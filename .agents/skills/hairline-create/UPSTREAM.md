@@ -1,0 +1,1 @@
+Unmodified Hairline creation skill from https://github.com/lucasmarkes/hairline at 37d2e78dcb333ab30c3338e28ed4a690364ea014. MIT license in LICENSE. Local worktree installation, requested by the user.

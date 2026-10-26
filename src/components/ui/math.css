@@ -1,0 +1,94 @@
+.nf-math .katex {
+  font-size: 0.95em;
+}
+.nf-math-display {
+  display: block;
+  margin: 1.4rem 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.3rem 0.15rem;
+}
+.nf-math-display .katex-display {
+  margin: 0.4rem 0;
+}
+.nf-math-display .katex-display > .katex {
+  text-align: center;
+}
+@media (max-width: 600px) {
+  .nf-math-display {
+    font-size: 0.9em;
+  }
+}
+
+/* MathMorph: ghosts lay each step out in place; live tokens travel between them. */
+.nf-morph {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.4rem 0;
+}
+.nf-morph-a11y {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.nf-morph-stage {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  min-width: max-content;
+  margin: 0 auto;
+  font-size: 1.12em;
+}
+.nf-morph-ghost {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  row-gap: 0.35em;
+  align-content: center;
+  visibility: hidden;
+}
+.nf-morph-stage:not([data-measured]) .nf-morph-ghost[data-resting] {
+  visibility: visible;
+}
+.nf-morph-cell {
+  display: flex;
+  align-items: baseline;
+  white-space: nowrap;
+}
+.nf-morph-cell.lhs {
+  justify-content: flex-end;
+}
+.nf-morph-tok[data-kind="bin"] {
+  margin: 0 0.2222em;
+}
+.nf-morph-tok[data-kind="rel"] {
+  margin: 0 0.2778em;
+}
+.nf-morph-tok .katex,
+.nf-morph-live .katex {
+  font-size: 1em;
+}
+.nf-morph-live {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  will-change: transform, opacity;
+}
+.nf-morph-stage:not([data-measured]) .nf-morph-live {
+  visibility: hidden;
+}
+@media (max-width: 600px) {
+  .nf-morph-stage {
+    font-size: 0.95em;
+  }
+}
+.nf-morph-tok,
+.nf-morph-live {
+  display: block;
+  line-height: 1.5;
+}

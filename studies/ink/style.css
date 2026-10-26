@@ -1,0 +1,78 @@
+@font-face{font-family:Newsreader;src:url(data:font/woff2;base64,FONT_DATA) format('woff2');font-weight:200 800;font-display:swap}
+
+*{box-sizing:border-box}
+html{color-scheme:dark;background:#0b0d0c;color:#e6e7dc}
+body{margin:0;font-family:Georgia,serif;font-size:17px}
+.paper{max-width:1600px;margin:auto;padding:26px 5.2% 24px}
+header{display:flex;align-items:center;justify-content:space-between;min-height:50px;gap:20px}
+.back,.edition,.eyebrow,.annotation,.transport,.footer,summary,.colophon{font:15px/1.5 system-ui,sans-serif}
+a{color:inherit;text-underline-offset:4px}
+.back{text-decoration:none;display:inline-flex;align-items:center;gap:12px;min-height:44px}
+.back span{font:25px Georgia}
+.edition{color:#a5aaa0}
+.stamp{font:23px/1 Georgia;display:grid;place-content:center;color:#a73d2d;border:1px solid #a73d2d;width:36px;height:39px;transform:rotate(-3deg)}
+main{margin-top:28px}
+.stage{position:relative;height:min(64vw,680px);min-height:520px;isolation:isolate}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.story{position:absolute;top:19%;left:2.5%;pointer-events:none;max-width:45%}
+.eyebrow{text-transform:uppercase;font-size:15px;letter-spacing:.11em;display:flex;align-items:center;gap:12px;color:#a5aaa0}
+.hairline{width:26px;height:1px;background:#4e5750}
+h1{font:400 clamp(56px,5.6vw,91px)/.99 Newsreader,Georgia,serif;letter-spacing:-.045em;margin:37px 0 23px}
+#verse{font:400 23px/1.42 Newsreader,Georgia,serif;color:#b7bdaf;margin:0}
+.annotation{display:flex;align-items:center;gap:9px;margin-top:43px;font-size:15px;color:#a0a99c;max-width:270px}
+.red-dot{width:6px;height:6px;flex:0 0 auto;border-radius:50%;background:#ad4433}
+.edge-note{position:absolute;right:-18px;top:44%;writing-mode:vertical-rl;letter-spacing:.15em;text-transform:uppercase;font:15px/1 system-ui,sans-serif;color:#8b9589}
+.transport{border-top:1px solid #3b453c;border-bottom:1px solid #343e35;display:flex;justify-content:space-between;align-items:center;gap:20px;padding:13px 0}
+.scene-tabs,.playback{display:flex;gap:6px;align-items:center}
+button{font:inherit;cursor:pointer;color:#c8cdbf;background:transparent;border:1px solid transparent;border-radius:2px;min-width:44px;min-height:44px;padding:8px 14px;transition:background-color 160ms ease-out,transform 120ms ease-out}
+button:active{transform:scale(.97)}
+button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #9f3f2f;outline-offset:4px}
+.scene-tabs button{display:flex;gap:10px;align-items:center}
+.scene-tabs button span{color:#899782}
+.scene-tabs button[aria-current=true]{color:#e9eadf;background:#293229}
+.scene-tabs button[aria-current=true] span{color:#a13e2e}
+#play{border-color:#68775f;display:flex;align-items:center;justify-content:center;gap:10px;min-width:145px}
+#play-icon{font-size:22px;line-height:1}
+button:disabled{cursor:default;opacity:.5}
+.footer{display:flex;justify-content:space-between;gap:20px;color:#98a88e;font-size:15px;margin:13px 0}
+.footer p{margin:0}
+details{max-width:660px;color:#b1bba6;margin-top:25px}
+summary{cursor:pointer;min-height:44px;display:list-item;width:fit-content;padding:10px 0}
+details p{font:19px/1.55 Newsreader,Georgia,serif;margin:8px 0 15px}
+.colophon{display:flex;justify-content:space-between;gap:20px;border-top:1px solid #343e35;margin-top:26px;padding-top:18px;font-size:15px;color:#9ba991}
+.colophon span:first-child{letter-spacing:.12em}
+@media(hover:hover) and (pointer:fine){button:hover{background:#232b22}
+a:hover{text-decoration:underline}
+}
+::selection{background:#bbc7ac;color:#151a14}
+
+@media(max-width:800px){.paper{padding:18px 6%}
+.edition{display:none}
+main{margin-top:5px}
+.stage{height:auto;min-height:0;display:flex;flex-direction:column}
+.stage canvas{position:relative;order:2;height:430px;flex-shrink:0}
+.story{position:relative;order:1;top:0;left:0;max-width:100%;margin-top:23px}
+h1{font-size:67px;margin:22px 0 17px}
+#verse{font-size:22px}
+.annotation{margin-top:24px}
+.edge-note{right:-12px;top:61%}
+.transport{flex-wrap:wrap;gap:12px}
+.scene-tabs{justify-content:space-between;width:100%;gap:0}
+.scene-tabs button{padding:8px 12px}
+.playback{width:100%;justify-content:space-between}
+.footer{display:block;line-height:1.6}
+.footer p+ p{margin-top:4px}
+.colophon{display:block}
+.colophon span{display:block;margin-top:6px}
+}
+
+@media(max-width:380px){h1{font-size:59px}
+.stage canvas{height:390px}
+.scene-tabs button{padding:8px}
+.eyebrow{font-size:15px;letter-spacing:.045em;gap:9px}
+.annotation{font-size:15px}
+.colophon{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){button{transition:none}
+button:active{transform:none}
+}

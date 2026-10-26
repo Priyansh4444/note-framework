@@ -1,0 +1,31 @@
+{
+  "upstreamRevision": "37d2e78dcb333ab30c3338e28ed4a690364ea014",
+  "unmodifiedSkillFiles": [
+    "LICENSE",
+    "SKILL.md",
+    "bench.html",
+    "build.mjs",
+    "concepts.md",
+    "examples/riffle.js",
+    "examples/terrain.js",
+    "kernel.js",
+    "look.md",
+    "look.mjs",
+    "read.mjs",
+    "rules.md",
+    "source.md",
+    "validate.mjs"
+  ],
+  "publicArtifacts": {
+    "public/studies/morph/index.html": "c4651ad646249ae1514bcc62bfb5162e10876eac2f00fd2c4bed61275541b7ed",
+    "public/studies/mechanical-arm/index.html": "8a777a5cdf3f2bfc71a0b0aec547931cc2be88dd22f05ee40bea76642985fd56",
+    "public/studies/ink/index.html": "55f646e00e19d1e57ec5befab6bf942d7f794a0c6b85553353deabbc7d2ea535",
+    "public/studies/hairline/index.html": "92821fa030c8610a1531fcc3b07241c36c15fe4f9f02db7affb5c42b625d18c4",
+    "public/studies/hairline/LICENSE": "948d56f0bc8c383c04c453136dcfb78407f97de65ff8bb4fabff2b79ddd17f59",
+    "public/studies/previews/hairline.webp": "1acb96db4f73b0b7475cd24985123abd600631be92a9c2eacbdb22be5b11cd5b",
+    "public/studies/previews/mechanical-arm.webp": "f6a1cd0b8013654a4e2e005558d03d6e706b8d23c656786475a91e52b002de32",
+    "public/studies/previews/morph.webp": "42b4c856543a21e37b4131d8ed643278774d1d711e9efba511d16dc14588f2a7",
+    "public/studies/previews/ink.webp": "095dcc51a99785469bd9920121ead7e4dd746c04953a14593520e78139944a55",
+    "public/studies/previews/anatomy.webp": "24aace2b3079dba3509070e6b426e652809802099144e416d133d334f9c9cbae"
+  }
+}

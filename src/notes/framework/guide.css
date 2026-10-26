@@ -1,0 +1,302 @@
+.fw-guide .fw-guide-layout {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 56px;
+  align-items: start;
+  padding: 80px 0 88px;
+}
+.fw-guide .fw-guide-toc {
+  position: sticky;
+  top: 32px;
+}
+.fw-guide .fw-guide-label {
+  margin: 0 0 16px;
+  color: var(--faint);
+  font: 11px/1.6 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.fw-guide .fw-guide-toc ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.fw-guide .fw-guide-toc li {
+  margin: 0;
+  padding: 0;
+}
+.fw-guide .fw-guide-toc a {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-height: 44px;
+  padding: 8px 0;
+  color: var(--muted);
+  font-size: 17px;
+  text-decoration: none;
+}
+.fw-guide .fw-guide-toc a span {
+  color: var(--faint);
+  font: 11px/1.5 var(--mono);
+}
+.fw-guide .fw-guide-body {
+  min-width: 0;
+}
+.fw-guide .fw-guide-header {
+  padding-bottom: 56px;
+}
+.fw-guide .fw-guide-header h1 {
+  font-size: 68px;
+}
+.fw-guide .fw-guide-header .fw-dek {
+  max-width: 25em;
+  margin-bottom: 24px;
+}
+.fw-guide .fw-guide-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 28px;
+  margin: 0;
+  font-size: 17px;
+}
+.fw-guide .fw-guide-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+}
+.fw-guide .fw-guide-section {
+  padding: 56px 0 64px;
+  border-top: 1px solid var(--rule);
+  scroll-margin-top: 32px;
+}
+.fw-guide .fw-guide-section:last-child {
+  padding-bottom: 0;
+}
+.fw-guide .fw-guide-section > p {
+  max-width: 680px;
+  margin: 20px 0;
+}
+.fw-guide .fw-guide-section > h2 {
+  font-size: 38px;
+}
+.fw-guide .fw-guide-section > .nk-code-block {
+  max-width: 680px;
+  margin: 28px 0;
+}
+.fw-guide .fw-guide-section .fw-guide-aside {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.fw-guide .fw-guide-prompt {
+  max-width: 680px;
+  margin: 28px 0;
+}
+.fw-guide .fw-guide-prompt label {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--muted);
+  font-size: 17px;
+}
+.fw-guide .fw-guide-prompt textarea {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 16px 18px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--text);
+  font: 18px/1.55 var(--serif);
+  resize: vertical;
+}
+.fw-guide .fw-guide-prompt-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin-top: 16px;
+}
+.fw-guide .fw-guide-prompt-actions [role="status"] {
+  color: var(--muted);
+  font-size: 16px;
+}
+.fw-guide .fw-guide-checklist {
+  max-width: 660px;
+  margin: 24px 0;
+  padding-left: 24px;
+}
+.fw-guide .fw-guide-checklist li {
+  margin: 12px 0;
+  padding-left: 4px;
+}
+
+/* Read the live result first; open its source only when needed. */
+.fw-guide .fw-guide-example {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+  margin: 36px 0 28px;
+}
+.fw-guide .fw-guide-source,
+.fw-guide .fw-guide-result {
+  min-width: 0;
+}
+.fw-guide .fw-guide-result {
+  max-width: 680px;
+  padding-top: 0;
+}
+.fw-guide .fw-guide-result.nk-note,
+.fw-guide .fw-guide-result > .nk-note {
+  padding: 0;
+  font-size: 20px;
+  line-height: 1.55;
+}
+.fw-guide .fw-guide-result > .nk-note {
+  max-width: 680px;
+}
+.fw-guide .fw-guide-result > .nk-note > p {
+  margin: 0;
+}
+.fw-guide .fw-guide-result .nk-experiment {
+  margin: 0;
+}
+.fw-guide .fw-guide-result .nk-experiment-question {
+  font-size: 23px;
+}
+.fw-guide .fw-guide-result .nk-equation {
+  margin: 24px 0;
+}
+.fw-guide .fw-guide-result .nk-check {
+  margin: 20px 0 0;
+}
+.fw-guide .fw-guide-result .nk-diagram {
+  display: block;
+  width: 100%;
+}
+.fw-guide .guide-readout {
+  display: block;
+  font-variant-numeric: tabular-nums;
+}
+.fw-guide .guide-readout strong {
+  color: var(--bright);
+  font-weight: 450;
+}
+
+.fw-guide .fw-guide-details {
+  max-width: 680px;
+  border-top: 1px solid var(--rule);
+}
+.fw-guide .fw-guide-details:last-child {
+  border-bottom: 1px solid var(--rule);
+}
+.fw-guide .fw-guide-details > summary {
+  min-height: 56px;
+  padding-block: 14px;
+  font-size: 18px;
+}
+.fw-guide .fw-guide-details > div {
+  padding: 0 0 22px 24px;
+  font-size: 17px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.fw-guide .fw-guide-details > div > p {
+  margin: 16px 0;
+}
+.fw-guide .fw-guide-details > div > p:first-child {
+  margin-top: 4px;
+}
+.fw-guide .fw-guide-details .nk-code-block {
+  margin: 24px 0;
+}
+.fw-guide .fw-guide-developer {
+  max-width: none;
+  margin: 0 0 64px;
+  scroll-margin-top: 32px;
+}
+.fw-guide .fw-guide-developer > div {
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+.fw-guide .fw-guide-developer .fw-guide-section:first-child {
+  padding-top: 24px;
+  border-top: 0;
+}
+.fw-guide .fw-guide-developer .fw-guide-section > h2 {
+  font-size: 33px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .fw-guide .fw-guide-toc a:hover,
+  .fw-guide .fw-guide-details > summary:hover {
+    color: var(--bright);
+  }
+  .fw-guide .fw-guide-toc a:hover span {
+    color: var(--accent);
+  }
+}
+@media (max-width: 1199px) {
+  .fw-guide .fw-guide-layout {
+    gap: 40px;
+  }
+}
+@media (max-width: 760px) {
+  .fw-guide .fw-guide-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 36px;
+    padding: 32px 0 56px;
+  }
+  .fw-guide .fw-guide-toc {
+    position: static;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .fw-guide .fw-guide-toc .fw-guide-label {
+    margin-bottom: 8px;
+  }
+  .fw-guide .fw-guide-toc ol {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 24px;
+  }
+  .fw-guide .fw-guide-toc a {
+    gap: 9px;
+  }
+  .fw-guide .fw-guide-header {
+    padding-bottom: 36px;
+  }
+  .fw-guide .fw-guide-header h1 {
+    font-size: 46px;
+  }
+  .fw-guide .fw-guide-links {
+    gap: 0 24px;
+    font-size: 16px;
+  }
+  .fw-guide .fw-guide-section {
+    padding: 36px 0 44px;
+    scroll-margin-top: 20px;
+  }
+  .fw-guide .fw-guide-section > h2 {
+    font-size: 33px;
+  }
+  .fw-guide .fw-guide-example {
+    margin-top: 28px;
+  }
+  .fw-guide .fw-guide-result.nk-note,
+  .fw-guide .fw-guide-result > .nk-note {
+    font-size: 19px;
+  }
+  .fw-guide .fw-guide-result .nk-experiment-question {
+    font-size: 22px;
+  }
+  .fw-guide .fw-guide-details > div {
+    padding-left: 0;
+  }
+  .fw-guide .fw-guide-developer {
+    margin-bottom: 44px;
+  }
+}

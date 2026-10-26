@@ -1,0 +1,10 @@
+.component-test-surface {
+  width: min(760px, calc(100% - 32px));
+  margin: 16px auto;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--text);
+}
+.component-test-surface figure {
+  margin-block: 0;
+}

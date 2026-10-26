@@ -1,0 +1,169 @@
+.note-inside-svg-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 12px;
+  width: min(calc(100% - 2.5rem), 680px);
+  margin: 28px auto 0;
+  padding: 0;
+  font: 17px/1.5 var(--serif, Georgia, serif);
+}
+.note-inside-svg-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.note-inside-svg .svg-shape {
+  stroke: none;
+}
+.note-inside-svg .svg-sky {
+  fill: color-mix(in srgb, var(--diagram-blue) 24%, var(--bg));
+}
+.note-inside-svg .svg-sun {
+  fill: var(--diagram-orange);
+}
+.note-inside-svg .svg-rear {
+  fill: color-mix(in srgb, var(--diagram-green) 43%, var(--bg));
+}
+.note-inside-svg .svg-front {
+  fill: color-mix(in srgb, var(--diagram-green) 72%, var(--bg));
+}
+.note-inside-svg .svg-frame {
+  fill: color-mix(in srgb, var(--diagram-orange) 65%, var(--bg));
+}
+.note-inside-svg .svg-artwork {
+  display: block;
+  width: min(100%, 360px);
+  height: auto;
+  margin: 0 auto;
+  overflow: visible;
+}
+.note-inside-svg .svg-reference {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-bottom: 20px;
+  font-size: 15px;
+  color: var(--muted);
+}
+.note-inside-svg .svg-reference .svg-artwork {
+  width: 78px;
+  margin: 0;
+}
+.note-inside-svg .svg-peel-stage {
+  position: relative;
+  width: 100%;
+}
+.note-inside-svg .svg-plane {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.note-inside-svg .svg-plane > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.note-inside-svg .svg-plane-label {
+  display: block;
+  height: 28px;
+  padding-top: 5px;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 23px;
+  text-align: center;
+  white-space: nowrap;
+}
+.note-inside-svg .svg-caption-main {
+  display: block;
+  color: var(--text);
+  margin-bottom: 5px;
+}
+.note-inside-svg .svg-button {
+  min-width: 44px;
+  min-height: 44px;
+  padding: 9px 14px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text);
+  font: 17px/1.4 var(--serif, Georgia, serif);
+  cursor: pointer;
+}
+.note-inside-svg .svg-button[aria-pressed="true"] {
+  background: var(--code-bg);
+  border-color: var(--diagram-orange);
+  color: var(--bright);
+}
+.note-inside-svg .svg-button:active {
+  opacity: 0.7;
+}
+.note-inside-svg .svg-button:focus-visible,
+.note-inside-svg-nav a:focus-visible {
+  outline: 2px solid var(--diagram-blue);
+  outline-offset: 4px;
+}
+.note-inside-svg .svg-clip-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+}
+.note-inside-svg .svg-stops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.note-inside-svg .svg-order-strip {
+  margin-top: 20px;
+  font-size: 16px;
+  line-height: 1.6;
+}
+.note-inside-svg .svg-order-strip > span {
+  color: var(--muted);
+}
+.note-inside-svg .svg-order-strip ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 0;
+  list-style: none;
+  padding: 0;
+  margin: 6px 0 0;
+}
+.note-inside-svg .svg-order-strip li:not(:last-child)::after {
+  content: "→";
+  margin: 0 9px;
+  color: var(--faint);
+}
+.note-inside-svg .svg-reason {
+  margin-top: 24px;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.note-inside-svg .svg-reason > div {
+  padding: 0 0 12px;
+}
+@media (forced-colors: active) {
+  .note-inside-svg .svg-sky {
+    fill: Canvas;
+    stroke: CanvasText;
+  }
+  .note-inside-svg .svg-sun {
+    fill: Highlight;
+  }
+  .note-inside-svg .svg-rear {
+    fill: GrayText;
+  }
+  .note-inside-svg .svg-front {
+    fill: CanvasText;
+  }
+  .note-inside-svg .svg-frame {
+    fill: ButtonText;
+  }
+  .note-inside-svg .svg-button[aria-pressed="true"] {
+    outline: 2px solid Highlight;
+  }
+}

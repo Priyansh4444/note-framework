@@ -1,0 +1,40 @@
+/* Keep topic styles scoped; shared reading defaults live in src/kit/kit.css. */
+/* Figures sit on the page; .nk-diagram keeps labels at a real 16px screen size. */
+.note-__SLUG__ .starter-figure .scene {
+  width: 100%;
+  max-width: 520px;
+  margin: 2.6rem auto;
+  transform: none;
+}
+.note-__SLUG__ .starter-figure .nk-diagram {
+  max-width: 420px;
+  margin: auto;
+}
+.note-__SLUG__ .slot {
+  fill: none;
+  stroke: var(--diagram-faint);
+  stroke-width: 1.2;
+}
+.note-__SLUG__ .slot-fill {
+  fill: var(--diagram-blue);
+}
+.note-__SLUG__ .slot-value {
+  fill: var(--bg);
+  font-family: var(--mono);
+}
+.note-__SLUG__ .slot-n {
+  fill: var(--muted);
+  font-family: var(--mono);
+}
+.note-__SLUG__ .slot-ring {
+  fill: none;
+  stroke: var(--diagram-orange);
+  stroke-width: 2;
+}
+.note-__SLUG__ .starter-readout {
+  margin: 16px 0 0;
+  min-height: 3em;
+  font-size: 17px;
+  line-height: 1.5;
+  color: var(--text);
+}

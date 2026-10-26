@@ -1,0 +1,162 @@
+.account-column {
+  width: min(100%, 680px);
+  margin: 64px auto 96px;
+}
+.fw-account .account-heading h1 {
+  font-size: clamp(42px, 6vw, 64px);
+  line-height: 1.04;
+}
+.account-heading {
+  margin-bottom: 48px;
+}
+.fw-account h2 {
+  font-size: 30px;
+  line-height: 1.15;
+}
+.account-section,
+.account-signin,
+.account-approval {
+  padding-block: 32px;
+  border-top: 1px solid var(--rule);
+}
+.account-approval {
+  border-color: var(--accent);
+}
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 20px;
+}
+.account-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+}
+.fw-account form label {
+  display: block;
+  font: 13px/1.5 var(--mono);
+  color: var(--muted);
+  margin: 24px 0 10px;
+}
+.fw-account input:not([type="range"]) {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+.fw-account form > button {
+  margin-top: 16px;
+}
+.account-hint {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.account-fingerprint {
+  display: block;
+  width: fit-content;
+  font: 22px/1.6 var(--mono);
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  margin-block: 20px;
+}
+.account-list {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0;
+}
+.account-list li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.account-list li > :first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.account-list li > :last-child {
+  flex-shrink: 0;
+}
+.account-text-button {
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  min-height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+.account-text-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.account-signout {
+  margin-top: 28px;
+}
+.account-command {
+  overflow-x: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  background: var(--panel);
+  padding: 16px;
+  font: 12px/1.8 var(--mono);
+}
+.fw-account .account-command code {
+  font: inherit;
+}
+.account-status {
+  min-height: 1.6em;
+  color: var(--muted);
+}
+.account-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.account-details {
+  border-top: 1px solid var(--rule);
+  padding-top: 16px;
+}
+.fw-account button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+.fw-account .framework-upload {
+  margin-top: 24px;
+}
+@media (max-width: 480px) {
+  .account-column {
+    margin-top: 40px;
+  }
+  .account-section-heading {
+    display: block;
+  }
+  .account-list li {
+    flex-wrap: wrap;
+    gap: 4px 16px;
+  }
+  .account-actions > button {
+    width: 100%;
+    justify-content: center;
+  }
+}

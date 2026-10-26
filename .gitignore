@@ -1,0 +1,12 @@
+node_modules/
+dist/
+dist-*/
+.env
+.env.*
+.dev.vars
+.dev.vars.*
+.wrangler/
+.note-framework/
+artifacts/
+releases/
+.vitest/

@@ -1,0 +1,4 @@
+{
+  "ignorePatterns": ["node_modules/**", "dist*/**", "artifacts/**", "releases/**", "public/**", "studies/**", "templates/**", ".agents/skills/hairline-create/**", "src/notes/spring-workshop/vendor/**", "src/notes/spring-workshop/verification/vendor/**", "bun.lock"],
+  "sortPackageJson": {}
+}

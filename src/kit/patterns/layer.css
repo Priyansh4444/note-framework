@@ -1,0 +1,120 @@
+.nk-layers {
+  position: relative;
+  left: 0;
+  transform: none;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 1.5rem 0;
+  min-width: 0;
+  max-width: 100%;
+  background: #101214;
+  color: #ece9df;
+  color-scheme: dark;
+  isolation: isolate;
+}
+.nk-layers > svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 10/7;
+  max-height: 470px;
+  overflow: hidden;
+}
+.nk-layers .nk-layer-edge {
+  fill: #101214;
+  stroke: #626973;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.nk-layers .nk-layer-crease {
+  fill: none;
+  stroke: #343a42;
+  stroke-width: 0.65;
+  vector-effect: non-scaling-stroke;
+}
+.nk-layers .is-selected .nk-layer-edge {
+  stroke: #e7e9e5;
+  stroke-width: 1.3;
+}
+.nk-layers .nk-layer-path {
+  fill: none;
+  stroke: #a2a9b2;
+  stroke-width: 1.4;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+.nk-layers .nk-layer-path.quiet {
+  stroke: #515961;
+  stroke-dasharray: 3 5;
+}
+.nk-layers .is-selected .nk-layer-path.ink {
+  stroke: #ece9df;
+}
+.nk-layers .nk-layer-path.accent {
+  stroke: #88b5c8;
+}
+.nk-layers > figcaption {
+  width: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  position: static;
+  transform: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #343638;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #b7b8b3;
+}
+.nk-layers figcaption > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.nk-layers button {
+  appearance: none;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 9px 14px;
+  max-width: 100%;
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.3;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  color: #b7b8b3;
+  background: transparent;
+  cursor: pointer;
+}
+.nk-layers button[aria-pressed="true"] {
+  background: #ece9df;
+  color: #101214;
+}
+.nk-layers button:focus-visible {
+  outline: 2px solid #91b1ce;
+  outline-offset: 3px;
+}
+@media (hover: hover) {
+  .nk-layers button:hover:not([aria-pressed="true"]) {
+    color: #ece9df;
+    background: #262a2d;
+  }
+}
+@media (max-width: 480px) {
+  .nk-layers > figcaption {
+    padding: 12px;
+    gap: 8px;
+  }
+  .nk-layers figcaption > div {
+    width: 100%;
+  }
+  .nk-layers button {
+    flex: 1;
+    padding: 9px 11px;
+  }
+}

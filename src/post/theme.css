@@ -1,0 +1,31 @@
+/* Ink-black reading surface with the terminal / Fastfetch accent palette.
+   Sources: ~/.local/state/omarchy/current/theme/alacritty.toml and
+   /etc/fastfetch/config.jsonc (green hardware, blue software, magenta uptime).
+   Secondary text and geometric guides are lifted for reading contrast;
+   terminal bright-black is too dark for labels on this background. */
+:root {
+  --bg: #050505;
+  --panel: #0c0c0c;
+  --text: #e0e0e0;
+  --bright: #ffffff;
+  --muted: #aaaaaa;
+  --faint: #777777;
+  --rule: rgb(224 224 224 / 16%);
+  --rule-strong: rgb(224 224 224 / 32%);
+  --code-bg: rgb(224 224 224 / 7%);
+  --accent: #26bbd9;
+  --bad: #e95678;
+  --good: #29d398;
+  --diagram-ink: var(--text);
+  --diagram-orange: #fab795;
+  --diagram-blue: #26bbd9;
+  --diagram-green: var(--good);
+  --diagram-red: var(--bad);
+  --diagram-magenta: #ee64ac;
+  --diagram-faint: #777777;
+}
+
+::selection {
+  color: var(--bg);
+  background: var(--text);
+}

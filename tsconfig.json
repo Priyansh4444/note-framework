@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "allowImportingTsExtensions": true,
+    "strict": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "types": ["vite/client", "bun"],
+    "noEmit": true,
+    "isolatedModules": true,
+    "paths": {
+      "~/*": ["./src/*"],
+      "/src/*": ["./src/*"],
+      "/visual/*": ["./visual/*"]
+    },
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "scripts/**/*.ts",
+    "sharing/**/*.ts",
+    "visual/**/*.ts",
+    "visual/**/*.tsx",
+    "tools/**/*.ts",
+    "component-tests/**/*.ts",
+    "component-tests/**/*.tsx",
+    "vitest.components.config.ts"
+  ]
+}

@@ -1,0 +1,407 @@
+[
+  {
+    "id": "rubber-foot-0",
+    "key": -99.1311204829776,
+    "motion": "base"
+  },
+  {
+    "id": "metal-foot-0",
+    "key": -97.6311204829776,
+    "motion": "base"
+  },
+  {
+    "id": "rubber-foot-1",
+    "key": 14.770152556440197,
+    "motion": "base"
+  },
+  {
+    "id": "metal-foot-1",
+    "key": 16.270152556440195,
+    "motion": "base"
+  },
+  {
+    "id": "rubber-foot-2",
+    "key": -31.770152556440195,
+    "motion": "base"
+  },
+  {
+    "id": "metal-foot-2",
+    "key": -30.270152556440195,
+    "motion": "base"
+  },
+  {
+    "id": "rubber-foot-3",
+    "key": 82.1311204829776,
+    "motion": "base"
+  },
+  {
+    "id": "metal-foot-3",
+    "key": 83.6311204829776,
+    "motion": "base"
+  },
+  {
+    "id": "bed",
+    "key": 83.65112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-0-washer",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-0-head",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-1-washer",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-1-head",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-2-washer",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-2-head",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-3-washer",
+    "key": 100.55407945411031,
+    "motion": "base"
+  },
+  {
+    "id": "bed-bolt-3-head",
+    "key": 100.87907945411031,
+    "motion": "base"
+  },
+  {
+    "id": "ruler",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "label",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "label-rivet--93",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "label-rivet--60",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "rail-0",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "rail-foot-0--85",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "rail-clamp-0--85",
+    "key": 83.71112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0--85--5-washer",
+    "key": 83.73112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0--85--5-head",
+    "key": 83.75112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0--85-5-washer",
+    "key": 83.73112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0--85-5-head",
+    "key": 83.75112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "rail-foot-0-85",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "rail-clamp-0-85",
+    "key": 83.71112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0-85--5-washer",
+    "key": 83.73112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0-85--5-head",
+    "key": 83.75112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0-85-5-washer",
+    "key": 83.73112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-0-85-5-head",
+    "key": 83.75112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "rail-1",
+    "key": 83.79112048297756,
+    "motion": "base"
+  },
+  {
+    "id": "rail-foot-1--85",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "rail-clamp-1--85",
+    "key": 83.81112048297756,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1--85--5-washer",
+    "key": 83.83112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1--85--5-head",
+    "key": 83.85112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1--85-5-washer",
+    "key": 83.83112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1--85-5-head",
+    "key": 83.85112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "rail-foot-1-85",
+    "key": 83.77112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "rail-clamp-1-85",
+    "key": 83.81112048297756,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1-85--5-washer",
+    "key": 83.83112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1-85--5-head",
+    "key": 83.85112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1-85-5-washer",
+    "key": 83.83112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "clamp-1-85-5-head",
+    "key": 83.85112048297755,
+    "motion": "base"
+  },
+  {
+    "id": "stop--61",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "stop-pad--61",
+    "key": 83.71112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "stop-56",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "stop-pad-56",
+    "key": 83.71112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "spring-anchor",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "anchor-washer",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "anchor-head",
+    "key": 83.71112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "damper-foot",
+    "key": 83.75112048297757,
+    "motion": "base"
+  },
+  {
+    "id": "damper",
+    "key": 120.69346662472522,
+    "motion": "base"
+  },
+  {
+    "id": "gland",
+    "key": 120.67346662472522,
+    "motion": "base"
+  },
+  {
+    "id": "damping-knob",
+    "key": 120.71346662472521,
+    "motion": "base"
+  },
+  {
+    "id": "shoe--18--20",
+    "key": 102.08229355385141,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe--18-20",
+    "key": 102.1822935538514,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-18--20",
+    "key": 102.08229355385141,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-18-20",
+    "key": 102.1822935538514,
+    "motion": "carriage"
+  },
+  {
+    "id": "carriage",
+    "key": 102.20229355385139,
+    "motion": "carriage"
+  },
+  {
+    "id": "cap",
+    "key": 102.24229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "left-seat",
+    "key": 102.22229355385139,
+    "motion": "carriage"
+  },
+  {
+    "id": "right-seat",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt--18--19-washer",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt--18--19-head",
+    "key": 102.28229355385137,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt--18-19-washer",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt--18-19-head",
+    "key": 102.28229355385137,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt-18--19-washer",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt-18--19-head",
+    "key": 102.28229355385137,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt-18-19-washer",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "shoe-bolt-18-19-head",
+    "key": 102.28229355385137,
+    "motion": "carriage"
+  },
+  {
+    "id": "grip-stem",
+    "key": 102.26229355385138,
+    "motion": "carriage"
+  },
+  {
+    "id": "grip",
+    "key": 102.28229355385137,
+    "motion": "carriage"
+  },
+  {
+    "id": "gauge-foot",
+    "key": 83.67112048297759,
+    "motion": "base"
+  },
+  {
+    "id": "gauge-post",
+    "key": 83.69112048297758,
+    "motion": "base"
+  },
+  {
+    "id": "gauge",
+    "key": 120.59346662472522,
+    "motion": "base"
+  },
+  {
+    "id": "rod",
+    "key": 111.4678800892883,
+    "motion": "half"
+  },
+  {
+    "id": "spring",
+    "key": 92.95670701841449,
+    "motion": "half"
+  }
+]

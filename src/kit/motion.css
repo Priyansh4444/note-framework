@@ -1,0 +1,35 @@
+/* Shared UI rhythm. Geometry continues to read directly from the scene clock. */
+:root {
+  --nk-motion-fast: 160ms;
+  --nk-motion-reveal: 240ms;
+  --nk-motion-ease: cubic-bezier(0.23, 1, 0.32, 1);
+}
+.nk-disclosure-mark svg {
+  transition: transform var(--nk-motion-fast) var(--nk-motion-ease);
+}
+
+/* Native open/closed, focus and inert-content semantics remain browser owned.
+   Unsupported engines keep the ordinary immediate native disclosure. */
+@supports (interpolate-size: allow-keywords) and (transition-behavior: allow-discrete) and
+  selector(::details-content) {
+  @media (prefers-reduced-motion: no-preference) {
+    details:not(.nk-check):has(> .nk-disclosure-summary) {
+      interpolate-size: allow-keywords;
+    }
+    details:not(.nk-check):has(> .nk-disclosure-summary)::details-content {
+      block-size: 0;
+      overflow: clip;
+      transition:
+        block-size var(--nk-motion-reveal) var(--nk-motion-ease),
+        content-visibility var(--nk-motion-reveal) allow-discrete;
+    }
+    details:not(.nk-check)[open]:has(> .nk-disclosure-summary)::details-content {
+      block-size: auto;
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-disclosure-mark svg {
+    transition: none;
+  }
+}

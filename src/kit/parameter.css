@@ -1,0 +1,167 @@
+.nk-parameter {
+  min-width: 0;
+  color: var(--bright, #eee);
+  font: 17px/1.4 var(--serif, Georgia, serif);
+}
+.nk-parameter-label {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 12px;
+}
+.nk-parameter-label label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  cursor: pointer;
+}
+.nk-parameter output {
+  color: var(--bright, #eee);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+.nk-parameter-range {
+  position: relative;
+  height: 44px;
+}
+.nk-parameter-skin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 44px;
+  overflow: visible;
+  pointer-events: none;
+}
+.nk-parameter-track,
+.nk-parameter-fill {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 3;
+}
+.nk-parameter-track {
+  stroke: var(--rule, #444);
+}
+.nk-parameter-fill {
+  stroke: var(--diagram-blue, #87c5d1);
+}
+.nk-parameter-accent-stop {
+  stop-color: var(--diagram-blue, #87c5d1);
+}
+.nk-parameter-neutral-stop {
+  stop-color: var(--rule, #444);
+}
+.nk-parameter-range input {
+  appearance: none;
+  -webkit-appearance: none;
+  display: block;
+  position: relative;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  cursor: ew-resize;
+  border-radius: 4px;
+}
+.nk-parameter-range input::-webkit-slider-runnable-track {
+  height: 16px;
+  background: transparent;
+}
+.nk-parameter-range input::-webkit-slider-thumb {
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  border: 2px solid var(--bg, #101010);
+  border-radius: 50%;
+  background: var(--bright, #eee);
+  box-shadow: 0 0 0 1px var(--rule, #444);
+}
+.nk-parameter-range input::-moz-range-track {
+  height: 3px;
+  background: transparent;
+}
+.nk-parameter-range input::-moz-range-thumb {
+  box-sizing: border-box;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--bg, #101010);
+  border-radius: 50%;
+  background: var(--bright, #eee);
+  box-shadow: 0 0 0 1px var(--rule, #444);
+}
+/* Paper: focus rings the thumb only, so it never crosses the label or bounds. */
+.nk-parameter-range input:focus-visible {
+  outline: none;
+}
+.nk-parameter-range input:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 2px var(--bg, #050505),
+    0 0 0 4px var(--diagram-blue, #26bbd9);
+}
+.nk-parameter-range input:focus-visible::-moz-range-thumb {
+  box-shadow:
+    0 0 0 2px var(--bg, #050505),
+    0 0 0 4px var(--diagram-blue, #26bbd9);
+}
+/* Bounds sit under the track ends (8px inset). */
+.nk-parameter-bounds {
+  display: flex;
+  justify-content: space-between;
+  height: 20px;
+  margin-top: 2px;
+  padding: 0 8px;
+  color: var(--muted, #999);
+  font-size: 14px;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+.nk-parameter[data-disabled] {
+  opacity: 0.45;
+}
+.nk-parameter[data-disabled] :is(label, input) {
+  cursor: default;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-parameter-collar {
+    display: none;
+  }
+}
+
+/* Native system paint remains identifiable when custom SVG ink is suppressed. */
+@media (forced-colors: active) {
+  .nk-parameter-skin {
+    display: none;
+  }
+  .nk-parameter-range input {
+    appearance: auto;
+    -webkit-appearance: auto;
+    accent-color: auto;
+  }
+  .nk-parameter-range input::-webkit-slider-runnable-track {
+    all: revert;
+  }
+  .nk-parameter-range input::-webkit-slider-thumb {
+    all: revert;
+  }
+  .nk-parameter-range input::-moz-range-track {
+    all: revert;
+  }
+  .nk-parameter-range input::-moz-range-thumb {
+    all: revert;
+  }
+  .nk-parameter-range input:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+  .nk-parameter-range input:focus-visible::-webkit-slider-thumb {
+    box-shadow: none;
+  }
+  .nk-parameter-range input:focus-visible::-moz-range-thumb {
+    box-shadow: none;
+  }
+}

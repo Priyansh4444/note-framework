@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark"><meta name="description" content="An original two-link robot arm. Move its tool, choose a target, and feel the geometry hold together."><title>A little reach — Mechanical arm study</title>
+<style>
+*{box-sizing:border-box}html{background:#121310;color:#eeeee3;font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}body{margin:0}button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}button:focus-visible,a:focus-visible,summary:focus-visible{outline:2px solid #d9eb8c;outline-offset:5px}button:focus-visible{outline:2px solid #d9eb8c;outline-offset:3px}a{color:inherit;text-underline-offset:4px}main{max-width:1120px;margin:auto;padding:30px 36px 60px}.navigation{display:flex;justify-content:space-between;align-items:center;font-size:15px;color:#b6b9a8}.navigation a{display:flex;align-items:center;min-height:44px;text-decoration:none}.navigation span{letter-spacing:.08em;font-size:12px;text-transform:uppercase}.intro{display:flex;justify-content:space-between;gap:36px;align-items:end;margin:54px 0 30px}h1{font:normal clamp(40px,5.5vw,68px)/1.05 Georgia,serif;letter-spacing:-.045em;margin:0}.intro p{max-width:330px;margin:0 0 4px;color:#b6b9a8;font-size:16px;line-height:1.6}.machine{border:1px solid #3a3e32;background:#181b16;border-radius:14px;overflow:hidden;box-shadow:0 30px 80px #0003}.instrument-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:17px 23px;border-bottom:1px solid #34392d;font-size:15px}.instrument-head strong{font-weight:500;letter-spacing:.05em}.machine-state{display:flex;align-items:center;gap:9px;color:#c7d6a2}.machine-state:before{content:"";display:block;width:6px;height:6px;border-radius:50%;background:#d6e99a;box-shadow:0 0 8px #cde77e44}.stage{position:relative;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 56% 45%,#262d2110,#0f120f66)}#mechanism{display:block;width:100%;height:auto;aspect-ratio:1000 / 600;touch-action:none;user-select:none;cursor:crosshair;outline:none}#mechanism:focus-visible{outline:2px solid #d9eb8c;outline-offset:-5px}#mechanism.dragging{cursor:grabbing}.stage-help{display:flex;justify-content:space-between;gap:20px;padding:0 24px 20px;color:#aeb49e;font-size:15px}.stage-help span:last-child{font-variant-numeric:tabular-nums;color:#d6dcc7}.target-controls{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:18px 20px;border-top:1px solid #34392d;background:#1c1f19}button.target{display:flex;text-align:left;align-items:center;gap:13px;min-height:68px;padding:12px 16px;border:1px solid #424837;border-radius:7px;color:#e9ecde;background:#24291f;cursor:pointer;transition:background 150ms ease,border-color 150ms ease,transform 120ms cubic-bezier(.23,1,.32,1)}button.target:active{transform:scale(.98)}button.target[aria-pressed=true]{border-color:#bacd7d;background:#363f27}button.target b{display:block;font-size:15px;font-weight:500}button.target small{display:block;color:#b4bda5;font-size:13px;margin-top:2px}.target-icon{font-size:19px;line-height:1;color:#cfddaa}.explanation{display:grid;grid-template-columns:1.1fr 1fr;gap:70px;margin:37px 3px 30px}h2{font:normal 27px/1.3 Georgia,serif;margin:0 0 12px;letter-spacing:-.02em}.explanation p{color:#aeb49e;font-size:15px;line-height:1.7;margin:0;max-width:440px}.readouts{display:grid;grid-template-columns:repeat(3,1fr);align-items:start;gap:20px;margin:6px 0 0}.readouts div{border-top:1px solid #3a3e32;padding-top:13px}.readouts dt{color:#aeb49e;font-size:15px}.readouts dd{font:normal 23px/1.4 Georgia,serif;margin:7px 0 0;font-variant-numeric:tabular-nums}.readouts dd small{font:13px system-ui;color:#aeb49e}.readouts div:last-child dd{color:#d3e69b}details{border-top:1px solid #34392d;padding-top:16px;color:#b6b9a8;font-size:15px}summary{cursor:pointer;min-height:44px;list-style-position:outside;margin-left:18px}details p{max-width:760px;line-height:1.7;margin:10px 0 18px}details a{color:#d1dbb8}.keyboard-hint{color:#b6b9a8;font-size:15px;margin:14px 3px 0}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}@media(hover:hover) and (pointer:fine){button.target:hover{background:#343c29;border-color:#8d9a73}.navigation a:hover{color:#d9eb8c}}@media(max-width:700px){main{padding:18px 20px 40px}.intro{display:block;margin:32px 0 25px}.intro p{margin-top:18px;max-width:380px}.explanation{grid-template-columns:1fr;gap:24px;margin-top:28px}.readouts{gap:20px}.instrument-head{padding:15px 16px;font-size:15px}.stage-help{padding:0 16px 16px;gap:8px;flex-wrap:wrap}.target-controls{padding:13px;gap:7px}button.target{padding:10px;gap:6px;min-height:62px}button.target small{display:none}.target-icon{font-size:16px}#mechanism{aspect-ratio:630 / 550}.navigation span{font-size:11px}.readouts dd{font-size:22px}}@media(max-width:360px){main{padding-left:12px;padding-right:12px}.instrument-head{padding:14px 12px}.instrument-head strong{letter-spacing:0}.target-controls{padding:10px}.target-icon{display:none}.stage-help{padding-left:12px;padding-right:12px;font-size:15px}}@media(prefers-reduced-motion:reduce){button.target{transition:none}button.target:active{transform:none}}
+</style></head><body><main>
+<nav class="navigation" aria-label="Study navigation"><a href="/studies">← All studies</a><span>Motion studies / 02</span></nav>
+<header class="intro"><h1>A little reach.</h1><p>Give a machine a point to reach.<br>Two rigid links work out the rest.</p></header>
+<section class="machine" aria-label="Interactive mechanical arm">
+<div class="instrument-head"><strong>REACH / 02</strong><span class="machine-state" id="status">Ready to move</span></div>
+<div class="stage"><svg id="mechanism" viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" tabindex="0" role="application" aria-label="Mechanical arm. Drag its tool or use arrow keys to move it." aria-describedby="keyboard-help">
+<defs><linearGradient id="ivory" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f0f0dc"/><stop offset=".47" stop-color="#d9debe"/><stop offset="1" stop-color="#b6bea0"/></linearGradient><linearGradient id="steel" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7e8a6b"/><stop offset=".38" stop-color="#d4dbc3"/><stop offset=".52" stop-color="#909c7d"/><stop offset="1" stop-color="#3d4933"/></linearGradient><linearGradient id="base" x1="0" y1="0" x2=".3" y2="1"><stop stop-color="#3b4433"/><stop offset="1" stop-color="#222a20"/></linearGradient><pattern id="dots" width="25" height="25" patternUnits="userSpaceOnUse"><circle cx="0" cy="0" r=".8" fill="#8a9473" opacity=".22"/></pattern><pattern id="warning" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="5" height="12" fill="#b9c785"/></pattern><filter id="shadow" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="1" dy="8" stdDeviation="6" flood-color="#000" flood-opacity=".42"/></filter></defs>
+<rect x="70" y="40" width="860" height="520" fill="url(#dots)"/><g stroke="#596149" stroke-width="1" fill="none" opacity=".55"><path d="M92 44v10 M92 552v-10"/><path d="M117 44v5 M117 552v-5"/><path d="M142 44v5 M142 552v-5"/><path d="M167 44v5 M167 552v-5"/><path d="M192 44v10 M192 552v-10"/><path d="M217 44v5 M217 552v-5"/><path d="M242 44v5 M242 552v-5"/><path d="M267 44v5 M267 552v-5"/><path d="M292 44v10 M292 552v-10"/><path d="M317 44v5 M317 552v-5"/><path d="M342 44v5 M342 552v-5"/><path d="M367 44v5 M367 552v-5"/><path d="M392 44v10 M392 552v-10"/><path d="M417 44v5 M417 552v-5"/><path d="M442 44v5 M442 552v-5"/><path d="M467 44v5 M467 552v-5"/><path d="M492 44v10 M492 552v-10"/><path d="M517 44v5 M517 552v-5"/><path d="M542 44v5 M542 552v-5"/><path d="M567 44v5 M567 552v-5"/><path d="M592 44v10 M592 552v-10"/><path d="M617 44v5 M617 552v-5"/><path d="M642 44v5 M642 552v-5"/><path d="M667 44v5 M667 552v-5"/><path d="M692 44v10 M692 552v-10"/><path d="M717 44v5 M717 552v-5"/><path d="M742 44v5 M742 552v-5"/><path d="M767 44v5 M767 552v-5"/><path d="M792 44v10 M792 552v-10"/><path d="M817 44v5 M817 552v-5"/><path d="M842 44v5 M842 552v-5"/><path d="M867 44v5 M867 552v-5"/><path d="M892 44v10 M892 552v-10"/><path d="M77 67V44h23 M900 44h23v23 M77 532v23h23 M900 555h23v-23"/></g>
+<path id="workspace" fill="#b9d581" fill-opacity=".018" stroke="#7e8d61" stroke-opacity=".3" stroke-dasharray="3 7"/>
+<g transform="translate(560 150)" opacity=".55"><path d="M-10 0h20 M0 -10v20" stroke="#98a785"/><circle r="18" fill="none" stroke="#667452" stroke-dasharray="2 5"/><circle r="3" fill="#a0b47e"/></g><g transform="translate(325 240)" opacity=".55"><path d="M-10 0h20 M0 -10v20" stroke="#98a785"/><circle r="18" fill="none" stroke="#667452" stroke-dasharray="2 5"/><circle r="3" fill="#a0b47e"/></g><g transform="translate(535 350)" opacity=".55"><path d="M-10 0h20 M0 -10v20" stroke="#98a785"/><circle r="18" fill="none" stroke="#667452" stroke-dasharray="2 5"/><circle r="3" fill="#a0b47e"/></g>
+<g filter="url(#shadow)"><path d="M580 349 850 349 862 361V513L850 525H580L568 513V361Z" fill="#0e150f" stroke="#080d08" stroke-width="3"/><path d="M575 356H850L855 361V510L850 516H575Z" fill="url(#base)" stroke="#6d7958"/><path d="M581 356H844" stroke="#c2cba7" stroke-opacity=".4"/><path d="M576 512H850" stroke="#10190e" stroke-width="3"/>
+<rect x="581" y="369" width="138" height="134" rx="4" fill="#171f15" stroke="#566445"/>
+<rect x="731" y="370" width="105" height="43" rx="4" fill="#10190e" stroke="#566445"/>
+<path d="M742 385h24 M742 392h45 M742 399h35" stroke="#91a96b" stroke-width="3"/><circle cx="818" cy="391" r="5" fill="#cbe885"/>
+<g stroke="#10170e" stroke-width="5"><path d="M741 433v28"/><path d="M751 433v28"/><path d="M761 433v28"/><path d="M771 433v28"/><path d="M781 433v28"/><path d="M791 433v28"/><path d="M801 433v28"/><path d="M811 433v28"/><path d="M821 433v28"/></g><g stroke="#657451" stroke-width="1"><path d="M743 433v28"/><path d="M753 433v28"/><path d="M763 433v28"/><path d="M773 433v28"/><path d="M783 433v28"/><path d="M793 433v28"/><path d="M803 433v28"/><path d="M813 433v28"/><path d="M823 433v28"/></g>
+<rect x="734" y="479" width="100" height="17" rx="2" fill="#25301e" stroke="#627049"/><path d="M740 484h30 M740 490h47" stroke="#b1be93" stroke-width="1"/><path d="M816 481v14 M821 481v14 M826 481v14" stroke="#859568"/>
+<rect x="573" y="514" width="282" height="7" fill="url(#warning)" opacity=".75"/><g transform="translate(583 365)"><circle r="5" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-2.2 1.6 2.2 -1.6" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(843 365)"><circle r="5" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-2.2 1.6 2.2 -1.6" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(583 505)"><circle r="5" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-2.2 1.6 2.2 -1.6" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(843 505)"><circle r="5" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-2.2 1.6 2.2 -1.6" stroke="#c4cab7" stroke-width="1.2"/></g>
+<circle cx="650" cy="430" r="63" fill="#11190f" stroke="#71815a" stroke-width="2"/><circle cx="650" cy="430" r="55" fill="url(#steel)" stroke="#aab895"/><circle cx="650" cy="430" r="49" fill="#343f2b" stroke="#11190f"/><circle cx="650" cy="430" r="43" fill="none" stroke="#9aa985" stroke-dasharray="1 7" stroke-width="5"/><g transform="translate(705 430)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(697.6313972081441 457.5)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(677.5 477.6313972081441)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(650 485)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(622.5 477.6313972081441)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(602.3686027918559 457.5)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(595 430)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(602.3686027918559 402.5)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(622.5 382.3686027918559)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(650 375)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(677.5 382.3686027918559)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(697.6313972081441 402.5)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g>
+</g>
+<g id="upper" filter="url(#shadow)">
+<path d="M22 17 C55 57 158 52 202 19" fill="none" stroke="#0b100b" stroke-width="9"/><path d="M22 17 C55 57 158 52 202 19" fill="none" stroke="#8f9b70" stroke-width="3"/>
+<path d="M-22-30Q-40 0-22 30L181 23Q235 30 242 0Q235-30 181-23Z" fill="url(#ivory)" stroke="#10170d" stroke-width="3"/>
+<path d="M29-21 177-16 M28 24 178 18" stroke="#f2f1dd" stroke-width="2" opacity=".7"/>
+<path d="M46-9H164Q178-9 178 0Q178 9 164 9H46Q36 9 36 0Q36-9 46-9Z" fill="#263320" stroke="#91a079"/><path d="M46-5H151" stroke="#10190f" stroke-width="2"/>
+<path d="M64-16v4 M84-16v4 M104-16v4 M124-16v4 M144-16v4" stroke="#7c8b64"/>
+<path d="M33 22 58 22 58 18" fill="none" stroke="#727f5c"/><circle cx="157" cy="17" r="3" fill="#aec76d"/>
+<g transform="translate(26 -18)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(26 18)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(184 -14)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(184 14)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(0 0)"><circle r="32" fill="#10170f" stroke="#8a9675" stroke-width="1.5"/><circle r="27" fill="url(#steel)" stroke="#e9ecdd" stroke-width="1"/><circle r="22" fill="#4b5340" stroke="#242c1f" stroke-width="2"/><circle r="18" fill="url(#ivory)" stroke="#a4ac94"/><path d="M-14 0 H14" stroke="#7f8a6b"/><g transform="translate(29 0)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(20.50609665440988 20.506096654409877)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(1.7757378587636622e-15 29)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-20.506096654409877 20.50609665440988)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-29 3.5514757175273244e-15)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-20.506096654409884 -20.506096654409877)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-5.327213576290986e-15 -29)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(20.506096654409873 -20.506096654409884)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><circle r="4" fill="#242c1f" stroke="#dae2c6"/></g>
+</g>
+<g id="forearm" filter="url(#shadow)">
+<path d="M9-18 C65-47 125-38 163-13" fill="none" stroke="#10150e" stroke-width="8"/><path d="M9-18 C65-47 125-38 163-13" fill="none" stroke="#8fa476" stroke-width="2.5"/>
+<path d="M-18-24Q-31 0-18 24L154 17 176 10V-10L154-17Z" fill="url(#ivory)" stroke="#11180e" stroke-width="3"/>
+<path d="M29-11H143V11H29Z" fill="#c8d0ae" stroke="#758563"/><path d="M35-5H133V5H35Z" fill="#26331e"/><path d="M39-3H124" stroke="#a3b27e"/>
+<path d="M49-17H128" stroke="#f0f1da" stroke-width="2"/><path d="M45 17H130" stroke="#889a6b" stroke-width="1"/>
+<g transform="translate(31 0)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(144 0)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(0 0)"><circle r="26" fill="#10170f" stroke="#8a9675" stroke-width="1.5"/><circle r="21" fill="url(#steel)" stroke="#e9ecdd" stroke-width="1"/><circle r="16" fill="#4b5340" stroke="#242c1f" stroke-width="2"/><circle r="12" fill="url(#ivory)" stroke="#a4ac94"/><path d="M-8 0 H8" stroke="#7f8a6b"/><g transform="translate(23 0)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(16.263455967290593 16.263455967290593)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(1.4083438190194562e-15 23)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-16.263455967290593 16.263455967290593)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-23 2.8166876380389124e-15)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-16.263455967290597 -16.263455967290593)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(-4.225031457058368e-15 -23)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><g transform="translate(16.26345596729059 -16.263455967290597)"><circle r="4" fill="#111710" stroke="#89917c" stroke-width="1"/><path d="M-1.6500000000000001 1.2000000000000002 1.6500000000000001 -1.2000000000000002" stroke="#c4cab7" stroke-width="1.2"/></g><circle r="4" fill="#242c1f" stroke="#dae2c6"/></g>
+<g transform="translate(175)"><rect x="-16" y="-19" width="24" height="38" rx="4" fill="#36472a" stroke="#0e170b" stroke-width="2"/><path d="M-10-17v34 M-4-17v34 M2-17v34" stroke="#8e9d74" stroke-width="2"/><path d="M7-15H24L34-7 28-1 18-8H7 M7 15H24L34 7 28 1 18 8H7" fill="url(#steel)" stroke="#11190d" stroke-width="2"/><circle r="7" fill="#d0e996" stroke="#18230f" stroke-width="2"/><circle r="2" fill="#f4ffd7"/></g>
+</g>
+<g id="tool-marker" pointer-events="none"><circle r="27" fill="none" stroke="#daeaaa" stroke-width="1" stroke-dasharray="3 5" opacity=".75"/><path d="M-35 0h9 M26 0h9 M0-35v9 M0 26v9" stroke="#dcecae" stroke-width="1.3"/></g>
+<circle id="tool-hit" r="34" fill="transparent" stroke="transparent" stroke-width="12" aria-hidden="true"/>
+</svg><div class="stage-help"><span>Drag the tool or choose a target.</span><span id="reach-label">Reach 294 mm</span></div></div>
+<div class="target-controls" aria-label="Arm targets"><button class="target" type="button" data-target="inspect" aria-pressed="true"><span class="target-icon" aria-hidden="true">↗</span><span><b>Inspect</b><small>High and close</small></span></button><button class="target" type="button" data-target="transfer" aria-pressed="false"><span class="target-icon" aria-hidden="true">↖</span><span><b>Transfer</b><small>Reach across</small></span></button><button class="target" type="button" data-target="park" aria-pressed="false"><span class="target-icon" aria-hidden="true">⌁</span><span><b>Park</b><small>Fold inward</small></span></button></div>
+</section>
+<p class="keyboard-hint" id="keyboard-help">Keyboard: focus the drawing, then use arrow keys. Shift moves farther. Home parks the arm.</p>
+<section class="explanation"><div><h2>One point. Two angles.</h2><p>The tool moves, the joints turn, and both links keep their length. Beyond the working area, your target rests on its nearest allowed radius and angle.</p></div><dl class="readouts"><div><dt>Upper link</dt><dd>220 <small>mm</small></dd></div><div><dt>Forearm</dt><dd>175 <small>mm</small></dd></div><div><dt>Tool reach</dt><dd><span id="reach-value">294</span> <small>mm</small></dd></div></dl></section>
+<details><summary>Inside the linkage</summary><p>Inverse kinematics means finding joint angles from a desired tool position. This drawing solves a two-link triangle with the cosine rule. The same numerical model positions every joint and supplies the measured reach. Link lengths stay at 220 and 175 mm; the tool is limited to a radius of 115–380 mm and an angle of 65–150° around the shoulder. That working sector keeps every pose in view.</p><p>Named targets use a critically damped response: each new command continues from the displayed position and velocity. Dragging and keyboard moves respond immediately. Reduced motion settles targets immediately; leaving the page pauses the clock.</p><p>An original SVG study inspired by the tangible articulation in <a href="https://x.com/fuma_nama/status/2114380869175857471" target="_blank" rel="noreferrer">Fuma Nama’s mechanical-arm clip</a>. No reference artwork or character is included. This is a geometric interaction, not a mechanical safety simulation.</p></details>
+<p class="sr-only" id="announcement" aria-live="polite"></p>
+</main><script type="module">const ARM = Object.freeze({ upper: 220, lower: 175, minRadius: 115, maxRadius: 380, minAngle: 65 * Math.PI / 180, maxAngle: 150 * Math.PI / 180, origin: Object.freeze({ x: 650, y: 430 }) });
+const TARGETS = Object.freeze([
+  Object.freeze({ id: 'inspect', name: 'Inspect', note: 'High and close', x: 560, y: 150 }),
+  Object.freeze({ id: 'transfer', name: 'Transfer', note: 'Reach across', x: 325, y: 240 }),
+  Object.freeze({ id: 'park', name: 'Park', note: 'Fold inward', x: 535, y: 350 }),
+]);
+const clamp = (x, lo, hi) => Math.min(hi, Math.max(lo, x));
+function boundPoint(point) {
+  const dx = point.x - ARM.origin.x, dy = ARM.origin.y - point.y;
+  const radius = clamp(Math.hypot(dx, dy), ARM.minRadius, ARM.maxRadius);
+  const rawAngle = Math.atan2(dy, dx);
+  // Compare directions on the circle; negative atan2 angles can be nearer the left boundary.
+  const nearestBoundary = Math.cos(rawAngle - ARM.minAngle) >= Math.cos(rawAngle - ARM.maxAngle) ? ARM.minAngle : ARM.maxAngle;
+  const angle = rawAngle >= ARM.minAngle && rawAngle <= ARM.maxAngle ? rawAngle : nearestBoundary;
+  return { radius, angle };
+}
+function pointAt(polar) {
+  return { x: ARM.origin.x + polar.radius * Math.cos(polar.angle), y: ARM.origin.y - polar.radius * Math.sin(polar.angle) };
+}
+function solve(polar) {
+  const radius = clamp(polar.radius, ARM.minRadius, ARM.maxRadius);
+  const angle = clamp(polar.angle, ARM.minAngle, ARM.maxAngle);
+  const bend = Math.acos(clamp((radius * radius - ARM.upper ** 2 - ARM.lower ** 2) / (2 * ARM.upper * ARM.lower), -1, 1));
+  const shoulder = angle + Math.atan2(ARM.lower * Math.sin(bend), ARM.upper + ARM.lower * Math.cos(bend));
+  const forearm = shoulder - bend;
+  const elbow = { x: ARM.origin.x + ARM.upper * Math.cos(shoulder), y: ARM.origin.y - ARM.upper * Math.sin(shoulder) };
+  const tip = { x: elbow.x + ARM.lower * Math.cos(forearm), y: elbow.y - ARM.lower * Math.sin(forearm) };
+  return { shoulder, forearm, elbow, tip, radius, angle };
+}
+function createMotion(target) {
+  return { radius: target.radius, angle: target.angle, radiusVelocity: 0, angleVelocity: 0 };
+}
+// Exact critically damped solution: retargeting keeps the currently displayed pose and velocity.
+function damp(position, velocity, goal, dt) {
+  const frequency = 15, displacement = position - goal;
+  const b = velocity + frequency * displacement, decay = Math.exp(-frequency * dt);
+  return [goal + (displacement + b * dt) * decay, (velocity - frequency * b * dt) * decay];
+}
+function advance(motion, target, dt) {
+  const [radius, radiusVelocity] = damp(motion.radius, motion.radiusVelocity, target.radius, dt);
+  const [angle, angleVelocity] = damp(motion.angle, motion.angleVelocity, target.angle, dt);
+  const boundedRadius = clamp(radius, ARM.minRadius, ARM.maxRadius), boundedAngle = clamp(angle, ARM.minAngle, ARM.maxAngle);
+  return { radius: boundedRadius, angle: boundedAngle, radiusVelocity: radius === boundedRadius ? radiusVelocity : 0, angleVelocity: angle === boundedAngle ? angleVelocity : 0 };
+}
+function isSettled(motion, target) {
+  return Math.abs(motion.radius - target.radius) < .015 && Math.abs(motion.angle - target.angle) < .00005 && Math.abs(motion.radiusVelocity) < .08 && Math.abs(motion.angleVelocity) < .0002;
+}
+
+const svg = document.querySelector('#mechanism');
+const upper = document.querySelector('#upper'), forearm = document.querySelector('#forearm');
+const marker = document.querySelector('#tool-marker'), hit = document.querySelector('#tool-hit');
+const status = document.querySelector('#status'), reachLabel = document.querySelector('#reach-label'), reachValue = document.querySelector('#reach-value');
+const announcement = document.querySelector('#announcement');
+const buttons = [...document.querySelectorAll('[data-target]')];
+const preference = matchMedia('(prefers-reduced-motion: reduce)');
+// One state record owns motion, gesture identity, selection and lifecycle.
+const state = { target: boundPoint(TARGETS[0]), motion: createMotion(boundPoint(TARGETS[0])), selection: 'inspect', gesture: null, frame: 0, lastTime: null, visible: true };
+const degrees = value => value * 180 / Math.PI;
+function render() {
+  const pose = solve(state.motion);
+  upper.setAttribute('transform', `translate(${ARM.origin.x} ${ARM.origin.y}) rotate(${-degrees(pose.shoulder)})`);
+  forearm.setAttribute('transform', `translate(${pose.elbow.x} ${pose.elbow.y}) rotate(${-degrees(pose.forearm)})`);
+  marker.setAttribute('transform', `translate(${pose.tip.x} ${pose.tip.y})`);
+  hit.setAttribute('cx', pose.tip.x); hit.setAttribute('cy', pose.tip.y);
+  reachValue.textContent = String(Math.round(pose.radius));
+  reachLabel.textContent = `Reach ${Math.round(pose.radius)} mm`;
+  // These attributes expose the actual rendered model for inspectable browser verification.
+  svg.dataset.radius = String(pose.radius); svg.dataset.angle = String(pose.angle);
+  svg.dataset.tipX = String(pose.tip.x); svg.dataset.tipY = String(pose.tip.y);
+  svg.dataset.elbowX = String(pose.elbow.x); svg.dataset.elbowY = String(pose.elbow.y);
+}
+function setStatus(text) { status.textContent = text; }
+function stopClock() {
+  if (state.frame) cancelAnimationFrame(state.frame);
+  state.frame = 0; state.lastTime = null;
+}
+function canRun() { return state.visible && !document.hidden && !preference.matches; }
+function tick(time) {
+  state.frame = 0;
+  if (!canRun()) { state.lastTime = null; return; }
+  const dt = state.lastTime === null ? 0 : Math.min((time - state.lastTime) / 1000, .05);
+  state.lastTime = time;
+  state.motion = advance(state.motion, state.target, dt);
+  if (isSettled(state.motion, state.target)) {
+    state.motion = createMotion(state.target); state.lastTime = null;
+    setStatus('Target reached'); render(); return;
+  }
+  render(); state.frame = requestAnimationFrame(tick);
+}
+function startClock() {
+  if (canRun() && !state.frame && !isSettled(state.motion, state.target)) state.frame = requestAnimationFrame(tick);
+}
+function select(id) {
+  state.selection = id;
+  for (const button of buttons) button.setAttribute('aria-pressed', String(button.dataset.target === id));
+}
+function command(point, immediate, id = null) {
+  state.target = boundPoint(point); select(id);
+  if (immediate || preference.matches) {
+    stopClock(); state.motion = createMotion(state.target); render();
+    setStatus(state.gesture ? 'Following your hand' : 'Target reached');
+  } else { setStatus('Moving to target'); startClock(); }
+}
+function localPoint(event) {
+  const matrix = svg.getScreenCTM();
+  return new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+}
+// Preserve the grabbed tool's offset: touching its hit area must never teleport the linkage.
+svg.addEventListener('pointerdown', event => {
+  if (state.gesture || !event.isPrimary || event.button !== 0) return;
+  const point = localPoint(event), tip = solve(state.motion).tip;
+  const onTool = Math.hypot(point.x - tip.x, point.y - tip.y) < 48;
+  state.gesture = { id: event.pointerId, offsetX: onTool ? tip.x - point.x : 0, offsetY: onTool ? tip.y - point.y : 0 };
+  stopClock(); svg.setPointerCapture(event.pointerId); svg.classList.add('dragging'); svg.focus({ preventScroll: true });
+  if (!onTool) command(point, true); else { state.target = { radius: state.motion.radius, angle: state.motion.angle }; state.motion = createMotion(state.target); select(null); setStatus('Following your hand'); }
+});
+svg.addEventListener('pointermove', event => {
+  if (event.pointerId !== state.gesture?.id) return;
+  const point = localPoint(event);
+  command({ x: point.x + state.gesture.offsetX, y: point.y + state.gesture.offsetY }, true);
+});
+function endGesture(event) {
+  if (event.pointerId !== state.gesture?.id) return;
+  state.gesture = null; svg.classList.remove('dragging');
+  if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+  setStatus('Position held'); announcement.textContent = `Tool held at ${Math.round(state.motion.radius)} millimeters reach.`;
+}
+svg.addEventListener('pointerup', endGesture); svg.addEventListener('pointercancel', endGesture); svg.addEventListener('lostpointercapture', endGesture);
+svg.addEventListener('keydown', event => {
+  if (event.key === 'Home') { event.preventDefault(); command(TARGETS[2], true, 'park'); return; }
+  const offsets = { ArrowLeft: [-1,0], ArrowRight: [1,0], ArrowUp: [0,-1], ArrowDown: [0,1] };
+  const offset = offsets[event.key]; if (!offset) return;
+  event.preventDefault(); const point = pointAt(state.motion), step = event.shiftKey ? 25 : 8;
+  command({ x: point.x + offset[0]*step, y: point.y + offset[1]*step }, true);
+});
+for (const button of buttons) button.addEventListener('click', event => {
+  const target = TARGETS.find(target => target.id === button.dataset.target);
+  command(target, event.detail === 0, target.id);
+  announcement.textContent = `${target.name} target selected.`;
+});
+preference.addEventListener('change', () => {
+  if (preference.matches) { stopClock(); state.motion = createMotion(state.target); render(); setStatus('Target reached'); }
+  else startClock();
+});
+document.addEventListener('visibilitychange', () => { if (document.hidden) stopClock(); else startClock(); });
+new IntersectionObserver(entries => {
+  state.visible = entries[entries.length-1].isIntersecting;
+  if (state.visible) startClock(); else stopClock();
+}, { threshold: .05 }).observe(svg);
+function resizeDrawing() { svg.setAttribute('viewBox', innerWidth <= 700 ? '260 20 630 550' : '0 0 1000 600'); }
+addEventListener('resize', resizeDrawing); resizeDrawing();
+const arc = (radius, angle) => pointAt({ radius, angle });
+const outerStart = arc(ARM.maxRadius, ARM.minAngle), outerEnd = arc(ARM.maxRadius, ARM.maxAngle);
+const innerEnd = arc(ARM.minRadius, ARM.maxAngle), innerStart = arc(ARM.minRadius, ARM.minAngle);
+document.querySelector('#workspace').setAttribute('d', `M${outerStart.x} ${outerStart.y} A${ARM.maxRadius} ${ARM.maxRadius} 0 0 0 ${outerEnd.x} ${outerEnd.y} L${innerEnd.x} ${innerEnd.y} A${ARM.minRadius} ${ARM.minRadius} 0 0 1 ${innerStart.x} ${innerStart.y} Z`);
+render();
+</script></body></html>

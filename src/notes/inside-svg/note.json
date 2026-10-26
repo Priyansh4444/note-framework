@@ -1,0 +1,7 @@
+{
+  "title": "A picture, made of shapes",
+  "description": "Pull apart an original SVG landscape, change its painting order, and move its clipping window.",
+  "nav": "Inside an SVG",
+  "worker": "note-inside-svg",
+  "order": 93
+}

@@ -1,0 +1,798 @@
+/* Page styles are scoped to .nk-note; reusable controls use nk- classes so they
+   can also appear in the framework guide without adopting a note page layout. */
+
+/* Default reading rhythm for new kit-authored notes. */
+.nk-note {
+  --measure: 680px;
+  --wide: 840px;
+  padding-block: 4rem 6rem;
+  font-size: 21px;
+  line-height: 1.6;
+}
+.nk-note article > p,
+.nk-note article > ul,
+.nk-note article > ol {
+  text-align: left;
+  hyphens: none;
+}
+/* Masthead: one quiet line of facts, a title, a plain-voiced dek, then a rule where reading begins. */
+.nk-note .nk-head {
+  padding-bottom: 2.2rem;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 0.5rem;
+}
+.nk-note .meta {
+  justify-content: flex-start;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  padding: 0;
+  border: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+.nk-note .meta > :first-child {
+  color: var(--accent);
+}
+.nk-note h1 {
+  margin: 1.4rem 0 1rem;
+  font-size: 50px;
+  line-height: 1.04;
+  letter-spacing: -0.022em;
+}
+.nk-note .dek {
+  margin: 0;
+  max-width: 36em;
+  font-size: 23px;
+  font-style: normal;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.nk-note .nk-chapter h2 .anchor {
+  display: none;
+}
+.nk-note a.nk-chapter-n {
+  text-decoration: none;
+}
+.nk-note a.nk-chapter-n:hover {
+  color: var(--bright);
+}
+.nk-note .nk-howto {
+  font-size: 17px;
+}
+@media (max-width: 600px) {
+  .nk-note {
+    padding-top: 2.5rem;
+    font-size: 19px;
+  }
+  .nk-note h1 {
+    font-size: 38px;
+  }
+  .nk-note .dek {
+    font-size: 20px;
+  }
+}
+
+/* ─── Route, chapters, provenance ───────────────────────────────── */
+
+/* Rules mark a change of reading mode; spacing handles relationships within a section. */
+.nk-note .nk-contents {
+  margin: 2.6rem 0 0;
+  padding-bottom: 1.8rem;
+  border-bottom: 1px solid var(--rule);
+}
+.nk-note .nk-contents ol {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0.7rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.nk-note .nk-contents li {
+  margin: 0;
+  padding: 0;
+}
+.nk-note .nk-contents a {
+  display: grid;
+  grid-template-columns: 2.2rem 1fr;
+  column-gap: 0.2rem;
+  padding: 0.45rem 0;
+  text-decoration: none;
+}
+.nk-note .nk-contents-n {
+  grid-row: span 2;
+  padding-top: 0.32rem;
+  color: var(--faint);
+  font: 11px/1.6 var(--mono);
+}
+.nk-note .nk-contents-t {
+  color: var(--bright);
+  font-size: 0.95em;
+}
+.nk-note .nk-contents-q {
+  color: var(--muted);
+  font-size: 0.82em;
+  font-style: italic;
+  line-height: 1.45;
+}
+.nk-note .nk-contents a:hover .nk-contents-t {
+  color: var(--accent);
+}
+
+.nk-note .nk-chapter {
+  margin-top: 4rem;
+}
+.nk-note .nk-chapter + .nk-chapter {
+  margin-top: 4.5rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule);
+}
+/* The previous chapter's takeaway closes the boundary, quietly, before the new title. */
+.nk-note .nk-sofar {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  align-items: baseline;
+  gap: 0 0.9rem;
+  margin: 0 0 2.4rem;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+.nk-note .nk-sofar-k {
+  color: var(--faint);
+  font: 10px/1 var(--mono);
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.nk-note .nk-sofar-k:hover {
+  color: var(--accent);
+}
+.nk-note .nk-chapter-head {
+  position: relative;
+  margin-bottom: 1.8rem;
+}
+.nk-note .nk-chapter-n {
+  display: block;
+  margin-bottom: 0.6rem;
+  color: var(--accent);
+  font: 12px/1 var(--mono);
+  letter-spacing: 0.06em;
+  font-variant-numeric: tabular-nums;
+}
+/* Wide screens: the number hangs in the margin, level with the title. */
+@media (min-width: 1100px) {
+  .nk-note .nk-chapter-n {
+    position: absolute;
+    top: 0.85em;
+    right: calc(100% + 1.6rem);
+    margin: 0;
+  }
+}
+.nk-note .nk-chapter h2 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+  letter-spacing: -0.012em;
+}
+.nk-note .nk-question {
+  margin: 0.55rem 0 0;
+  color: var(--muted);
+  font-size: 1.05em;
+  font-style: italic;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.nk-note .nk-from {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.2rem 0.8rem;
+  margin: 0.7rem 0 0;
+  color: var(--faint);
+  font: 11px/1.6 var(--mono);
+}
+.nk-note .nk-cite {
+  color: var(--muted);
+  font: 11px/1.6 var(--mono);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.nk-note .nk-cite span {
+  margin-left: 0.15em;
+}
+.nk-note .nk-cite:hover {
+  color: var(--accent);
+}
+.nk-note p .nk-cite {
+  font-size: 0.6em;
+}
+.nk-note .nk-from .nk-cite {
+  font-size: 11px;
+}
+.nk-note .nk-cite-demo {
+  color: var(--accent);
+  font-family: var(--mono);
+}
+@media (max-width: 600px) {
+  .nk-note .nk-chapter h2 {
+    font-size: 28px;
+  }
+  .nk-note .nk-sofar {
+    grid-template-columns: 1fr;
+    gap: 0.35rem;
+  }
+}
+.nk-note .nk-end {
+  margin-top: 3rem;
+  padding-top: 1.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+/* ─── Glossary and sources ──────────────────────────────────────── */
+
+.nk-note .nk-glossary-group {
+  margin: 2.2rem 0 0.2rem;
+  color: var(--accent);
+  font: 400 10px/1.6 var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.nk-note .nk-glossary {
+  display: grid;
+  grid-template-columns: 12rem 1fr;
+  margin: 0.6rem 0 0;
+  border-top: 1px solid var(--rule);
+}
+.nk-note .nk-glossary dt,
+.nk-note .nk-glossary dd {
+  margin: 0;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.92em;
+  line-height: 1.55;
+}
+.nk-note .nk-glossary dt {
+  padding-right: 1.2rem;
+  color: var(--bright);
+}
+.nk-note .nk-glossary dd {
+  color: var(--muted);
+  hyphens: none;
+  text-align: left;
+}
+.nk-note .nk-glossary-symbol {
+  margin-left: 0.5rem;
+  color: var(--muted);
+}
+.nk-note .nk-sources {
+  padding-left: 1.4rem;
+  font-size: 0.9em;
+}
+.nk-note .nk-sources li {
+  margin: 0.5rem 0;
+}
+.nk-note .nk-sources-why {
+  display: block;
+  color: var(--muted);
+  font-size: 0.9em;
+}
+.tip .nk-tip-home {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
+/* ─── Checks, tables, equations ─────────────────────────────────── */
+
+/* Disclosures share one marker: a chevron in a box exactly one summary line tall. */
+.nk-note details > summary {
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.nk-note details > summary::-webkit-details-marker {
+  display: none;
+}
+.nk-note details > summary:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.nk-note article details:not(.nk-check) {
+  margin: 1.2rem 0 1.6rem;
+}
+.nk-disclosure-summary {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: 1em minmax(0, 1fr);
+  align-items: start;
+  column-gap: 10px;
+  min-height: 44px;
+  padding: 10px 8px;
+  color: var(--muted, #999);
+  font-size: 0.92em;
+  line-height: 1.5;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.nk-disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+.nk-disclosure-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1lh;
+  color: var(--accent);
+}
+.nk-disclosure-mark svg {
+  display: block;
+  width: 0.85em;
+  height: 0.85em;
+  overflow: visible;
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+[open] > .nk-disclosure-summary > .nk-disclosure-mark svg {
+  transform: rotate(90deg);
+}
+.nk-disclosure-label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+/* Keep focus beside the words even though the whole row remains clickable. */
+.nk-disclosure-summary:focus-visible,
+.nk-note details > .nk-disclosure-summary:focus-visible {
+  outline: none;
+}
+.nk-disclosure-summary:focus-visible .nk-disclosure-mark {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-radius: 3px;
+}
+.nk-disclosure-summary:focus-visible .nk-disclosure-label {
+  text-decoration: underline 1px var(--accent);
+  text-underline-offset: 0.2em;
+}
+.nk-disclosure-summary:hover {
+  color: var(--text);
+}
+.nk-note .nk-check-mark::before {
+  content: "";
+  width: 0.36em;
+  height: 0.36em;
+  margin-left: 0.1em;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.nk-note .nk-check[open] .nk-check-mark::before {
+  transform: rotate(45deg);
+}
+
+.nk-note .nk-check {
+  margin: 2rem 0;
+}
+.nk-note .nk-check > summary {
+  display: grid;
+  grid-template-columns: 1em auto minmax(0, 1fr);
+  align-items: start;
+  column-gap: 0.7rem;
+  padding: 0.55rem 0;
+  min-height: 44px;
+  color: var(--bright);
+  font-size: 1em;
+  line-height: 1.5;
+}
+/* Same font and line-height as the question, so 1lh is the question's first line. */
+.nk-note .nk-check-mark,
+.nk-note .nk-check-label {
+  display: flex;
+  align-items: center;
+  height: 1lh;
+}
+.nk-note .nk-check-mark {
+  justify-content: center;
+  color: var(--accent);
+}
+.nk-note .nk-check-k {
+  color: var(--accent);
+  font: 11px/1 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nk-note .nk-check-q {
+  text-wrap: pretty;
+}
+.nk-note .nk-check > summary:hover .nk-check-q {
+  color: var(--accent);
+}
+/* Focus marks the chevron and question, not the whole row. */
+.nk-note .nk-check > summary:focus-visible {
+  outline: none;
+}
+.nk-note .nk-check > summary:focus-visible .nk-check-mark {
+  border-radius: 3px;
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+.nk-note .nk-check > summary:focus-visible .nk-check-q {
+  text-decoration: underline 1px var(--accent);
+  text-underline-offset: 0.2em;
+}
+.nk-note .nk-check-a {
+  padding: 0.2rem 0 0 calc(1em + 0.7rem);
+  color: var(--text);
+}
+.nk-note .nk-check-a > :first-child {
+  margin-top: 0.4rem;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-disclosure-mark svg,
+  .nk-note .nk-check-mark::before {
+    transition: none;
+  }
+}
+
+.nk-note .nk-table {
+  margin: 1.6rem 0;
+  overflow-x: auto;
+}
+.nk-note .nk-numeric {
+  font-variant-numeric: tabular-nums;
+}
+.nk-note .nk-numeric td:not(:first-child),
+.nk-note .nk-numeric th:not(:first-child) {
+  text-align: right;
+}
+
+.nk-note .nk-equation {
+  margin: 1.8rem 0;
+  padding: 0.2rem 0;
+  overflow-x: auto;
+}
+.nk-note .nk-equation .label {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+.nk-note .nk-equation small {
+  display: block;
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.82em;
+  line-height: 1.5;
+}
+.nk-note .nk-eq-narrow {
+  display: none;
+}
+.nk-note .nk-steps-grid {
+  display: grid;
+  grid-template-columns: max-content max-content 1fr;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.55rem 0.4rem;
+  margin: 0.9rem 0 0.4rem;
+}
+.nk-note .nk-steps-lhs {
+  text-align: right;
+}
+.nk-note .nk-steps-why {
+  padding-left: 1.4rem;
+  color: var(--muted);
+  font-size: 0.86em;
+  line-height: 1.4;
+}
+.nk-note .nk-model {
+  margin: 2rem 0 2.2rem;
+}
+.nk-note .nk-model > .label {
+  display: block;
+  margin-bottom: 0.6rem;
+}
+.nk-note .nk-model dl {
+  display: grid;
+  grid-template-columns: 5.2rem max-content 1fr;
+  column-gap: 1.4rem;
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+.nk-note .nk-model-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  align-items: baseline;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+.nk-note .nk-model dt {
+  color: var(--accent);
+  font: 10px/1.6 var(--mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.nk-note .nk-model dd {
+  margin: 0;
+}
+.nk-note .nk-model-math {
+  color: var(--bright);
+  white-space: nowrap;
+}
+.nk-note .nk-model-why {
+  color: var(--muted);
+  font-size: 0.9em;
+  line-height: 1.5;
+  hyphens: none;
+}
+
+/* ─── The corner map ────────────────────────────────────────────── */
+
+.nk-note .nk-way {
+  font: 11px/1.5 var(--mono);
+}
+.nk-note .nk-way ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.nk-note .nk-way li {
+  margin: 0;
+  padding: 0;
+}
+.nk-note .nk-way a {
+  color: inherit;
+  text-decoration: none;
+}
+.nk-note .nk-way-n {
+  color: var(--faint);
+}
+.nk-note .nk-way-back {
+  display: flex;
+  gap: 0.4rem;
+  max-width: 100%;
+  margin-top: 0.8rem;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--accent);
+  font: inherit;
+  text-align: left;
+}
+.nk-note .nk-way-back span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Wide screens: a rail in the left margin, beside wide figures, never over them. */
+.nk-note .nk-way-rail {
+  display: none;
+}
+@media (min-width: 1360px) {
+  .nk-note .nk-way-rail {
+    position: fixed;
+    top: 18vh;
+    left: 24px;
+    display: block;
+    width: min(230px, calc((100vw - var(--wide)) / 2 - 56px));
+    color: var(--muted);
+  }
+}
+.nk-note .nk-way-top {
+  display: block;
+  margin-bottom: 0.7rem;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.nk-note .nk-way-railbody {
+  position: relative;
+  padding-left: 12px;
+  border-left: 1px solid var(--rule);
+}
+.nk-note .nk-way-marker {
+  position: absolute;
+  left: -1px;
+  width: 1px;
+  background: var(--accent);
+  opacity: 0;
+}
+.nk-note .nk-way-rail li a {
+  display: flex;
+  gap: 0.55rem;
+  padding: 0.18rem 0;
+}
+.nk-note .nk-way-rail .nk-way-t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nk-note .nk-way li.done .nk-way-t {
+  color: var(--text);
+}
+.nk-note .nk-way li.now .nk-way-t {
+  color: var(--bright);
+}
+.nk-note .nk-way li.now .nk-way-n {
+  color: var(--accent);
+}
+.nk-note .nk-way a:hover .nk-way-t {
+  color: var(--accent);
+}
+.nk-note .nk-way-q {
+  display: block;
+  margin: 0.1rem 0 0.5rem 1.75rem;
+  color: var(--muted);
+  font: italic 13px/1.4 var(--serif);
+}
+
+/* Narrow screens: a pill in the corner that opens the route. */
+.nk-note .nk-way-pill {
+  position: fixed;
+  bottom: 14px;
+  left: 14px;
+  z-index: 20;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: flex-start;
+  gap: 0.4rem;
+  max-width: calc(100vw - 28px);
+}
+.nk-note .nk-way-pill .nk-way-back {
+  margin: 0;
+}
+.nk-note .nk-way:not([data-active]) .nk-way-here {
+  display: none;
+}
+.nk-note .nk-way-here {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  max-width: 100%;
+  overflow: hidden;
+  padding: 0.35rem 0.8rem 0.45rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: rgb(14 14 13 / 92%);
+  backdrop-filter: blur(6px);
+  color: var(--text);
+  font: inherit;
+}
+.nk-note .nk-way-here .nk-way-t {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.nk-note .nk-way-bar {
+  position: absolute;
+  right: 0.8rem;
+  bottom: 0.2rem;
+  left: 0.8rem;
+  height: 1px;
+  background: var(--rule);
+}
+.nk-note .nk-way-bar span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: left;
+}
+.nk-note .nk-way-sheet {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  width: min(380px, calc(100vw - 28px));
+  max-height: 62vh;
+  overflow-y: auto;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--rule-strong);
+  border-radius: 10px;
+  background: var(--panel);
+  box-shadow: 0 12px 40px rgb(0 0 0 / 50%);
+}
+.nk-note .nk-way-sheet[hidden] {
+  display: none;
+}
+.nk-note .nk-way-sheet li a {
+  display: flex;
+  gap: 0.6rem;
+  padding: 0.35rem 0;
+}
+.nk-note .nk-way-sheet .nk-way-q {
+  margin-left: 1.9rem;
+}
+
+@media (min-width: 1360px) {
+  .nk-note .nk-way-pill {
+    display: none;
+  }
+}
+
+@media (max-width: 1359px) {
+  /* Room to scroll the last lines above the corner pill. */
+  .nk-note {
+    padding-bottom: 4rem;
+  }
+}
+
+/* ─── Phones ────────────────────────────────────────────────────── */
+
+@media (max-width: 600px) {
+  .nk-note .nk-glossary {
+    grid-template-columns: 1fr;
+  }
+  .nk-note .nk-glossary dt {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+  .nk-note .nk-glossary dd {
+    padding-top: 0.15rem;
+  }
+  .nk-note .nk-eq-wide {
+    display: none;
+  }
+  .nk-note .nk-eq-narrow {
+    display: block;
+  }
+  .nk-note .nk-equation {
+    padding: 0.2rem 0;
+  }
+  .nk-note .nk-steps-grid {
+    grid-template-columns: 1fr;
+    justify-content: start;
+    row-gap: 0.15rem;
+  }
+  .nk-note .nk-steps-lhs {
+    text-align: left;
+  }
+  .nk-note .nk-steps-lhs:empty {
+    display: none;
+  }
+  .nk-note .nk-steps-rhs {
+    padding-left: 1.1rem;
+  }
+  .nk-note .nk-steps-why {
+    padding: 0 0 0.6rem 1.1rem;
+    font-size: 0.82em;
+  }
+  .nk-note .nk-model dl {
+    grid-template-columns: 4.2rem 1fr;
+    column-gap: 0.9rem;
+  }
+  .nk-note .nk-model-why {
+    grid-column: 2;
+    margin-top: 0.3rem;
+  }
+  .nk-note .nk-model-math {
+    white-space: normal;
+  }
+}
+
+@media print {
+  .nk-note .nk-way {
+    display: none;
+  }
+}
+
+/* Inline labels own their icon gap; flex whitespace cannot silently collapse it. */
+.nk-arrow-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 100%;
+  vertical-align: baseline;
+}
+.nk-arrow-text {
+  display: block;
+  min-width: 0;
+}
+.nk-arrow-icon {
+  display: block;
+  flex: none;
+  width: 1em;
+  height: 1em;
+}

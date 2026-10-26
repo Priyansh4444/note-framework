@@ -1,0 +1,1 @@
+Anatomy core, unmodified, from https://github.com/wheresryan22/anatomy at 1482e8469b0a9e0d8cc18ea2740a01423d29ae80. Copyright Ryan White, MIT license in LICENSE. Imported as a note-local rendering dependency; not installed globally or added to the framework's shared starter. Figure geometry/model/UI are original.

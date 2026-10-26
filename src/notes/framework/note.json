@@ -1,0 +1,7 @@
+{
+  "title": "Note Framework — ideas worth seeing",
+  "description": "An ink-black framework for clear visual notes. Give an agent one URL, create a page, and share a versioned link.",
+  "nav": "Framework",
+  "worker": "note-framework-share",
+  "order": 90
+}

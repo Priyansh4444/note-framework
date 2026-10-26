@@ -1,0 +1,7 @@
+{
+  "title": "One service, many windows",
+  "description": "Follow a request into one service, then watch its result return only to the windows sharing that work.",
+  "nav": "Shared service",
+  "worker": "note-shared-service",
+  "order": 92
+}

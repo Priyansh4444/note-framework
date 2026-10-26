@@ -1,0 +1,25 @@
+.ui-review {
+  width: min(680px, calc(100% - 40px));
+}
+.ui-review .ui-case {
+  padding: 24px;
+  margin: 24px 0;
+  border: 1px solid var(--rule);
+}
+.ui-review [data-case-value] {
+  display: block;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.ui-review .ui-case details {
+  margin: 0;
+}
+.ui-review .ui-case .nk-check {
+  margin: 0;
+}
+@media (max-width: 500px) {
+  .ui-review .ui-case {
+    padding: 16px;
+  }
+}

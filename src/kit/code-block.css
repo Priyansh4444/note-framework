@@ -1,0 +1,234 @@
+/* The source frame follows the measured OpenCode outline. Tools live outside it. */
+.nk-code-example {
+  min-width: 0;
+  max-width: 100%;
+}
+figure.nk-code-block {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 24px 0 36px;
+  transform: none;
+  position: relative;
+  border: 1px solid #ffffff26;
+  border-top-color: transparent;
+  border-radius: 0;
+  background: transparent;
+  color: #e1e4e8;
+  text-align: left;
+  text-indent: 0;
+  hyphens: none;
+  overflow-anchor: none;
+  font:
+    16px/1.7 "Commit Mono",
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+.nk-code-block > .nk-code-block-header {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  min-height: 0;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  color: #958f85;
+  font:
+    400 12px/1.5 "Commit Mono",
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+  position: absolute;
+  top: -0.5px;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+}
+.nk-code-block-header::before,
+.nk-code-block-header::after {
+  content: "";
+  border-top: 1px solid #ffffff26;
+}
+.nk-code-block-header::before {
+  flex: 0 0 16px;
+}
+.nk-code-block-header::after {
+  flex: 1 1 0%;
+}
+.nk-code-block-title {
+  min-width: 0;
+  max-width: calc(100% - 40px);
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nk-code-block-switch {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: #4a4a4a;
+  opacity: 0;
+  cursor: pointer;
+  transition:
+    opacity 0.2s ease-out,
+    color 0.35s ease-out;
+}
+.nk-code-block:hover .nk-code-block-switch,
+.nk-code-block-switch:focus-visible,
+.nk-code-block-switch[data-flash] {
+  opacity: 1;
+}
+.nk-code-block-switch:hover {
+  color: #6a6a6a;
+}
+.nk-code-block-switch[aria-pressed="true"] {
+  color: #d8d8d8;
+}
+.nk-code-block-switch[aria-pressed="true"]:hover {
+  color: #fff;
+}
+.nk-code-block-switch:focus-visible {
+  outline: 1px solid #aaa;
+  outline-offset: 2px;
+}
+.nk-code-block-switch[data-flash] {
+  animation: nk-code-switch-flash 1s ease-out;
+}
+@keyframes nk-code-switch-flash {
+  from {
+    color: #fff;
+    filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 2px #fff);
+  }
+  to {
+    color: #d8d8d8;
+    filter: drop-shadow(0 0 0 transparent);
+  }
+}
+.nk-code-block-render,
+.nk-code-inspector-render {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  font: inherit;
+}
+.nk-code-block-render:focus-visible,
+.nk-code-inspector-render:focus-visible {
+  outline: 1px solid #aaa;
+  outline-offset: 2px;
+}
+.nk-code-source-tools {
+  margin: -20px 0 36px;
+  color: #958f85;
+  font:
+    12px/1.5 "Commit Mono",
+    monospace;
+}
+.nk-code-source-tools > summary {
+  cursor: pointer;
+  width: fit-content;
+  padding: 6px 0;
+}
+.nk-code-source-notice {
+  margin: 8px 0;
+  color: inherit;
+  font: inherit;
+  text-indent: 0;
+}
+.nk-code-block-views {
+  display: inline-flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-right: 8px;
+}
+.nk-code-source-tools button {
+  min-height: 44px;
+  padding: 0 10px;
+  border: 0;
+  background: transparent;
+  color: #aaa;
+  font: inherit;
+  cursor: pointer;
+}
+.nk-code-source-tools button:hover {
+  color: #fff;
+}
+.nk-code-source-tools button[aria-pressed="true"] {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+.nk-code-source-tools button:focus-visible {
+  outline: 1px solid #aaa;
+}
+.nk-code-block-status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.nk-code-source-tools > .nk-code-block-scroll-hint {
+  margin: 0;
+  padding: 6px 0;
+  color: inherit;
+  font: inherit;
+  text-indent: 0;
+}
+@media (width <= 800px) {
+  figure.nk-code-block {
+    font-size: 15px;
+  }
+}
+@media (width <= 640px) {
+  .nk-code-block-switch {
+    display: none;
+  }
+}
+@media (hover: none) and (width >= 641px) {
+  .nk-code-block-switch {
+    opacity: 1;
+  }
+  .nk-code-block-switch::after {
+    content: "";
+    position: absolute;
+    inset: -8px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-code-block-switch {
+    transition: none;
+  }
+  .nk-code-block-switch[data-flash] {
+    animation: none;
+  }
+}
+
+.nk-code-source-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.nk-code-source-actions > p {
+  flex-basis: 100%;
+}

@@ -1,0 +1,303 @@
+.note-shared-service .ss-figure {
+  --ss-surface: var(--bg, #161616);
+  --ss-line: var(--rule, #383838);
+  --ss-role: var(--diagram-blue, #26bbd9);
+  position: relative;
+  font: 15px/1.4 var(--mono, monospace);
+  color: var(--text, #d6d6d6);
+}
+.note-shared-service .ss-scroll-hint {
+  margin: 0 0 18px;
+  color: var(--muted, #aaa);
+  font: inherit;
+}
+.note-shared-service .ss-scroll-hint span {
+  display: none;
+}
+.note-shared-service .ss-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 10px 3px 6px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rule-strong, #666) transparent;
+}
+.note-shared-service .ss-scroll:focus-visible {
+  outline: 2px solid var(--ss-role);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+.note-shared-service .ss-diagram {
+  min-width: 560px;
+  position: relative;
+}
+.note-shared-service .ss-clients {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.note-shared-service .ss-client-slot {
+  min-width: 0;
+  min-height: 120px;
+  display: flex;
+}
+.note-shared-service .ss-client {
+  box-sizing: border-box;
+  min-height: 120px;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--ss-line);
+  border-radius: 2px;
+  background: var(--ss-surface);
+  display: flex;
+  flex-direction: column;
+}
+.note-shared-service .ss-client-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted, #aaa);
+  font-size: 15px;
+}
+.note-shared-service .ss-glyph {
+  display: inline-block;
+  font: 15px/1 var(--mono, monospace);
+  color: var(--muted, #aaa);
+}
+.note-shared-service .ss-client-task {
+  margin: 10px 0 4px;
+  font: 15px/1.4 var(--mono, monospace);
+  color: var(--bright, #eee);
+}
+.note-shared-service .ss-client-status {
+  margin: auto 0 0;
+  color: var(--muted, #aaa);
+  font: 15px/1.4 var(--mono, monospace);
+  white-space: nowrap;
+}
+.note-shared-service .ss-client-status[data-complete="true"] {
+  color: var(--text, #d6d6d6);
+}
+.note-shared-service .ss-wires {
+  display: block;
+  width: 100%;
+  height: 64px;
+  overflow: visible;
+}
+.note-shared-service .ss-wire {
+  fill: none;
+  stroke: var(--muted, #999);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.note-shared-service .ss-packet {
+  fill: none;
+  stroke: #fff;
+  vector-effect: non-scaling-stroke;
+}
+.note-shared-service .ss-port-columns {
+  pointer-events: none;
+  height: 64px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.note-shared-service .ss-port-column {
+  position: relative;
+}
+.note-shared-service .ss-port-dot {
+  position: absolute;
+  left: calc(50% - 3px);
+  width: 6px;
+  height: 6px;
+  box-sizing: border-box;
+  border: 1px solid var(--muted, #999);
+  border-radius: 50%;
+  background: var(--ss-surface);
+  z-index: 1;
+}
+.note-shared-service .ss-port-client {
+  top: -2px;
+}
+.note-shared-service .ss-port-service {
+  bottom: -2px;
+}
+.note-shared-service .ss-port-dot[data-connected="true"] {
+  background: var(--ss-role);
+  border-color: var(--ss-role);
+}
+.note-shared-service .ss-arrival {
+  position: absolute;
+  left: calc(50% - 11px);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--ss-role);
+  filter: blur(5px);
+}
+.note-shared-service .ss-arrival-client {
+  top: -10px;
+}
+.note-shared-service .ss-arrival-service {
+  bottom: -10px;
+}
+.note-shared-service .ss-service {
+  border: 1px solid var(--ss-line);
+  border-radius: 2px;
+  background: var(--ss-surface);
+}
+.note-shared-service .ss-service-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--ss-line);
+}
+.note-shared-service .ss-service-name {
+  display: block;
+  color: var(--bright, #eee);
+  font-size: 15px;
+}
+.note-shared-service .ss-pid {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted, #aaa);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.note-shared-service .ss-process-state {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  color: var(--muted, #aaa);
+}
+.note-shared-service .ss-process-state i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.note-shared-service [data-process="running"] .ss-process-state i {
+  color: var(--ss-role);
+}
+.note-shared-service .ss-sessions {
+  position: relative;
+  padding: 4px 14px;
+}
+.note-shared-service .ss-empty {
+  position: absolute;
+  top: 25px;
+  left: 14px;
+  margin: 0;
+  font: inherit;
+  color: var(--muted, #aaa);
+}
+.note-shared-service .ss-session {
+  min-height: 56px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--ss-line);
+}
+.note-shared-service .ss-session:last-child {
+  border-bottom: 0;
+}
+.note-shared-service .ss-session-content {
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.note-shared-service .ss-session-title {
+  display: block;
+  color: var(--bright, #eee);
+}
+.note-shared-service .ss-subscribers {
+  display: block;
+  color: var(--muted, #aaa);
+  margin-top: 3px;
+}
+.note-shared-service .ss-session-status {
+  color: var(--muted, #aaa);
+}
+.note-shared-service [data-state="complete"] .ss-session-status {
+  color: var(--text, #d6d6d6);
+}
+.note-shared-service .ss-caption-event {
+  display: block;
+  min-height: 3em;
+  color: var(--text, #d6d6d6);
+}
+.note-shared-service .ss-caption-definition {
+  display: block;
+  margin-top: 8px;
+}
+.note-shared-service .ss-caption-definition strong {
+  font-weight: 500;
+  color: var(--text, #d6d6d6);
+}
+.note-shared-service .ss-result {
+  font-size: 22px;
+  line-height: 1.45;
+}
+.note-shared-service .ss-attribution {
+  color: var(--muted, #aaa);
+  font-size: 15px;
+}
+@media (max-width: 680px) {
+  .note-shared-service .ss-scroll-hint span {
+    display: block;
+    margin-top: 4px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .note-shared-service .ss-client {
+    transform: none !important;
+    opacity: 1 !important;
+  }
+  .note-shared-service .ss-arrival {
+    opacity: 0 !important;
+  }
+}
+@media (forced-colors: active) {
+  .note-shared-service .ss-wire,
+  .note-shared-service .ss-packet {
+    stroke: CanvasText;
+  }
+  .note-shared-service .ss-client,
+  .note-shared-service .ss-service {
+    border-color: CanvasText;
+  }
+}
+
+.note-shared-service .ss-subscriber-names {
+  color: var(--ss-role);
+}
+.note-shared-service-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 24px;
+  width: min(1160px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+  font: 15px/1.4 var(--serif, Georgia, serif);
+}
+.note-shared-service-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+}
+.note-shared-service-nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .note-shared-service-nav a:hover {
+    color: var(--bright);
+  }
+}

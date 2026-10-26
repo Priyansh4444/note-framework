@@ -1,0 +1,31 @@
+html {
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.note-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.3rem;
+  width: min(100% - 2.5rem, 980px);
+  margin: 1.5rem auto 0;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid var(--rule);
+  font: 11px/1.6 var(--mono);
+  color: var(--muted);
+}
+.note-navigation a {
+  text-decoration: none;
+}
+.note-navigation .current-note {
+  color: var(--bright);
+}
+.note-navigation a:hover {
+  color: var(--accent);
+}

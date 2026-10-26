@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Component fixture</title>
+    <script type="module">
+      import "@fontsource-variable/newsreader/opsz.css";
+      import "@fontsource-variable/newsreader/opsz-italic.css";
+      import "@fontsource/commit-mono/400.css";
+      import "/src/post/post.css";
+      import "/src/post/theme.css";
+      import "/src/kit/kit.css";
+      import "/src/kit/motion.css";
+      import { installSpringVars } from "/src/post/scene/springs";
+
+      // Match the app's styling without creating a Solid-owned article root.
+      installSpringVars();
+    </script>
+  </head>
+  <body></body>
+</html>
