@@ -44,11 +44,13 @@ export const distanceAtScroll = (map: ReadingMap, scroll: number) =>
 export const scrollAtDistance = (map: ReadingMap, distance: number) =>
   interpolate(map, distance, "distance", "scroll");
 
-/** Fit the same rounded diagonal to the outline's natural height. Wrapped HTML
+export const READING_RAIL_WIDTH = 44;
+
+/** Fit a crisp dogleg to the outline's natural height. Wrapped HTML
  * labels scroll; they never compress or deform the curve. */
 export function readingRail(height: number) {
   if (!Number.isFinite(height) || height < 160) return undefined;
-  return curvedRail(height, 80);
+  return curvedRail(height, READING_RAIL_WIDTH, { inset: 10, cornerRadius: 4, bendHeight: 36 });
 }
 export function distanceAtY(rail: ReturnType<typeof curvedRail>, y: number) {
   let lo = 0,

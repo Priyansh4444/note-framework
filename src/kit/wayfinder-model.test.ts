@@ -5,7 +5,26 @@ import {
   readingMap,
   readingRail,
   distanceAtY,
+  READING_RAIL_WIDTH,
 } from "./wayfinder-model";
+test("the compact reading dogleg has short tangent corners and one terminal", () => {
+  for (const height of [180, 420, 600]) {
+    const rail = readingRail(height)!;
+    expect(READING_RAIL_WIDTH).toBe(44);
+    expect(rail.pointAt(0)).toEqual({ x: 10, y: 24 });
+    expect(rail.pointAt(rail.length)).toEqual({ x: 34, y: height - 24 });
+    for (const i of [1, 3]) {
+      const corner = rail.segments[i];
+      expect(
+        Math.hypot(corner.control!.x - corner.from.x, corner.control!.y - corner.from.y),
+      ).toBeCloseTo(4, 8);
+      expect(
+        Math.hypot(corner.to.x - corner.control!.x, corner.to.y - corner.control!.y),
+      ).toBeCloseTo(4, 8);
+    }
+    expect(rail.segments[2].to.y - rail.segments[2].from.y).toBeLessThan(36);
+  }
+});
 test("one chapter map round-trips between document scroll and rounded rail distance", () => {
   const rail = readingRail(420)!;
   const map = readingMap(

@@ -16,18 +16,35 @@ const distance = (a: RailPoint, b: RailPoint) => Math.hypot(a.x - b.x, a.y - b.y
 const clamp = (v: number, max: number) => Math.max(0, Math.min(max, v));
 
 /** A pixel-sized vertical–diagonal–vertical rail, with tangent quadratic joins. */
-export function curvedRail(height: number, width = 96) {
-  if (!Number.isFinite(height) || height < 160 || !Number.isFinite(width) || width < 64)
-    throw new Error("Rail needs at least 64 × 160 pixels.");
-  const top = { x: 24, y: 24 },
-    bottom = { x: width - 24, y: height - 24 };
+export function curvedRail(
+  height: number,
+  width = 96,
+  shape: { inset?: number; cornerRadius?: number; bendHeight?: number } = {},
+) {
+  const { inset = 24, cornerRadius = 22, bendHeight = 70 } = shape;
+  if (
+    !Number.isFinite(height) ||
+    height < 160 ||
+    !Number.isFinite(width) ||
+    width < 44 ||
+    !Number.isFinite(inset) ||
+    inset <= 0 ||
+    inset * 2 >= width ||
+    !Number.isFinite(cornerRadius) ||
+    cornerRadius <= 0 ||
+    !Number.isFinite(bendHeight) ||
+    bendHeight <= 0
+  )
+    throw new Error("Rail needs finite positive geometry and at least 44 × 160 pixels.");
+  const top = { x: inset, y: 24 },
+    bottom = { x: width - inset, y: height - 24 };
   const span = bottom.y - top.y;
   const a = { x: top.x, y: top.y + span * 0.25 };
   // A fixed shallow kink near the top leaves a longer lower vertical, even when
   // wrapped labels grow the instrument. Keep room for both rounded joins.
-  const b = { x: bottom.x, y: a.y + Math.min(70, span * 0.36) };
+  const b = { x: bottom.x, y: a.y + Math.min(bendHeight, span * 0.36) };
   const diagonal = distance(a, b);
-  const trim = Math.min(22, diagonal / 4, (a.y - top.y) / 2, (bottom.y - b.y) / 2);
+  const trim = Math.min(cornerRadius, diagonal / 4, (a.y - top.y) / 2, (bottom.y - b.y) / 2);
   const beforeA = { x: a.x, y: a.y - trim },
     afterA = mix(a, b, trim / diagonal);
   const beforeB = mix(b, a, trim / diagonal),

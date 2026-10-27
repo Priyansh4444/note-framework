@@ -116,7 +116,7 @@
 .nk-note .nk-reader-outline .nk-outline-slider {
   position: absolute;
   inset: 0 auto auto 0;
-  width: 80px;
+  width: var(--nk-reading-rail-width, 44px);
   min-height: 44px;
   touch-action: none;
   cursor: ns-resize;
@@ -146,6 +146,14 @@
   stroke: var(--diagram-blue, #87c5d1);
   stroke-width: 4;
 }
+.nk-outline-terminal {
+  fill: var(--muted);
+  stroke: var(--bg);
+  stroke-width: 2;
+}
+.nk-outline-terminal.is-reached {
+  fill: var(--diagram-blue, #87c5d1);
+}
 .nk-outline-playhead-focus {
   fill: none;
   stroke: var(--bright, #eee);
@@ -169,6 +177,14 @@
   .nk-outline-playhead-focus {
     stroke: CanvasText;
     forced-color-adjust: none;
+  }
+  .nk-outline-terminal {
+    fill: GrayText;
+    stroke: Canvas;
+    forced-color-adjust: none;
+  }
+  .nk-outline-terminal.is-reached {
+    fill: Highlight;
   }
 }
 .nk-note .nk-reader-outline .nk-outline-slider[aria-disabled="true"] {
@@ -222,7 +238,8 @@
   .nk-note .nk-reader-outline {
     position: fixed;
     top: 96px;
-    right: 24px;
+    left: calc((100vw + max(var(--wide), 980px)) / 2 + 16px);
+    right: auto;
     width: min(192px, calc((100vw - max(var(--wide), 980px)) / 2 - 32px));
     max-height: calc(100dvh - 128px);
     overflow-y: auto;
@@ -234,7 +251,7 @@
     display: none;
   }
   .nk-note .nk-reader-outline .nk-outline-route ol {
-    padding-left: 72px;
+    padding-left: var(--nk-reading-rail-width, 44px);
   }
   .nk-note .nk-reader-outline .nk-outline-route a {
     grid-template-columns: 2ch minmax(0, 1fr);
@@ -252,7 +269,7 @@
   .nk-note .nk-reader-outline .nk-outline-top {
     display: flex;
     align-items: center;
-    padding-left: 12px;
+    padding-left: 10px;
     color: var(--text);
   }
   .nk-note .nk-reader-outline .nk-outline-heading {

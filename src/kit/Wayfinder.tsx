@@ -19,6 +19,7 @@ import {
   distanceAtScroll,
   scrollAtDistance,
   type ReadingMap,
+  READING_RAIL_WIDTH,
 } from "./wayfinder-model";
 
 export interface WayChapter {
@@ -293,6 +294,7 @@ export const Wayfinder: Component<{ chapters: WayChapter[] }> = (props) => {
       aria-label="On this page"
       data-open={open() ? "" : undefined}
       data-route={route() === "none" ? undefined : route()}
+      style={{ "--nk-reading-rail-width": `${READING_RAIL_WIDTH}px` }}
     >
       <button
         ref={trigger}
@@ -375,9 +377,9 @@ export const Wayfinder: Component<{ chapters: WayChapter[] }> = (props) => {
           >
             <svg
               ref={svg}
-              width="80"
+              width={READING_RAIL_WIDTH}
               height={total()}
-              viewBox={`0 0 80 ${Math.max(1, total())}`}
+              viewBox={`0 0 ${READING_RAIL_WIDTH} ${Math.max(1, total())}`}
               aria-hidden="true"
             >
               <path d={curve()?.path ?? ""} class="nk-outline-track-base" />
@@ -394,7 +396,16 @@ export const Wayfinder: Component<{ chapters: WayChapter[] }> = (props) => {
               />
               <Show when={curve()}>
                 {(rail) => (
-                  <PathPlayhead class="nk-outline-playhead" rail={rail()} distance={distance()} />
+                  <>
+                    <PathPlayhead class="nk-outline-playhead" rail={rail()} distance={distance()} />
+                    <circle
+                      class="nk-outline-terminal"
+                      classList={{ "is-reached": progress() >= 99.99 }}
+                      cx={rail().pointAt(rail().length).x}
+                      cy={rail().pointAt(rail().length).y}
+                      r="3.5"
+                    />
+                  </>
                 )}
               </Show>
             </svg>

@@ -1,6 +1,14 @@
 import { expect, test } from "bun:test";
 import { animationRail, curvedRail, playheadGrabOffset, playheadPath } from "./timeline-model";
 
+test("compact rail shaping leaves the scene rail's default geometry unchanged", () => {
+  expect(curvedRail(280).path).toBe(
+    "M24 24L24 60.780904826077055Q24 82 36 99.5L60 134.5Q72 152 72 173.21909517392294L72 256",
+  );
+  for (const shape of [{ inset: NaN }, { cornerRadius: Infinity }, { bendHeight: -1 }])
+    expect(() => curvedRail(280, 96, shape)).toThrow();
+});
+
 test("rounded joins share tangents with both adjacent lines", () => {
   for (const height of [180, 280, 600]) {
     const { segments } = curvedRail(height);

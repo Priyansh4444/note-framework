@@ -174,3 +174,71 @@ test("reading keyboard focus is confined to its line marker", async ({ page }) =
     expect(focus.stroke).not.toBe(focus.coreStroke);
   }
 });
+
+for (const width of [1440, 1920])
+  test(`the compact reading map hugs the article and ends in a dot at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
+    await page.locator("#mix").scrollIntoViewIfNeeded();
+    const nav = page.getByRole("navigation", { name: "On this page", exact: true });
+    await expect(nav.getByRole("slider")).toBeVisible();
+    const geometry = await nav.evaluate((el) => {
+      const bounds = el.getBoundingClientRect(),
+        slider = el.querySelector<HTMLElement>(".nk-outline-slider")!,
+        svg = slider.querySelector("svg")!,
+        path = svg.querySelector<SVGPathElement>(".nk-outline-track-base")!,
+        terminal = svg.querySelector<SVGCircleElement>(".nk-outline-terminal")!,
+        end = path.getPointAtLength(path.getTotalLength());
+      return {
+        left: bounds.left,
+        right: bounds.right,
+        width: bounds.width,
+        rail: slider.getBoundingClientRect().width,
+        viewBox: svg.viewBox.baseVal.width,
+        titles: [...el.querySelectorAll(".nk-outline-route .nk-outline-title")].map(
+          (label) => label.getBoundingClientRect().width,
+        ),
+        terminalError: Math.hypot(
+          terminal.cx.baseVal.value - end.x,
+          terminal.cy.baseVal.value - end.y,
+        ),
+        radius: terminal.r.baseVal.value,
+      };
+    });
+    expect(geometry.width).toBe(192);
+    expect(geometry.left - (width + 980) / 2).toBe(16);
+    expect(geometry.right).toBeLessThanOrEqual(width - 16);
+    expect(geometry.rail).toBe(44);
+    expect(geometry.viewBox).toBe(44);
+    for (const label of geometry.titles) expect(label).toBeGreaterThanOrEqual(100);
+    expect(geometry.terminalError).toBeLessThan(0.01);
+    expect(geometry.radius).toBe(3.5);
+    expect(
+      await page.locator(".bz-example-nav").evaluate((el) => el.getBoundingClientRect().width),
+    ).toBe(980);
+    await nav.getByRole("slider").press("End");
+    await expect(nav.locator(".nk-outline-terminal")).toHaveClass(/is-reached/);
+    await nav.getByRole("slider").press("Home");
+    await expect(nav.locator(".nk-outline-terminal")).not.toHaveClass(/is-reached/);
+    await page.locator("#mix").scrollIntoViewIfNeeded();
+    await nav.getByRole("slider").evaluate((el) => (el as HTMLElement).blur());
+    await nav.screenshot({ path: `artifacts/compact-wayfinder/outline-${width}.png` });
+    await page.screenshot({ path: `artifacts/compact-wayfinder/page-${width}.png` });
+  });
+
+test("the compact header keeps both phone navigation targets usable", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
+  const nav = page.locator(".bz-example-nav");
+  const layout = await nav.evaluate((el) => ({
+    width: el.getBoundingClientRect().width,
+    links: [...el.querySelectorAll("a")].map((a) => a.getBoundingClientRect().height),
+    overflow: document.documentElement.scrollWidth > innerWidth,
+  }));
+  expect(layout.width).toBe(350);
+  expect(layout.overflow).toBe(false);
+  for (const height of layout.links) expect(height).toBeGreaterThanOrEqual(44);
+  await page.screenshot({ path: "artifacts/compact-wayfinder/page-390.png" });
+});
