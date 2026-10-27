@@ -142,11 +142,6 @@ figure.nk-code-block {
     12px/1.5 "Commit Mono",
     monospace;
 }
-.nk-code-source-tools > summary {
-  cursor: pointer;
-  width: fit-content;
-  padding: 6px 0;
-}
 .nk-code-source-notice {
   margin: 8px 0;
   color: inherit;

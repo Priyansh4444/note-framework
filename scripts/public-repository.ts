@@ -173,6 +173,7 @@ export const PUBLIC_REPOSITORY_FILES = [
   "src/kit/note.tsx",
   "src/kit/parameter.css",
   "src/kit/parts.tsx",
+  "src/kit/disclosure.tsx",
   "src/kit/patterns/InkFigure.tsx",
   "src/kit/patterns/LayerFigure.tsx",
   "src/kit/patterns/MorphFigure.tsx",

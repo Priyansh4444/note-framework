@@ -72,6 +72,7 @@ const FRAMEWORK_FILES = [
   "src/kit/motion.css",
   "src/kit/note.tsx",
   "src/kit/parts.tsx",
+  "src/kit/disclosure.tsx",
   "src/kit/Wayfinder.tsx",
   "src/kit/wayfinder-model.ts",
   "src/kit/wayfinder-model.test.ts",

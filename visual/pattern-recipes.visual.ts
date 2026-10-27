@@ -21,7 +21,7 @@ for (const width of [320, 390, 1280])
       const panel = page.locator(`#pattern-panel-${id}`);
       await expect(panel).toBeVisible();
       const source = page.locator(".bz-pattern-source");
-      if (!(await source.getAttribute("open"))) await source.locator("summary").click();
+      if (!(await source.getAttribute("open"))) await source.locator(":scope > summary").click();
       await expect(source.locator(".nk-code-block-title")).toHaveText(`pattern-${id}.tsx`);
       await expect(source.locator(".nk-code-block-render")).toContainText(`Pattern${name}`);
       await expect(source.locator(".nk-code-block-render")).toContainText("props.points");
@@ -133,7 +133,8 @@ test("the active code panel copies the actual rendered component file", async ({
     }),
   );
   const source = page.locator(".bz-pattern-source");
-  await source.locator("summary").click();
+  await source.locator(":scope > summary").click();
+  await source.locator(".nk-code-source-tools > summary").click();
   for (const [id, name] of [
     ["morph", "Morph"],
     ["layers", "Layers"],
@@ -172,6 +173,6 @@ test("inspect curved destinations, material treatments and selected contribution
       .locator("#pattern-panel-ink")
       .screenshot({ path: `${out}/curved-${material.replaceAll(" ", "-").toLowerCase()}-390.png` });
   }
-  await page.locator(".bz-pattern-source summary").click();
+  await page.locator(".bz-pattern-source > summary").click();
   await page.locator(".bz-pattern-source").screenshot({ path: `${out}/source-390.png` });
 });

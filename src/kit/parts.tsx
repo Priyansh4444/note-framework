@@ -1,6 +1,7 @@
 import { type Component, type JSX, type ParentComponent, For, Show } from "solid-js";
 import { Tex } from "../components/ui/Tex";
 import { auditLayout } from "./layout";
+export { DisclosureSummary } from "./disclosure";
 
 /** A still figure: a wide panel with a numbered legend. Animated figures use `SceneFrame` instead. */
 export const Figure: ParentComponent<{
@@ -45,24 +46,6 @@ export const ArrowLabel: ParentComponent<{ direction?: "out" | "right" | "down" 
       />
     </svg>
   </span>
-);
-
-/** A native disclosure with one first-line marker and a full-width hit target. */
-export const DisclosureSummary: ParentComponent = (props) => (
-  <summary class="nk-disclosure-summary">
-    <span class="nk-disclosure-mark" aria-hidden="true">
-      <svg viewBox="0 0 16 16" width="16" height="16" fill="none">
-        <path
-          d="m6 4 4 4-4 4"
-          stroke="currentColor"
-          stroke-width="1.5"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        />
-      </svg>
-    </span>
-    <span class="nk-disclosure-label">{props.children}</span>
-  </summary>
 );
 
 /**

@@ -2,6 +2,7 @@ import { createEffect, createSignal, Show, onCleanup, onMount } from "solid-js";
 import "./code-block.css";
 import { tip } from "../post/scene/tooltip";
 import { mountCodeMorph } from "./code-morph";
+import { DisclosureSummary } from "./disclosure";
 import type { CodeMorphPlan, CodeSide } from "./code-morph-plan";
 
 declare const compiledCode: unique symbol;
@@ -208,7 +209,7 @@ export function CodeBlock(props: CodeBlockProps) {
         />
       </figure>
       <details ref={tools} class="nk-code-source-tools" onToggle={updateOverflow}>
-        <summary>Source tools</summary>
+        <DisclosureSummary>Source tools</DisclosureSummary>
         <div class="nk-code-source-actions">
           <Show when={props.artifact.kind === "diff"}>
             <p class="nk-code-source-notice">
