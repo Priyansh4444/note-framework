@@ -123,9 +123,7 @@ test("reduced-motion playback stays still while manual seeking remains usable", 
   );
 });
 
-test("line mixing, weights and subdivisions keep their measured models during playback", async ({
-  page,
-}) => {
+test("line mixing and subdivision keep their measured models during playback", async ({ page }) => {
   await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
   for (const selector of ["#mix figure[data-nk-scene]", "#flatten-experiment"]) {
     const root = page.locator(selector).first();
@@ -161,6 +159,9 @@ test("line mixing, weights and subdivisions keep their measured models during pl
         point: point ? [Number(point.getAttribute("cx")), Number(point.getAttribute("cy"))] : null,
         lineEnd: end ? [Number(end.getAttribute("x2")), Number(end.getAttribute("y2"))] : null,
         chords: chordDots.length,
+        state: el.querySelector("[data-refinement-state]")?.getAttribute("data-refinement-state"),
+        caption: el.querySelector("figcaption")?.textContent,
+        vertices: el.querySelectorAll("[data-refinement-dot]").length,
       };
     });
     if (selector.startsWith("#mix")) {
@@ -171,10 +172,19 @@ test("line mixing, weights and subdivisions keep their measured models during pl
       expect(model.lineEnd).toEqual(model.point);
     } else {
       expect(model.position).toBeCloseTo(model.t * model.length, 6);
-      // Five equal bins double n: 1, 2, 4, 8, 16. Dots fade out during 16's first 300 ms.
-      expect(model.pieces).toBe([1, 2, 4, 8, 16][Math.min(4, Math.floor(model.t * 5))]);
-      if (model.pieces <= 12) expect(model.chords).toBe(model.pieces + 1);
-      else expect([0, model.pieces + 1]).toContain(model.chords);
+      const phase = model.t * 4;
+      const n = 2 ** Math.floor(phase);
+      expect(model.vertices).toBe(17);
+      if (Number.isInteger(phase)) {
+        expect(model.state).toBe("settled");
+        expect(model.pieces).toBe(n);
+        expect(model.chords).toBe(n === 16 ? 0 : n + 1);
+      } else {
+        expect(model.state).toBe("splitting");
+        expect(model.caption).toContain(`Splitting ${n}`);
+        expect(Number.isNaN(model.pieces)).toBe(true);
+        expect(model.chords).toBe(n === 8 ? 9 : n * 2 + 1);
+      }
     }
   }
 });
@@ -254,28 +264,42 @@ test("mix labels stay separate throughout the sweep, including coincident endpoi
   }
 });
 
-test("curved refinement keeps exact whole-piece bins, endpoints and keyboard", async ({ page }) => {
+test("curved refinement names splits honestly and keeps endpoints and keyboard", async ({
+  page,
+}) => {
   await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
   const root = page.locator("#flatten-experiment");
   const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
-  // Play doubles n through five equal bins: 1, 2, 4, 8, 16. Past 12 the sample dots fade
-  // out over the first 300 ms of their bin.
   const LENGTH = 5000;
-  const nAt = (fraction: number) => [1, 2, 4, 8, 16][Math.min(4, Math.floor(fraction * 5))];
-  const dotsAt = (fraction: number) => {
-    const n = nAt(fraction);
-    return n <= 12 ? n + 1 : fraction * LENGTH - 4000 >= 300 ? 0 : n + 1;
-  };
+  async function check(fraction: number) {
+    const time = Number(await slider.getAttribute("aria-valuenow"));
+    expect(time / LENGTH).toBeCloseTo(fraction, 4);
+    const phase = (4 * time) / LENGTH;
+    const n = 2 ** Math.floor(phase);
+    if (Number.isInteger(phase)) {
+      await expect(root.locator("figcaption .bz-count")).toHaveText(String(n));
+      expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(
+        n === 16 ? 0 : n + 1,
+      );
+    } else {
+      await expect(root.locator("figcaption .bz-count")).toHaveCount(0);
+      await expect(root.locator("figcaption")).toContainText(`Splitting ${n}`);
+      expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(
+        n === 8 ? 9 : n * 2 + 1,
+      );
+    }
+    await expect(slider).toHaveAttribute(
+      "aria-valuetext",
+      new RegExp(`${Math.round(fraction * 100)} percent$`),
+    );
+  }
   await expect(root.locator("figcaption .bz-count")).toHaveText("4");
   await expect(slider).toHaveAttribute("aria-valuemin", "0");
   await expect(slider).toHaveAttribute("aria-valuemax", String(LENGTH));
   for (const fraction of [0.19, 0.21, 0.59, 0.61, 0.999]) {
     await scrubTo(page, slider, fraction);
-    await expect(root.locator("figcaption .bz-count")).toHaveText(String(nAt(fraction)));
-    expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(dotsAt(fraction));
-    expect(Number(await root.getAttribute("data-nk-scene-time")) / LENGTH).toBeCloseTo(fraction, 4);
+    await check(fraction);
   }
-  // The beat button selects its exact start; End selects the end; arrows move 1%.
   for (const [beat, keys, fraction] of [
     ["Double n", [], 0],
     ["Double n", ["ArrowRight", "ArrowRight", "ArrowRight"], 0.03],
@@ -284,23 +308,16 @@ test("curved refinement keeps exact whole-piece bins, endpoints and keyboard", a
   ] as const) {
     await root.getByRole("button", { name: beat, exact: true }).click();
     for (const key of keys) await slider.press(key);
-    await expect(root.locator("figcaption .bz-count")).toHaveText(String(nAt(fraction)));
-    expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(dotsAt(fraction));
-    expect(Number(await root.getAttribute("data-nk-scene-time"))).toBeCloseTo(fraction * LENGTH, 6);
-    await expect(slider).toHaveAttribute(
-      "aria-valuetext",
-      new RegExp(`${Math.round(fraction * 100)} percent$`),
-    );
+    await check(fraction);
   }
-  for (const [key, fraction, n] of [
-    ["Home", 0, "1"],
-    ["ArrowRight", 0.01, "1"],
-    ["End", 1, "16"],
-    ["ArrowLeft", 0.99, "16"],
+  for (const [key, fraction] of [
+    ["Home", 0],
+    ["ArrowRight", 0.01],
+    ["End", 1],
+    ["ArrowLeft", 0.99],
   ] as const) {
     await slider.press(key);
-    expect(Number(await slider.getAttribute("aria-valuenow"))).toBeCloseTo(fraction * LENGTH, 6);
-    await expect(root.locator("figcaption .bz-count")).toHaveText(n);
+    await check(fraction);
     await expect(root.locator("[data-nk-scene-action]")).not.toHaveAttribute(
       "data-nk-scene-action",
       "pause",

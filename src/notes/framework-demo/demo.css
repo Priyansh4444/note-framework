@@ -89,6 +89,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+.note-framework-demo #flatten-experiment > figcaption {
+  min-height: 4.5em;
+}
+
+@media (max-width: 500px) {
+  .note-framework-demo #flatten-experiment > figcaption {
+    min-height: 6em;
+  }
+}
+
 /* Weights: the picture and its chart are two diagrams; keep their labels apart. */
 .note-framework-demo #weight-experiment .nk-diagram + .nk-diagram {
   margin-top: 12px;

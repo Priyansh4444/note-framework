@@ -1,7 +1,6 @@
 import { createMemo, For } from "solid-js";
 import {
   Axes,
-  clamp01,
   DiagramViewer,
   Experiment,
   Legend,
@@ -10,9 +9,9 @@ import {
   Tex,
   useDiagram,
   createScene,
-  createPlayback,
 } from "../../../kit";
-import { BOX, chordBound, chordError, chords, worstChordGap, curvePath } from "../bezier/model";
+import { BOX, chordBound, curvePath } from "../bezier/model";
+import { prepareRefinement } from "../bezier/refinement";
 import { Handles } from "../bezier/Handles";
 import { movePoint, points } from "../bezier/store";
 
@@ -27,32 +26,27 @@ const W = 560,
   Y1 = 34;
 const LX = (n: number) => X0 + (Math.log2(n) / Math.log2(N_MAX)) * (X1 - X0);
 
-// Past this many pieces the sample dots crowd the curve; the chords alone read better.
-const DOTS = 12;
-// Play doubles the count through these; the chart also shows 32, where the gap is subpixel.
-const PLAYED = [1, 2, 4, 8, 16] as const;
 const CHART = [1, 2, 4, 8, 16, 32] as const;
 const fmt = (v: number) => (v >= 10 ? v.toFixed(1) : v.toFixed(2));
 
 export function Flatten() {
   const scene = createScene([{ label: "Double n", ms: 5000 }]);
-  // The clock steps k = 0…4 in equal bins; n = 2ᵏ.
-  const playback = createPlayback(scene, { min: 0, max: PLAYED.length - 1, initial: 2, step: 1 });
-  const k = createMemo(playback.value);
-  const n = () => PLAYED[k()];
-  // Past DOTS the sample dots fade over the first 300 ms of their bin, on the scene clock.
-  const dots = () =>
-    n() <= DOTS ? 1 : clamp01(1 - (scene.t() - (scene.length * k()) / PLAYED.length) / 300);
-  const samples = createMemo(() => chords(points(), n()));
-  const dotSlots = Array.from({ length: PLAYED.at(-1)! + 1 }, (_, i) => i);
-  // Powers of two for the chart, recomputed only when the control points move.
-  const series = createMemo(() =>
-    CHART.map((m) => ({
-      n: m,
-      error: chordError(points(), m, 32),
-      bound: chordBound(points(), m),
-    })),
-  );
+  scene.seek(scene.length / 2);
+  const stepTimes = [0, 1250, 2500, 3750, 5000];
+  const prepared = createMemo(() => prepareRefinement(points()));
+  const frame = createMemo(() => prepared().frame((4 * scene.t()) / scene.length));
+  const dotSlots = Array.from({ length: 17 }, (_, i) => i);
+  const series = () => prepared().series;
+  const settledCount = () => {
+    const state = frame().state;
+    return state.kind === "settled" ? state.n : undefined;
+  };
+  const description = () => {
+    const state = frame().state;
+    return state.kind === "settled"
+      ? `${state.n} straight ${state.n === 1 ? "piece" : "pieces"}`
+      : `Splitting ${state.from} ${state.from === 1 ? "piece" : "pieces"} into ${state.to}`;
+  };
   const hasCurvature = () => series()[0].error > 1e-10;
   // Include every positive sample and the proven bound; dragging cannot clip the data.
   const range = createMemo(() => {
@@ -77,12 +71,10 @@ export function Flatten() {
     ((Math.log10(Math.max(10 ** range().lo, e)) - range().lo) /
       (Math.log10(range().top) - range().lo)) *
       (Y0 - Y1);
-  const now = () => series()[k()];
   const need = () => Math.max(1, Math.ceil(Math.sqrt(chordBound(points(), 1) / TOL)));
-  const gap = createMemo(() => worstChordGap(points(), n(), 32).at);
   const poly = createMemo(() =>
-    samples()
-      .map((q, i) => `${i ? "L" : "M"}${q[0].toFixed(2)} ${q[1].toFixed(2)}`)
+    frame()
+      .vertices.map((q, i) => `${i ? "L" : "M"}${q[0]} ${q[1]}`)
       .join(""),
   );
   const boundLine = () =>
@@ -91,8 +83,16 @@ export function Flatten() {
     <More summary="Compare the gaps and error bounds">
       <p>
         Distances are in figure units; at full desktop width one unit is about 1.2 screen pixels.
-        Gaps are sampled at 33 parameters per segment, which can only underestimate the largest gap;
-        the dashed bound is proved below.
+        Gaps are measured against the current white polygon on a fixed grid of 1,025 parameters.
+        Sampling can only underestimate the largest gap; the dashed bound is proved below.
+      </p>
+      <p>
+        During a split, each new midpoint moves from its parent chord to the curve. The moving
+        vertices are construction positions until the split finishes. If its progress is α, the
+        polygon is (1 − α) times the old polygon plus α times the new one. The triangle inequality
+        gives the same blend of their proven bounds. The red line fades away during the middle of
+        each split, and when separated lobes tie, because the location of the largest gap can
+        switch; its endpoints always measure the current polygon.
       </p>
       <div hidden={!hasCurvature()}>
         <DiagramViewer
@@ -115,7 +115,7 @@ export function Flatten() {
           <For each={series()}>
             {(row) => (
               <circle
-                class={row.n === n() ? "nk-point nk-red" : "nk-dot nk-red"}
+                class={row.n === settledCount() ? "nk-point nk-red" : "nk-dot nk-red"}
                 cx={LX(row.n)}
                 cy={LY(row.error)}
               />
@@ -132,7 +132,7 @@ export function Flatten() {
       </div>
       <Readout quiet={scene.playing()}>
         <span>
-          bound <b>{fmt(now().bound)}</b>
+          bound <b>{fmt(frame().bound)}</b>
         </span>
         <span>
           n ≥ <b>{need()}</b> guarantees half a unit
@@ -145,14 +145,20 @@ export function Flatten() {
       timeline="Subdivision playback"
       id="flatten-experiment"
       scene={scene}
-      stepTimes={playback.steps}
+      stepTimes={stepTimes}
       question="How many little pieces make the line look smooth?"
       caption={
         hasCurvature() ? (
           <>
-            <b class="bz-count">{n()}</b> straight {n() === 1 ? "piece" : "pieces"}, in white, try
-            to follow the grey curve. Largest sampled gap: {fmt(now().error)} units. Red marks the
-            gap while it is large enough to see.
+            {settledCount() !== undefined ? (
+              <>
+                <b class="bz-count">{settledCount()}</b> straight{" "}
+                {settledCount() === 1 ? "piece follows" : "pieces follow"} the grey curve.
+              </>
+            ) : (
+              <>{description()}: new midpoints move from chord to curve.</>
+            )}{" "}
+            Largest sampled gap: {fmt(frame().gap.error)} units. Red marks a visible gap.
           </>
         ) : (
           <>Zero error: these points lie on a straight line, so one segment draws it exactly.</>
@@ -160,48 +166,62 @@ export function Flatten() {
       }
       details={DETAILS}
     >
-      <div style={{ "max-width": "560px", margin: "0 auto" }}>
+      <div
+        data-refinement-state={frame().state.kind}
+        style={{ "max-width": "560px", margin: "0 auto" }}
+      >
         <DiagramViewer
           viewBox={[BOX.x, BOX.y, BOX.w, BOX.h]}
-          label={`The curve approximated by ${n()} straight segments; the largest sampled gap is ${fmt(now().error)} units.`}
+          label={`${description()}; the largest sampled gap is ${fmt(frame().gap.error)} units.`}
         >
           <path class="nk-stroke" d={curvePath(points())} />
           {/* The chords are the approximation, so they are the brightest line. */}
           <g style={{ "--role": "var(--bright)" }}>
-            <path class="nk-stroke" d={poly()} />
-            <g opacity={dots()}>
+            <path data-refinement-path class="nk-stroke" d={poly()} />
+            <g>
               <For each={dotSlots}>
                 {(i) => (
                   <circle
+                    data-refinement-dot
                     class="nk-dot"
-                    cx={samples()[Math.min(i, n())][0]}
-                    cy={samples()[Math.min(i, n())][1]}
-                    visibility={i <= n() && dots() > 0 ? "visible" : "hidden"}
+                    cx={frame().vertices[i][0]}
+                    cy={frame().vertices[i][1]}
+                    opacity={frame().dotOpacity[i]}
+                    visibility={frame().dotOpacity[i] > 0 ? "visible" : "hidden"}
                   />
                 )}
               </For>
             </g>
           </g>
-          <GapMarker at={gap()} error={now().error} curved={hasCurvature()} />
-          <Handles points={points()} onMove={movePoint} onGrab={playback.pause} />
+          <GapMarker
+            at={frame().gap.at}
+            error={frame().gap.error}
+            opacity={frame().markerOpacity}
+            curved={hasCurvature()}
+          />
+          <Handles points={points()} onMove={movePoint} onGrab={scene.pause} />
         </DiagramViewer>
       </div>
     </Experiment>
   );
 }
 
-/** A subpixel miss needs a numerical readout, not a ring over an endpoint. */
+/** A subpixel miss needs only its numerical readout. */
 function GapMarker(props: {
   at: readonly [readonly [number, number], readonly [number, number]];
   error: number;
+  opacity: number;
   curved: boolean;
 }) {
   const { u } = useDiagram();
-  const visible = () => props.curved && props.error / u() >= 3;
-  const ringClear = () =>
-    points().every((p) => Math.hypot(p[0] - props.at[0][0], p[1] - props.at[0][1]) > 14 + 10 * u());
+  const visible = () => props.curved && props.error / u() >= 3 && props.opacity > 0;
   return (
-    <g class="nk-red" data-gap-marker visibility={visible() ? "visible" : "hidden"}>
+    <g
+      class="nk-red"
+      data-gap-marker
+      opacity={props.opacity}
+      visibility={visible() ? "visible" : "hidden"}
+    >
       <line
         class="nk-curve"
         stroke-width="4"
@@ -210,26 +230,21 @@ function GapMarker(props: {
         x2={props.at[1][0]}
         y2={props.at[1][1]}
       />
-      <circle
-        class="nk-stroke"
-        cx={props.at[0][0]}
-        cy={props.at[0][1]}
-        r="14"
-        stroke-width="1.5"
-        visibility={visible() && ringClear() ? "visible" : "hidden"}
-      />
     </g>
   );
 }
 
 /** The explanation follows the same live control points as the figure. */
 export function FlattenSummary() {
-  const values = createMemo(() => ({
-    eight: chordError(points(), 8, 32),
-    sixteen: chordError(points(), 16, 32),
-    need: Math.max(1, Math.ceil(Math.sqrt(chordBound(points(), 1) / TOL))),
-    curved: chordError(points(), 1, 32) > 1e-10,
-  }));
+  const values = createMemo(() => {
+    const series = prepareRefinement(points()).series;
+    return {
+      eight: series[3].error,
+      sixteen: series[4].error,
+      need: Math.max(1, Math.ceil(Math.sqrt(chordBound(points(), 1) / TOL))),
+      curved: series[0].error > 1e-10,
+    };
+  });
   return (
     <p data-flatten-summary>
       For this curve, going from 8 to 16 pieces changes the largest sampled gap from{" "}
