@@ -72,6 +72,8 @@ test("exports framework sources and exact binary baselines without private mater
   expect(ci).not.toContain("framework-redesign/");
   expect(ci).not.toContain("working-directory:");
   expect(ci).toContain("include-hidden-files: true");
+  expect(ci).toContain("if: failure() && steps.page_tests.outcome == 'failure'");
+  expect(ci).toContain("visual/baselines/ubuntu-24/");
 });
 
 test("accepts an empty external directory and preserves independent starter export", () => {
