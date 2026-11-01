@@ -126,7 +126,8 @@ for (const width of [1280, 390, 320])
     const figure = page.locator(".bz-first-try figure");
     const handles = figure.locator(".nk-handle");
     const labels = handles.locator(".nk-label");
-    await expect(labels).toHaveText(["P₀", "P₁", "P₂", "P₃"]);
+    await expect(labels).toHaveText(["P0", "P1", "P2", "P3"]);
+    await expect(labels.locator('tspan[baseline-shift="sub"]')).toHaveText(["0", "1", "2", "3"]);
     // Retain actual browser node references across preset and coordinate updates.
     const persistent = await figure.evaluateHandle((el) =>
       [...el.querySelectorAll(".nk-handle")].flatMap((handle) => [

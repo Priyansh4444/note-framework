@@ -85,7 +85,12 @@ const PEAK = [0.06, 1 / 3, 2 / 3, 0.94];
 export function Weights() {
   // No clock here: the reader sets t directly on the chart, and every view follows it.
   const [t, setT] = createSignal(0.45);
-  const seek = (v: number) => setT(Math.max(0, Math.min(1, v)));
+  const seek = (v: number) => {
+    const bounded = Math.max(0, Math.min(1, v));
+    // Inverse SVG transforms introduce sub-pixel noise at the exact symmetric midpoint.
+    // Canonicalize only that numerical neighbourhood; all other drags remain continuous.
+    setT(Math.abs(bounded - 0.5) <= 1e-7 ? 0.5 : bounded);
+  };
   const w = () => weights(t());
   const b = () => pointAt(points(), t());
   return (
@@ -104,7 +109,7 @@ export function Weights() {
         <DiagramViewer
           viewBox={[BOX.x, BOX.y, BOX.w, BOX.h]}
           label={`The curve inside the convex hull of its control points. At t = ${t().toFixed(2)} the weights are ${w()
-            .map((v) => v.toFixed(2))
+            .map((v) => v.toFixed(3))
             .join(", ")}.`}
         >
           <path class="nk-area" d={pathOf(convexHull(points()))} />

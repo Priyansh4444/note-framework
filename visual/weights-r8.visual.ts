@@ -94,6 +94,7 @@ for (const width of [390, 1440]) {
 }
 
 test("weights bar drags without moving any chart datum off its true value", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/notes/framework-demo#weights", { waitUntil: "networkidle" });
   const root = page.locator("#weight-experiment");
   const grip = root.getByRole("slider", { name: "Chart cursor t", exact: true });
@@ -105,6 +106,22 @@ test("weights bar drags without moving any chart datum off its true value", asyn
     const end = new DOMPoint(540, n.cy.baseVal.value).matrixTransform(n.getScreenCTM()!);
     return { x: p.x, y: p.y, end: end.x };
   });
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x + (start.end - start.x) * 0.7, start.y);
+  await page.mouse.up();
+  await grip.press("Home");
+  await page.mouse.move(start.x, start.y);
+  await page.mouse.down();
+  await page.mouse.move(start.x + (start.end - start.x) * 0.5, start.y);
+  await page.mouse.up();
+  await expect(grip).toHaveAttribute("aria-valuenow", "0.5");
+  await expect(root.locator("[data-weight-tie]")).toHaveCount(2);
+  await expect(root.getByRole("img").first()).toHaveAttribute(
+    "aria-label",
+    /0.125, 0.375, 0.375, 0.125/,
+  );
+  await grip.press("Home");
   await page.mouse.move(start.x, start.y);
   await page.mouse.down();
   await page.mouse.move(start.x + (start.end - start.x) * 0.7, start.y);
