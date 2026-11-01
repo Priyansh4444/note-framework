@@ -13,7 +13,7 @@
   hyphens: none;
   text-wrap: pretty;
 }
-.fw-page :is(a, button, input:not([type="range"]), textarea):focus-visible {
+.fw-page :is(a, button, summary, input:not([type="range"]), textarea):focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
@@ -48,7 +48,7 @@
 .fw-masthead nav {
   display: flex;
   align-items: center;
-  gap: 4px 26px;
+  gap: 4px 24px;
   flex-wrap: wrap;
   justify-content: flex-end;
   font-size: 16px;
@@ -63,15 +63,6 @@
 }
 .fw-masthead nav a[aria-current="page"] {
   color: var(--bright);
-}
-.fw-masthead .fw-masthead-cta {
-  min-height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--rule-strong);
-  border-radius: 999px;
-  color: var(--text);
-  font: 12px/1 var(--mono);
-  letter-spacing: 0.04em;
 }
 
 /* Type */
@@ -145,8 +136,7 @@
   cursor: pointer;
   transition:
     border-color 120ms ease,
-    background-color 120ms ease,
-    transform 120ms cubic-bezier(0.23, 1, 0.32, 1);
+    background-color 120ms ease;
 }
 .fw-button-primary {
   border-color: var(--text);
@@ -154,7 +144,7 @@
   color: var(--bg);
 }
 .fw-button:active {
-  transform: scale(0.98);
+  border-color: var(--bright);
 }
 @media (hover: hover) and (pointer: fine) {
   .fw-masthead nav a:hover {
@@ -162,7 +152,7 @@
   }
   .fw-button:hover {
     border-color: var(--muted);
-    background: rgb(255 255 255 / 4%);
+    background: var(--wash);
   }
   .fw-button-primary:hover {
     border-color: var(--bright);
@@ -175,8 +165,8 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
   align-items: center;
-  gap: 72px;
-  padding: 96px 0 104px;
+  gap: 56px;
+  padding: 56px 0 64px;
 }
 .fw-page :is(figure, pre) {
   width: auto;
@@ -200,18 +190,19 @@
   line-height: 1.5;
 }
 .fw-hero-figure figcaption a {
+  white-space: nowrap;
   color: var(--text);
 }
 
 /* Sections */
 .fw-section {
-  padding: 88px 0 96px;
+  padding: 64px 0 72px;
   border-top: 1px solid var(--rule);
   scroll-margin-top: 24px;
 }
 .fw-section-head {
   max-width: 680px;
-  margin-bottom: 44px;
+  margin-bottom: 32px;
 }
 .fw-section-head > p:not(.fw-eyebrow) {
   margin: 0;
@@ -488,8 +479,8 @@
 @media (max-width: 1000px) {
   .fw-hero {
     grid-template-columns: 1fr;
-    gap: 48px;
-    padding: 64px 0 72px;
+    gap: 32px;
+    padding: 48px 0 56px;
   }
   .fw-hero-figure {
     max-width: 640px;
@@ -504,16 +495,24 @@
     font-size: 19px;
   }
   .fw-masthead {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0;
-    padding: 14px 0 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0 24px;
+    min-height: 88px;
+    padding: 8px 0;
   }
+  /* One row on phones: drop the link glyphs and space the links evenly. */
   .fw-masthead nav {
-    justify-content: flex-start;
-    gap: 0 20px;
+    justify-content: space-between;
+    gap: 0 10px;
+    width: 100%;
+    font-size: 15px;
+  }
+  .fw-masthead nav svg {
+    display: none;
   }
   .fw-page h1 {
+    margin-bottom: 20px;
     font-size: 46px;
     letter-spacing: -0.03em;
   }
@@ -524,7 +523,18 @@
     font-size: 20px;
   }
   .fw-hero {
-    padding: 44px 0 56px;
+    gap: 24px;
+    padding: 32px 0 44px;
+  }
+  .fw-hero .fw-eyebrow {
+    margin-bottom: 12px;
+    font-size: 11px;
+  }
+  .fw-hero .fw-dek {
+    margin-bottom: 22px;
+  }
+  .fw-hero-figure .nk-diagram {
+    margin-block: 0;
   }
   .fw-section {
     padding: 56px 0 64px;

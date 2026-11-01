@@ -1,3 +1,7 @@
+/* An inline formula never breaks across lines: a broken formula reads as two. */
+.nf-math:not(.nf-math-display) {
+  white-space: nowrap;
+}
 .nf-math .katex {
   font-size: 0.95em;
 }
@@ -6,6 +10,8 @@
   margin: 1.4rem 0;
   overflow-x: auto;
   overflow-y: hidden;
+  /* Room for glyph overhang inside the scroller, without moving the formula off the column. */
+  margin-inline: -0.15rem;
   padding: 0.3rem 0.15rem;
 }
 .nf-math-display .katex-display {

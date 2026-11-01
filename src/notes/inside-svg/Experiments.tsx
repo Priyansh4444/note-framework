@@ -31,7 +31,6 @@ export function DissectionExperiment() {
       id="svg-peel"
       scene={scene}
       timeline="Separation"
-      actionsPlacement="bottom"
       question="Press Play to find the five shapes."
       caption={
         <>
@@ -98,7 +97,7 @@ export function PaintOrderExperiment() {
           aria-pressed={front()}
           onClick={() => setFront((v) => !v)}
         >
-          {front() ? "Put the sun behind" : "Bring the sun forward"}
+          Sun in front
         </button>
       }
       caption={
@@ -151,7 +150,7 @@ export function ClippingExperiment() {
             aria-pressed={inspection()}
             onClick={() => setInspection((v) => !v)}
           >
-            {inspection() ? "Use the window" : "Show beyond the window"}
+            Show beyond the window
           </button>
         </div>
       }

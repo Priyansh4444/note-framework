@@ -23,7 +23,6 @@ export function ServiceExperiment(props: { scene?: Scene } = {}) {
       scene={scene}
       timeline="Service position"
       sound={cues}
-      actionsPlacement="bottom"
       question="Can two windows watch the same work?"
       caption={
         <>

@@ -8,6 +8,7 @@ import {
   type InkPose,
   type InkScene,
 } from "./ink-model";
+import { Choice } from "../ui";
 import "./ink.css";
 export { brushStroke } from "./ink-model";
 export type { InkMark, InkScene, BrushOptions } from "./ink-model";
@@ -163,19 +164,12 @@ export function InkFigure(props: InkFigureProps) {
       </svg>
       <figcaption>
         <span class="nk-ink-label">{props.label}</span>
-        <div class="nk-ink-scenes" role="group" aria-label={`Choose a scene for ${props.label}`}>
-          <For each={scenes()}>
-            {(scene) => (
-              <button
-                type="button"
-                aria-pressed={selected().id === scene.id}
-                onClick={() => choose(scene.id)}
-              >
-                {scene.label}
-              </button>
-            )}
-          </For>
-        </div>
+        <Choice
+          label={`Choose a scene for ${props.label}`}
+          options={scenes()}
+          value={selected().id}
+          onChange={choose}
+        />
       </figcaption>
     </figure>
   );

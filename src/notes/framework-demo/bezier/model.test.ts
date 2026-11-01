@@ -8,6 +8,7 @@ import {
   clampPoint,
   construction,
   convexHull,
+  mapCubic,
   maxSecond,
   pointAt,
   PRESETS,
@@ -147,10 +148,7 @@ test("the rendered cubic restriction evaluates to the original curve, including 
       const path = curvePath(p, a, b);
       expect(path).not.toContain("L");
       const numbers = path.match(/[-+]?(?:\d*\.)?\d+(?:e[-+]?\d+)?/gi)!.map(Number);
-      const restricted = Array.from({ length: 4 }, (_, i) => [
-        numbers[i * 2],
-        numbers[i * 2 + 1],
-      ]) as unknown as Cubic;
+      const restricted = mapCubic(p, (_, i) => [numbers[i * 2], numbers[i * 2 + 1]]);
       for (const u of [0, 0.17, 0.5, 0.81, 1])
         close(pointAt(restricted, u), pointAt(p, a + u * (b - a)), 8);
     }

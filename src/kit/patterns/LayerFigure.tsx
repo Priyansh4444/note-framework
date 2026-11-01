@@ -7,6 +7,7 @@ import {
   type FigureLayer,
   type LayerPose,
 } from "./layer-model";
+import { Choice } from "../ui";
 import "./layer.css";
 export type { FigureLayer } from "./layer-model";
 export type LayerFigureProps = {
@@ -227,19 +228,12 @@ export function LayerFigure(props: LayerFigureProps) {
       </svg>
       <figcaption>
         <span>{props.label}</span>
-        <div role="group" aria-label={`Choose a layer for ${props.label}`}>
-          <For each={layers()}>
-            {(layer) => (
-              <button
-                type="button"
-                aria-pressed={layers()[index()].id === layer.id}
-                onClick={() => choose(layer.id)}
-              >
-                {layer.label}
-              </button>
-            )}
-          </For>
-        </div>
+        <Choice
+          label={`Choose a layer for ${props.label}`}
+          options={layers()}
+          value={layers()[index()].id}
+          onChange={choose}
+        />
       </figcaption>
     </figure>
   );

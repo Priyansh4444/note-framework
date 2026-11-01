@@ -21,7 +21,8 @@ async function choose(patch: import("@playwright/test").Locator, side: "before" 
   if (await toggle.isVisible()) await toggle.click();
   else {
     const tools = patch.locator("..").locator(".nk-code-source-tools");
-    if ((await tools.getAttribute("open")) === null) await tools.locator("summary").click();
+    if ((await tools.getAttribute("data-open")) === null)
+      await tools.locator(".nk-code-source-toggle").click();
     await tools
       .getByRole("button", { name: side === "before" ? "Before" : "After", exact: true })
       .click();
@@ -191,9 +192,8 @@ test("selecting the active source keeps each original code line intact", async (
       .map((e) => e.innerText);
   });
   expect(lines).toContain("export type Point = readonly [x: number, y: number];");
-  expect(lines).toContain(
-    "export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;",
-  );
+  expect(lines).toContain("export function lerp(a: number, b: number, t: number) {");
+  expect(lines).toContain("  return a + (b - a) * t;");
 });
 
 test("font remeasurement under enlarged layout keeps token boxes fitted to text", async ({

@@ -1,65 +1,26 @@
 import { For } from "solid-js";
+import { Handle, useDiagram } from "../../../kit";
 import type { Cubic, Point } from "./model";
 
-export const ROLE = ["p0", "p1", "p2", "p3"] as const;
+/** One colour class per control point, reused by every figure, weight and legend. */
+export const ROLE = ["nk-orange", "nk-magenta", "nk-green", "nk-blue"] as const;
 export const NAME = ["P₀", "P₁", "P₂", "P₃"] as const;
-const STEP = 4,
-  BIG = 20;
 
-/**
- * Four draggable control points. Pointer drags map through the SVG's own transform;
- * arrow keys move a focused point (Shift for larger steps). The hit area keeps a
- * 44px screen size at any figure width.
- */
+/** Four draggable control points, each labelled on the side away from the curve. */
 export function Handles(props: {
   points: Cubic;
   onMove: (i: number, q: Point) => void;
   onGrab?: () => void;
   labels?: boolean;
-  dim?: (i: number) => number;
+  /** Radius, in SVG units, of a mark around point i; its label sits just beyond it. */
+  clearance?: (i: number, u: number) => number;
 }) {
-  let drag: { i: number; id: number } | undefined;
-  const local = (event: PointerEvent): Point | undefined => {
-    const svg = (event.currentTarget as SVGElement).ownerSVGElement;
-    const m = svg?.getScreenCTM();
-    if (!m) return;
-    const q = new DOMPoint(event.clientX, event.clientY).matrixTransform(m.inverse());
-    return [q.x, q.y];
-  };
-  const down = (i: number) => (event: PointerEvent) => {
-    if (event.button !== 0) return;
-    props.onGrab?.();
-    drag = { i, id: event.pointerId };
-    (event.currentTarget as Element).setPointerCapture(event.pointerId);
-    event.preventDefault();
-  };
-  const move = (event: PointerEvent) => {
-    if (!drag || event.pointerId !== drag.id) return;
-    const q = local(event);
-    if (q) props.onMove(drag.i, q);
-  };
-  const up = (event: PointerEvent) => {
-    if (drag?.id === event.pointerId) drag = undefined;
-  };
-  const key = (i: number) => (event: KeyboardEvent) => {
-    const d = event.shiftKey ? BIG : STEP;
-    const delta = (
-      { ArrowLeft: [-d, 0], ArrowRight: [d, 0], ArrowUp: [0, -d], ArrowDown: [0, d] } as Record<
-        string,
-        [number, number]
-      >
-    )[event.key];
-    if (!delta) return;
-    event.preventDefault();
-    props.onGrab?.();
-    const p = props.points[i];
-    props.onMove(i, [p[0] + delta[0], p[1] + delta[1]]);
-  };
+  const diagram = useDiagram();
   return (
     <For each={[0, 1, 2, 3]}>
       {(i) => {
         const p = () => props.points[i];
-        // Put the label on the side away from the curve: opposite the neighbouring control points.
+        // Opposite the neighbouring control points.
         const away = () => {
           const ps = props.points,
             q = p();
@@ -74,35 +35,44 @@ export function Handles(props: {
           const l = Math.hypot(dx, dy);
           return l < 1e-6 ? [0, -1] : [dx / l, dy / l];
         };
+        // Beyond the point, but always inside the figure: an edge pulls the label back in.
+        const label = () => {
+          const em = 16 * diagram.u();
+          const d = Math.max(1.8 * em, (props.clearance?.(i, diagram.u()) ?? 0) + 0.8 * em);
+          const [bx, by, bw, bh] = diagram.box;
+          const [left, right, top, bottom] = [
+            bx + 0.9 * em,
+            bx + bw - 0.9 * em,
+            by + 1.4 * em,
+            by + bh - 0.9 * em,
+          ];
+          let [ax, ay] = away();
+          // Mirror a side that would leave the figure, so the label flips inward, clear of its dot.
+          if (p()[0] + ax * d < left || p()[0] + ax * d > right) ax = -ax;
+          if (p()[1] + ay * d + 0.35 * em < top || p()[1] + ay * d + 0.35 * em > bottom) ay = -ay;
+          const x = p()[0] + ax * d,
+            y = p()[1] + ay * d + 0.35 * em;
+          return [Math.min(right, Math.max(left, x)), Math.min(bottom, Math.max(top, y))];
+        };
         return (
-          <g
-            class={`bz-handle bz-${ROLE[i]}`}
-            tabIndex={0}
-            role="slider"
-            aria-label={`Control point ${NAME[i]}, x ${p()[0]}, y ${p()[1]}. Arrow keys move it.`}
-            aria-valuetext={`(${p()[0]}, ${p()[1]})`}
-            style={{ opacity: props.dim?.(i) ?? 1 }}
-            onPointerDown={down(i)}
-            onPointerMove={move}
-            onPointerUp={up}
-            onPointerCancel={up}
-            onKeyDown={key(i)}
+          <Handle
+            class={ROLE[i]}
+            x={p()[0]}
+            y={p()[1]}
+            label={`Control point ${NAME[i]}`}
+            value={`(${Math.round(p()[0])}, ${Math.round(p()[1])})`}
+            onGrab={props.onGrab}
+            onDrag={(q) => props.onMove(i, [q[0], q[1]])}
           >
-            <circle class="bz-hit" cx={p()[0]} cy={p()[1]} r="22" />
-            <circle class="bz-dot" cx={p()[0]} cy={p()[1]} r="7" />
             {props.labels !== false && (
-              <text
-                class="bz-label"
-                x={p()[0]}
-                y={p()[1]}
-                dx={`${away()[0] * 1.3}em`}
-                dy={`${away()[1] * 1.3 + 0.35}em`}
-                text-anchor="middle"
-              >
-                P<tspan dx="0.04em">{i}</tspan>
+              <text class="nk-label" x={label()[0]} y={label()[1]} text-anchor="middle">
+                P
+                <tspan baseline-shift="sub" font-size="0.7em">
+                  {i}
+                </tspan>
               </text>
             )}
-          </g>
+          </Handle>
         );
       }}
     </For>

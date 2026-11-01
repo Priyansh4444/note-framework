@@ -64,8 +64,9 @@ test("S rail has tangent lobes, strictly increasing x and shared inverse project
       const at = (rail.length * i) / 1000,
         point = rail.pointAt(at);
       expect(point.x).toBeGreaterThan(previous);
-      expect(point.y).toBeGreaterThanOrEqual(20 - 0.001);
-      expect(point.y).toBeLessThanOrEqual(68 + 0.001);
+      // ±22px around the 32px midline of the 64px band.
+      expect(point.y).toBeGreaterThanOrEqual(10 - 0.001);
+      expect(point.y).toBeLessThanOrEqual(54 + 0.001);
       expect(Math.abs(rail.project(point) - at)).toBeLessThan(0.001);
       previous = point.x;
     }

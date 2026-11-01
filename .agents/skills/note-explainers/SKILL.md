@@ -23,7 +23,7 @@ For deeper graph, vocabulary, visibility and compression choices, read [authorin
 
 For SVG inspection, Pierre code/diff imports and executable alignment/visibility checks, read [authoring tools](references/authoring-tools.md) when needed.
 
-For visual polish, read [taste](references/taste.md): editorial scale, restrained boundaries and controls that explain the idea.
+For visual polish, read [taste](references/taste.md) and run `bun run taste`: editorial scale, restrained boundaries, controls that explain the idea.
 
 For mechanism-focused interactive articles, use [explorable explanations](../explorable-explanations/SKILL.md); its case studies are optional.
 

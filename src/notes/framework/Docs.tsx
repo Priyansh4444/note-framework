@@ -19,7 +19,7 @@ import "./guide.css";
 
 const sections = [
   { id: "start", title: "Pick a question" },
-  { id: "write", title: "Make your first note" },
+  { id: "write", title: "Write it" },
   { id: "publish", title: "Check it and share" },
 ] as const;
 
@@ -66,22 +66,6 @@ export const Docs: Component = () => {
     <main ref={root} class="fw-page fw-guide">
       <Masthead here="guide" />
       <div class="fw-guide-layout">
-        <nav class="fw-guide-toc" aria-label="On this page">
-          <p class="fw-guide-label">The guide</p>
-          <ol>
-            <For each={sections}>
-              {(section, index) => (
-                <li>
-                  <a href={`#${section.id}`}>
-                    <span>{String(index() + 1).padStart(2, "0")}</span>
-                    {section.title}
-                  </a>
-                </li>
-              )}
-            </For>
-          </ol>
-        </nav>
-
         <article class="fw-guide-body">
           <header class="fw-guide-header enter">
             <p class="fw-eyebrow">A small guide</p>
@@ -99,6 +83,22 @@ export const Docs: Component = () => {
               </a>
             </p>
           </header>
+
+          <nav class="fw-guide-toc" aria-label="On this page">
+            <p class="fw-guide-label">The guide</p>
+            <ol>
+              <For each={sections}>
+                {(section, index) => (
+                  <li>
+                    <a href={`#${section.id}`}>
+                      <span>{String(index() + 1).padStart(2, "0")}</span>
+                      {section.title}
+                    </a>
+                  </li>
+                )}
+              </For>
+            </ol>
+          </nav>
 
           <For each={sections}>
             {(section) => (
@@ -124,7 +124,7 @@ export const Docs: Component = () => {
                           You can also <a href="/notes/inside-svg">take a picture apart</a> or watch{" "}
                           <a href="/notes/shared-service">four windows share one service</a>, or try{" "}
                           <a href="/notes/spring-workshop">a spring you can feel</a>. The{" "}
-                          <a href="/studies">motion studies</a> explore four more directions.
+                          <a href="/studies">motion studies</a> explore five directions.
                         </>
                       )}
                     </p>
@@ -185,8 +185,15 @@ export const Docs: Component = () => {
             )}
           </For>
 
-          <details id="developer-guide" class="fw-guide-details fw-guide-developer">
-            <DisclosureSummary>Edit the files yourself</DisclosureSummary>
+          {/* A plain section, not a disclosure: its parts carry their own disclosures. */}
+          <section
+            id="developer-guide"
+            class="fw-guide-developer"
+            aria-labelledby="developer-guide-title"
+          >
+            <p class="fw-eyebrow" id="developer-guide-title">
+              Edit the files yourself
+            </p>
             <div>
               <section
                 id="developer-start"
@@ -339,10 +346,6 @@ export const Docs: Component = () => {
                     </div>
                   </details>
                 </div>
-                <p>
-                  Try all three in <a href={`${EXAMPLE}#patterns`}>the example note</a>. The layers
-                  and ink use the curve drawn earlier on that page.
-                </p>
               </section>
 
               <section id="check" class="fw-guide-section" aria-labelledby="guide-check-title">
@@ -464,7 +467,7 @@ export const Docs: Component = () => {
                 </details>
               </section>
             </div>
-          </details>
+          </section>
         </article>
       </div>
       <Footer />

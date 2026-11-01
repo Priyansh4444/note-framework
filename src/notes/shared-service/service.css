@@ -92,7 +92,7 @@
 }
 .note-shared-service .ss-packet {
   fill: none;
-  stroke: #fff;
+  stroke: var(--bright);
   vector-effect: non-scaling-stroke;
 }
 .note-shared-service .ss-port-columns {

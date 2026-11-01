@@ -115,7 +115,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
     )!;
   });
   expect(await hit(order, 160, 140)).toBe("rear");
-  await order.getByRole("button", { name: "Bring the sun forward" }).click();
+  await order.getByRole("button", { name: "Sun in front" }).click();
   expect(await hit(order, 160, 140)).toBe("sun");
   expect(
     await page.evaluate(
@@ -124,7 +124,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
         document.querySelector('#svg-order [data-layer="sun"]'),
     ),
   ).toBe(true);
-  await order.getByRole("button", { name: "Put the sun behind" }).press("Enter");
+  await order.getByRole("button", { name: "Sun in front" }).press("Enter");
   expect(await hit(order, 160, 140)).toBe("rear");
   const geometry = () =>
     clip.locator("[data-scenery]").evaluate((node) => {
@@ -156,7 +156,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
       ),
     ),
   ).toBe(true);
-  await clip.getByRole("button", { name: "Use the window" }).press("Space");
+  await clip.getByRole("button", { name: "Show beyond the window" }).press("Space");
   expect(await hit(clip, 20, 50)).toBe(null);
 });
 
@@ -185,7 +185,7 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   await expect(peel).toHaveAttribute("data-nk-scene-active", "false");
   await peel.getByRole("button", { name: "Replay", exact: true }).click();
   await expect(peel).toHaveAttribute("data-nk-scene-time", "0");
-  const forward = page.locator("#svg-order").getByRole("button", { name: "Bring the sun forward" });
+  const forward = page.locator("#svg-order").getByRole("button", { name: "Sun in front" });
   await forward.focus();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Shift+Tab");
@@ -197,7 +197,7 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   expect(parseFloat(focus.width)).toBeGreaterThanOrEqual(2);
   await forward.press("Enter");
   await expect(
-    page.locator("#svg-order").getByRole("button", { name: "Put the sun behind" }),
+    page.locator("#svg-order").getByRole("button", { name: "Sun in front" }),
   ).toHaveAttribute("aria-pressed", "true");
   await page.emulateMedia({ forcedColors: "active" });
   await page

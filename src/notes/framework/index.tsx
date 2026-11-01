@@ -32,7 +32,7 @@ export const Masthead: Component<{ here?: "home" | "guide" | "studies" | "accoun
       <a href="/llms.txt">
         <ArrowLabel>For agents</ArrowLabel>
       </a>
-      <a class="fw-masthead-cta" href="/starter.zip" download="note-framework-starter.zip">
+      <a href="/starter.zip" download="note-framework-starter.zip">
         <ArrowLabel direction="down">Starter</ArrowLabel>
       </a>
     </nav>
@@ -87,24 +87,14 @@ const FrameworkHome: Component = () => {
             play with.
           </h1>
           <p class="fw-dek">
-            Give an agent one link. It writes a short, sourced note with figures your reader can
-            drag, play and check. You get a page you can share.
+            A short explanation. A picture you can change. Move a point below and see how the curve
+            follows.
           </p>
           <div class="fw-actions">
-            <a
-              class="fw-button fw-button-primary"
-              href="/starter.zip"
-              download="note-framework-starter.zip"
-            >
-              <ArrowLabel direction="down">Download the starter</ArrowLabel>
-            </a>
-            <a class="fw-button" href={EXAMPLE}>
-              <ArrowLabel direction="right">Read the example</ArrowLabel>
+            <a class="fw-button fw-button-primary" href="/docs">
+              <ArrowLabel direction="right">Make your first note</ArrowLabel>
             </a>
           </div>
-          <p class="fw-small">
-            SolidJS · TypeScript · KaTeX · local fonts. Your files, your hosting.
-          </p>
         </div>
         <HeroCurve />
       </section>

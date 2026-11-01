@@ -95,7 +95,8 @@ test("small refinement drags move smoothly inside a whole-piece stage", async ({
   const root = page.locator("#flatten-experiment"),
     slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
   await slider.scrollIntoViewIfNeeded();
-  await root.getByRole("button", { name: "17–24 pieces", exact: false }).click();
+  // The middle of five doubling bins is n = 4.
+  await root.getByRole("button", { name: "Double n", exact: true }).click();
   const grab = await railPoint(slider, 0.5);
   await page.mouse.move(grab.x, grab.y);
   await page.mouse.down();
@@ -105,14 +106,14 @@ test("small refinement drags move smoothly inside a whole-piece stage", async ({
     const point = await railPoint(slider, fraction);
     await page.mouse.move(point.x, point.y);
     values.push(Number(await slider.getAttribute("aria-valuenow")));
-    counts.push(Number(await root.locator(".bz-piece-count").textContent()));
+    counts.push(Number(await root.locator("figcaption .bz-count").textContent()));
   }
   expect(new Set(values).size).toBeGreaterThanOrEqual(4);
   expect(new Set(counts).size).toBe(1);
-  expect(counts[0]).toBe(17);
+  expect(counts[0]).toBe(4);
   await page.mouse.up();
-  const n = Number(await root.locator(".bz-piece-count").textContent());
-  expect(await root.locator(".bz-chord-dot[visibility=visible]").count()).toBe(n + 1);
+  const n = Number(await root.locator("figcaption .bz-count").textContent());
+  expect(await root.locator(".nk-dot[visibility=visible]").count()).toBe(n + 1);
 });
 
 test("rapid input keeps the contour root attached and one motion owner", async ({ page }) => {

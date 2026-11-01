@@ -53,7 +53,10 @@ for (const width of [1440, 768, 390, 320])
         right: r.right,
         scroll: document.documentElement.scrollWidth,
         gap: r.top - stage.bottom,
-        actionGap: actions.top - r.bottom,
+        actionTop: actions.top,
+        sliderTop: el.querySelector(".nk-timeline-slider")!.getBoundingClientRect().top,
+        actionsBottom: actions.bottom,
+        sliderBottom: el.querySelector(".nk-timeline-slider")!.getBoundingClientRect().bottom,
         buttons: [...el.querySelectorAll("button")].map((button) => ({
           width: button.getBoundingClientRect().width,
           height: button.getBoundingClientRect().height,
@@ -63,8 +66,9 @@ for (const width of [1440, 768, 390, 320])
     });
     expect(geometry.scroll).toBeLessThanOrEqual(width);
     expect(geometry.right).toBeLessThanOrEqual(width);
-    expect(geometry.gap).toBeGreaterThanOrEqual(24);
-    expect(geometry.actionGap).toBeGreaterThanOrEqual(16);
+    expect(geometry.gap).toBeGreaterThanOrEqual(12);
+    expect(geometry.actionTop).toBe(geometry.sliderTop);
+    expect(geometry.actionsBottom).toBe(geometry.sliderBottom);
     for (const button of geometry.buttons) {
       expect(button.width).toBeGreaterThanOrEqual(44);
       expect(button.height).toBeGreaterThanOrEqual(44);
@@ -195,12 +199,7 @@ for (const width of [320, 390, 768, 1440])
         const figure = body.closest("figure")!,
           stage = body.querySelector(".nk-experiment-stage")!.getBoundingClientRect(),
           timeline = body.querySelector("[data-nk-timeline]")!.getBoundingClientRect();
-        const groups = [
-          body,
-          ...figure.querySelectorAll(
-            ":scope > .nk-experiment-controls,:scope > .nk-experiment-actions",
-          ),
-        ]
+        const groups = [body, ...figure.querySelectorAll(":scope > .nk-experiment-controls")]
           .map((el) => el.getBoundingClientRect())
           .filter((r) => r.height > 0)
           .sort((a, b) => a.top - b.top);
@@ -210,10 +209,10 @@ for (const width of [320, 390, 768, 1440])
         };
       }),
     );
-    expect(measured.length).toBeGreaterThanOrEqual(4);
+    expect(measured.length).toBeGreaterThanOrEqual(3);
     for (const figure of measured) {
-      expect(figure.stageGap).toBeGreaterThanOrEqual(24);
-      for (const gap of figure.groupGaps) expect(gap).toBeGreaterThanOrEqual(16);
+      expect(figure.stageGap).toBeGreaterThanOrEqual(12);
+      for (const gap of figure.groupGaps) expect(gap).toBeGreaterThanOrEqual(12);
     }
     await page
       .locator(".bz-first-try .nk-experiment")

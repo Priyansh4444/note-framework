@@ -4,9 +4,8 @@ for (const width of [1280, 390, 320])
   test(`real animated figures have one position slider at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
-    await page.locator("#weights > details > summary").click();
     const figures = page.locator("figure[data-nk-scene]");
-    await expect(figures).toHaveCount(4);
+    await expect(figures).toHaveCount(3);
     for (const figure of await figures.all()) {
       // Point handles also expose slider roles, but edit independent control-point coordinates.
       await expect(
@@ -44,8 +43,10 @@ for (const width of [1280, 390, 320])
         .locator("circle")
         .last()
         .evaluate((el) => [Number(el.getAttribute("cx")), Number(el.getAttribute("cy"))]);
-      expect(point[0]).toBeCloseTo(40 + 320 * fraction, 6);
-      expect(point[1]).toBeCloseTo(160 - 280 * fraction * (1 - fraction), 6);
+      // Kit playback eases its ends: the value is (1 − cos πf) / 2 of the time fraction f.
+      const t = (1 - Math.cos(Math.PI * fraction)) / 2;
+      expect(point[0]).toBeCloseTo(40 + 320 * t, 6);
+      expect(point[1]).toBeCloseTo(160 - 280 * t * (1 - t), 6);
     }
 
     const input = page.locator("#interact .nk-parameter input[type=range]");
