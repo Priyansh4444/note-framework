@@ -1,4 +1,4 @@
-import { createMemo, For } from "solid-js";
+import { createComputed, createMemo, createSignal, For, on } from "solid-js";
 import {
   Axes,
   DiagramViewer,
@@ -30,22 +30,34 @@ const CHART = [1, 2, 4, 8, 16, 32] as const;
 const fmt = (v: number) => (v >= 10 ? v.toFixed(1) : v.toFixed(2));
 
 export function Flatten() {
-  const scene = createScene([{ label: "Double n", ms: 5000 }]);
-  scene.seek(scene.length / 2);
-  const stepTimes = [0, 1250, 2500, 3750, 5000];
+  const scene = createScene([{ label: "Double n", ms: 3200 }]);
   const prepared = createMemo(() => prepareRefinement(points()));
-  const frame = createMemo(() => prepared().frame((4 * scene.t()) / scene.length));
+  const [pacing, setPacing] = createSignal(prepared().pacing(scene.length));
+  scene.seek(pacing().stops[2]);
+  // Capture only at the beginning of normal playback. Geometry edits and seeks
+  // retain this schedule, so they cannot change phase beneath the reader's hand.
+  createComputed(
+    on(scene.playing, (playing) => {
+      if (playing && scene.t() === 0) setPacing(prepared().pacing(scene.length));
+    }),
+  );
+  const phase = () => pacing().phaseAt(scene.t());
+  const frame = createMemo(() => prepared().frame(phase()));
   const dotSlots = Array.from({ length: 17 }, (_, i) => i);
   const series = () => prepared().series;
   const settledCount = () => {
     const state = frame().state;
     return state.kind === "settled" ? state.n : undefined;
   };
+  const stationary = () => {
+    const state = frame().state;
+    return state.kind === "splitting" && state.stationary;
+  };
   const description = () => {
     const state = frame().state;
     return state.kind === "settled"
       ? `${state.n} straight ${state.n === 1 ? "piece" : "pieces"}`
-      : `Splitting ${state.from} ${state.from === 1 ? "piece" : "pieces"} into ${state.to}`;
+      : `Splitting ${state.from} → ${state.to} pieces`;
   };
   const hasCurvature = () => series()[0].error > 1e-10;
   // Include every positive sample and the proven bound; dragging cannot clip the data.
@@ -90,14 +102,15 @@ export function Flatten() {
         During a split, each new midpoint moves from its parent chord to the curve. The moving
         vertices are construction positions until the split finishes. If its progress is α, the
         polygon is (1 − α) times the old polygon plus α times the new one. The triangle inequality
-        gives the same blend of their proven bounds. The red line fades away during the middle of
-        each split, and when separated lobes tie, because the location of the largest gap can
-        switch; its endpoints always measure the current polygon.
+        gives the same blend of their proven bounds. A red gap marker is optional: it fades away
+        during the middle of each split, when separated lobes tie, and as the gap becomes too small
+        on screen. The largest-gap location can switch; its endpoints always measure the current
+        polygon.
       </p>
       <div hidden={!hasCurvature()}>
         <DiagramViewer
           viewBox={[0, 0, W, H]}
-          label="Log–log chart of largest gap against segment count: the measured gaps fall along a line of slope minus two, just under the bound."
+          label="Log–log chart of sampled largest gaps and proven error bounds against segment count."
         >
           <Axes
             grid
@@ -145,29 +158,39 @@ export function Flatten() {
       timeline="Subdivision playback"
       id="flatten-experiment"
       scene={scene}
-      stepTimes={stepTimes}
+      stepTimes={pacing().stops}
       question="How many little pieces make the line look smooth?"
       caption={
-        hasCurvature() ? (
-          <>
-            {settledCount() !== undefined ? (
+        <>
+          <span class="bz-refinement-status">
+            {hasCurvature() ? (
               <>
-                <b class="bz-count">{settledCount()}</b> straight{" "}
-                {settledCount() === 1 ? "piece follows" : "pieces follow"} the grey curve.
+                {settledCount() !== undefined ? (
+                  <>
+                    <b class="bz-count">{settledCount()}</b> straight{" "}
+                    {settledCount() === 1 ? "piece" : "pieces"}.
+                  </>
+                ) : (
+                  <>{description()}.</>
+                )}
+                {stationary() ? " Midpoint already lies on the chord." : ""}
               </>
             ) : (
-              <>{description()}: new midpoints move from chord to curve.</>
-            )}{" "}
-            Largest sampled gap: {fmt(frame().gap.error)} units. Red marks a visible gap.
-          </>
-        ) : (
-          <>Zero error: these points lie on a straight line, so one segment draws it exactly.</>
-        )
+              <>Zero error: one piece draws this straight line exactly.</>
+            )}
+          </span>
+          <span class="bz-refinement-gap">
+            Largest sampled gap: {fmt(frame().gap.error)} units.
+          </span>
+        </>
       }
       details={DETAILS}
     >
       <div
         data-refinement-state={frame().state.kind}
+        data-refinement-phase={phase()}
+        data-refinement-stops={JSON.stringify(pacing().stops)}
+        data-refinement-stationary={stationary()}
         style={{ "max-width": "560px", margin: "0 auto" }}
       >
         <DiagramViewer
@@ -214,12 +237,16 @@ function GapMarker(props: {
   curved: boolean;
 }) {
   const { u } = useDiagram();
-  const visible = () => props.curved && props.error / u() >= 3 && props.opacity > 0;
+  const opacity = () => {
+    const size = Math.max(0, Math.min(1, (props.error / u() - 3) / 3));
+    return props.opacity * size * size * (3 - 2 * size);
+  };
+  const visible = () => props.curved && opacity() > 0;
   return (
     <g
       class="nk-red"
       data-gap-marker
-      opacity={props.opacity}
+      opacity={opacity()}
       visibility={visible() ? "visible" : "hidden"}
     >
       <line

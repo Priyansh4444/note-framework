@@ -3,7 +3,7 @@ import { chordBound, lerp, pointAt, type Cubic, type Point } from "./model";
 type Count = 1 | 2 | 4 | 8 | 16;
 type State =
   | { kind: "settled"; n: Count }
-  | { kind: "splitting"; from: Count; to: Count; alpha: number };
+  | { kind: "splitting"; from: Count; to: Count; alpha: number; stationary: boolean };
 type Gap = { error: number; at: readonly [Point, Point] };
 type Frame = {
   state: State;
@@ -16,6 +16,11 @@ type Frame = {
 
 const COUNTS = [1, 2, 4, 8, 16] as const;
 const GRID = 1024;
+const STATIONARY_TRAVEL = 1e-8;
+type Pacing = {
+  stops: readonly [number, number, number, number, number];
+  phaseAt: (ms: number) => number;
+};
 const slots = <T>(f: (index: number) => T): readonly T[] =>
   Array.from({ length: 17 }, (_, i) => f(i));
 const ease = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : (1 - Math.cos(Math.PI * u)) / 2);
@@ -85,6 +90,13 @@ export function prepareRefinement(points: Cubic) {
     dotOpacity: slots((j) => (n < 16 && j % (16 / n) === 0 ? 1 : 0)),
     markerOpacity: levels[k].measurement.ambiguous ? 0 : 1,
   }));
+  const travel = COUNTS.slice(0, 4).map((_, k) =>
+    Math.max(
+      ...levels[k].vertices.map((p, j) =>
+        Math.hypot(p[0] - levels[k + 1].vertices[j][0], p[1] - levels[k + 1].vertices[j][1]),
+      ),
+    ),
+  );
 
   return {
     series: levels.map((level) => ({
@@ -92,6 +104,42 @@ export function prepareRefinement(points: Cubic) {
       error: level.measurement.gap.error,
       bound: level.bound,
     })),
+    /** Presentation schedule for this snapshot, never an independent clock. */
+    pacing(length: number): Pacing {
+      const reserves = travel.map((distance) => (distance <= STATIONARY_TRAVEL ? 120 : 180));
+      const reserved = reserves.reduce((sum, ms) => sum + ms, 0);
+      if (!Number.isFinite(length) || length < reserved)
+        throw new Error(`Refinement pacing needs at least ${reserved} finite milliseconds.`);
+      const totalTravel = travel.reduce(
+        (sum, distance) => sum + (distance <= STATIONARY_TRAVEL ? 0 : distance),
+        0,
+      );
+      const durations = travel.map((distance, k) =>
+        totalTravel === 0
+          ? length / 4
+          : reserves[k] +
+            (distance <= STATIONARY_TRAVEL ? 0 : ((length - reserved) * distance) / totalTravel),
+      );
+      const stops: Pacing["stops"] = [
+        0,
+        durations[0],
+        durations[0] + durations[1],
+        durations[0] + durations[1] + durations[2],
+        length,
+      ];
+      return {
+        stops,
+        phaseAt(ms) {
+          if (!Number.isFinite(ms)) throw new Error("Refinement time must be finite.");
+          const bounded = Math.max(0, Math.min(length, ms));
+          for (let k = 0; k < 4; k++) {
+            if (bounded <= stops[k + 1])
+              return k + (bounded - stops[k]) / (stops[k + 1] - stops[k]);
+          }
+          return 4;
+        },
+      };
+    },
     frame(phase: number): Frame {
       if (!Number.isFinite(phase)) throw new Error("Refinement phase must be finite.");
       const bounded = Math.max(0, Math.min(4, phase));
@@ -103,7 +151,13 @@ export function prepareRefinement(points: Cubic) {
         to = levels[k + 1];
       const measurement = measure(from.grid, to.grid, alpha);
       return {
-        state: { kind: "splitting", from: COUNTS[k], to: COUNTS[k + 1], alpha },
+        state: {
+          kind: "splitting",
+          from: COUNTS[k],
+          to: COUNTS[k + 1],
+          alpha,
+          stationary: travel[k] <= STATIONARY_TRAVEL,
+        },
         vertices: slots((j) => [
           lerp(from.vertices[j][0], to.vertices[j][0], alpha),
           lerp(from.vertices[j][1], to.vertices[j][1], alpha),

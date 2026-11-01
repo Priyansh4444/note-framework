@@ -167,6 +167,71 @@ test("the last interval keeps moving until the exact sixteen-piece endpoint", ()
   expect(prepared.frame(3.8).vertices).not.toEqual(prepared.frame(4).vertices);
 });
 
+test("travel-aware pacing has five exact invertible stops and pure reverse seeks", () => {
+  for (const p of shapes) {
+    const prepared = prepareRefinement(p);
+    const pacing = prepared.pacing(3200);
+    expect(pacing.stops).toHaveLength(5);
+    expect(pacing.stops[0]).toBe(0);
+    expect(pacing.stops[4]).toBe(3200);
+    for (let stage = 0; stage <= 4; stage++) {
+      expect(pacing.phaseAt(pacing.stops[stage])).toBe(stage);
+      expect(prepared.frame(pacing.phaseAt(pacing.stops[stage])).state).toEqual({
+        kind: "settled",
+        n: counts[stage],
+      });
+      if (stage === 4) continue;
+      const start = pacing.stops[stage],
+        end = pacing.stops[stage + 1];
+      expect(end).toBeGreaterThan(start);
+      for (const fraction of [0.1, 0.5, 0.9]) {
+        const ms = lerp(start, end, fraction);
+        expect(pacing.phaseAt(ms)).toBeCloseTo(stage + fraction, 12);
+        pacing.phaseAt(3200);
+        pacing.phaseAt(0);
+        expect(pacing.phaseAt(ms)).toBeCloseTo(stage + fraction, 12);
+      }
+    }
+    expect(pacing.phaseAt(-1)).toBe(0);
+    expect(pacing.phaseAt(4000)).toBe(4);
+    for (const ms of [NaN, Infinity, -Infinity]) expect(() => pacing.phaseAt(ms)).toThrow();
+    for (const length of [0, -1, NaN, Infinity]) expect(() => prepared.pacing(length)).toThrow();
+  }
+});
+
+test("pacing compresses the S bend's stationary opening and tiny late arch splits", () => {
+  const bend = prepareRefinement(PRESETS[1].points);
+  expect(bend.frame(0.5).state).toMatchObject({ kind: "splitting", stationary: true });
+  expect(bend.frame(1.5).state).toMatchObject({ kind: "splitting", stationary: false });
+  expect(bend.pacing(3200).stops[1]).toBe(120);
+  const arch = prepareRefinement(START),
+    stops = arch.pacing(3200).stops;
+  const travel = counts.slice(0, 4).map((_, stage) => {
+    const from = arch.frame(stage).vertices,
+      to = arch.frame(stage + 1).vertices;
+    return Math.max(...from.map((p, i) => Math.hypot(p[0] - to[i][0], p[1] - to[i][1])));
+  });
+  const rate = (stage: number) => (stops[stage + 1] - stops[stage] - 180) / travel[stage];
+  for (let stage = 1; stage < 4; stage++) {
+    expect(rate(stage)).toBeCloseTo(rate(0), 10);
+    expect(stops[stage + 1] - stops[stage]).toBeLessThan(stops[stage] - stops[stage - 1]);
+  }
+  expect(stops[4] - stops[3]).toBeLessThan(250);
+});
+
+test("zero-travel shapes retain four equal finite lessons with honest stationary state", () => {
+  for (const points of [PRESETS[2].points, degenerate]) {
+    const prepared = prepareRefinement(points),
+      pacing = prepared.pacing(3200);
+    expect(pacing.stops).toEqual([0, 800, 1600, 2400, 3200]);
+    for (let stage = 0; stage < 4; stage++)
+      expect(prepared.frame(stage + 0.5).state).toMatchObject({
+        kind: "splitting",
+        stationary: true,
+      });
+  }
+});
+
 test("only active subdivision knots appear, with a quiet eight-to-sixteen fade", () => {
   const prepared = prepareRefinement(START);
   for (const phase of [0, 0.3, 1, 1.6, 2, 2.5, 3, 3.6, 4]) {

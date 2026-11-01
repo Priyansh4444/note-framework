@@ -160,6 +160,9 @@ test("line mixing and subdivision keep their measured models during playback", a
         lineEnd: end ? [Number(end.getAttribute("x2")), Number(end.getAttribute("y2"))] : null,
         chords: chordDots.length,
         state: el.querySelector("[data-refinement-state]")?.getAttribute("data-refinement-state"),
+        phase: Number(
+          el.querySelector("[data-refinement-phase]")?.getAttribute("data-refinement-phase"),
+        ),
         caption: el.querySelector("figcaption")?.textContent,
         vertices: el.querySelectorAll("[data-refinement-dot]").length,
       };
@@ -172,7 +175,7 @@ test("line mixing and subdivision keep their measured models during playback", a
       expect(model.lineEnd).toEqual(model.point);
     } else {
       expect(model.position).toBeCloseTo(model.t * model.length, 6);
-      const phase = model.t * 4;
+      const phase = model.phase;
       const n = 2 ** Math.floor(phase);
       expect(model.vertices).toBe(17);
       if (Number.isInteger(phase)) {
@@ -270,11 +273,13 @@ test("curved refinement names splits honestly and keeps endpoints and keyboard",
   await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
   const root = page.locator("#flatten-experiment");
   const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
-  const LENGTH = 5000;
+  const LENGTH = Number(await slider.getAttribute("aria-valuemax"));
   async function check(fraction: number) {
     const time = Number(await slider.getAttribute("aria-valuenow"));
     expect(time / LENGTH).toBeCloseTo(fraction, 4);
-    const phase = (4 * time) / LENGTH;
+    const phase = Number(
+      await root.locator("[data-refinement-phase]").getAttribute("data-refinement-phase"),
+    );
     const n = 2 ** Math.floor(phase);
     if (Number.isInteger(phase)) {
       await expect(root.locator("figcaption .bz-count")).toHaveText(String(n));

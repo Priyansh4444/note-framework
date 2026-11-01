@@ -211,7 +211,7 @@ export default function Demo() {
             Screens, plotters and cutters draw straight lines, so renderers{" "}
             <T k="flatten">flatten</T> curves first. The simplest way picks <Tex tex="n+1" /> evenly
             spaced values of <Tex tex="t" /> from 0 to 1 and joins their curve points with straight
-            pieces. Play to add pieces and watch the largest gap, in red, shrink.
+            pieces. Play to split pieces and move new midpoints onto the curve.
           </p>
           <Flatten />
           <FlattenSummary />

@@ -95,7 +95,7 @@ test("small refinement drags move the polygon continuously inside a split", asyn
   const root = page.locator("#flatten-experiment"),
     slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
   await slider.scrollIntoViewIfNeeded();
-  // Halfway through playback starts the four-to-eight subdivision.
+  // A small drag must update the same continuous split, without a queued tween.
   await root.getByRole("button", { name: "Double n", exact: true }).click();
   const grab = await railPoint(slider, 0.5);
   await page.mouse.move(grab.x, grab.y);
@@ -107,12 +107,15 @@ test("small refinement drags move the polygon continuously inside a split", asyn
     await page.mouse.move(point.x, point.y);
     values.push(Number(await slider.getAttribute("aria-valuenow")));
     paths.push(await root.locator("[data-refinement-path]").getAttribute("d"));
-    await expect(root.locator("figcaption")).toContainText("Splitting 4 pieces into 8");
+    await expect(root.locator("[data-refinement-state]")).toHaveAttribute(
+      "data-refinement-state",
+      "splitting",
+    );
   }
   expect(new Set(values).size).toBeGreaterThanOrEqual(4);
   expect(new Set(paths).size).toBeGreaterThanOrEqual(4);
   await page.mouse.up();
-  expect(await root.locator(".nk-dot[visibility=visible]").count()).toBe(9);
+  await expect(root.locator("figcaption .bz-count")).toHaveCount(0);
   await page.waitForTimeout(80);
   expect(await root.locator("[data-refinement-path]").getAttribute("d")).toBe(paths.at(-1));
 });
