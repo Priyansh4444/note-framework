@@ -1,0 +1,155 @@
+import { expect, test, type Locator } from "./browser-test";
+
+async function seek(slider: Locator, time: number) {
+  await slider.press("Home");
+  if (time === 5000) return slider.press("End");
+  for (let i = 0; i < time / 50; i++) await slider.press("ArrowRight");
+  await expect(slider).toHaveAttribute("aria-valuenow", String(time));
+}
+
+async function vertices(root: Locator) {
+  return root.locator("[data-refinement-path]").evaluate((el) => {
+    const coordinates = (el.getAttribute("d")!.match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi) ?? []).map(
+      Number,
+    );
+    return Array.from({ length: coordinates.length / 2 }, (_, i) => [
+      coordinates[i * 2],
+      coordinates[i * 2 + 1],
+    ]);
+  });
+}
+
+const displacement = (a: number[][], b: number[][]) =>
+  Math.max(...a.map((p, i) => Math.hypot(p[0] - b[i][0], p[1] - b[i][1])));
+
+for (const width of [390, 1440])
+  test(`subdivision unfolds one continuous retained polygon at ${width}px`, async ({ page }) => {
+    test.setTimeout(90_000);
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    const root = page.locator("#flatten-experiment");
+    const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+    await expect(root.locator(".bz-count")).toHaveText("4");
+    const retained = await root.evaluateHandle((el) => [
+      el.querySelector("[data-refinement-path]"),
+      ...el.querySelectorAll("[data-refinement-dot]"),
+    ]);
+    await seek(slider, 0);
+    const first = await vertices(root);
+    expect(first).toHaveLength(17);
+    await expect(root.locator("[data-refinement-dot]")).toHaveCount(17);
+    await seek(slider, 500);
+    const middle = await vertices(root);
+    expect(
+      displacement(first, middle),
+      "geometry must move within the former static bin",
+    ).toBeGreaterThan(1);
+    await expect(root.locator("figcaption")).toContainText(/splitting/i);
+    await seek(slider, 950);
+    const left = await vertices(root);
+    await seek(slider, 1000);
+    expect(
+      displacement(left, await vertices(root)),
+      "no 1-second polygon replacement",
+    ).toBeLessThan(20);
+    await seek(slider, 1200);
+    const beforeStop = await vertices(root);
+    await seek(slider, 1250);
+    const atStop = await vertices(root);
+    expect(displacement(beforeStop, atStop)).toBeLessThan(3);
+    await expect(root.locator(".bz-count")).toHaveText("2");
+    await seek(slider, 1300);
+    expect(displacement(atStop, await vertices(root))).toBeLessThan(3);
+    await seek(slider, 500);
+    expect(await vertices(root), "backward seek must reproduce the identical frame").toEqual(
+      middle,
+    );
+    await seek(slider, 4500);
+    const lastMiddle = await vertices(root);
+    await seek(slider, 5000);
+    expect(
+      displacement(lastMiddle, await vertices(root)),
+      "last stage must keep refining",
+    ).toBeGreaterThan(0.01);
+    await expect(root.locator(".bz-count")).toHaveText("16");
+    expect(
+      await root.evaluate((el, original) => {
+        const current = [
+          el.querySelector("[data-refinement-path]"),
+          ...el.querySelectorAll("[data-refinement-dot]"),
+        ];
+        return current.every((node, i) => node === original[i]);
+      }, retained),
+    ).toBe(true);
+    await retained.dispose();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+    await root.screenshot({ path: test.info().outputPath(`refinement-${width}.png`) });
+  });
+
+test("the visible in-between polygon owns the measured gap and pause freezes it", async ({
+  page,
+}) => {
+  await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+  const root = page.locator("#flatten-experiment");
+  const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+  await seek(slider, 650);
+  const measured = await root.evaluate((el) => {
+    const numbers = el
+      .querySelector("[data-refinement-path]")!
+      .getAttribute("d")!
+      .match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi)!
+      .map(Number);
+    const vs = Array.from({ length: 17 }, (_, i) => [numbers[2 * i], numbers[2 * i + 1]]);
+    const controls = [...el.querySelectorAll<SVGCircleElement>(".nk-handle-hit")].map((n) => [
+      n.cx.baseVal.value,
+      n.cy.baseVal.value,
+    ]);
+    const mix = (a: number[], b: number[], t: number) => a.map((x, i) => (1 - t) * x + t * b[i]);
+    const curve = (t: number) => {
+      let row = controls;
+      while (row.length > 1) row = row.slice(1).map((b, i) => mix(row[i], b, t));
+      return row[0];
+    };
+    let largest = 0;
+    for (let i = 0; i <= 1024; i++) {
+      const u = i / 64;
+      const k = Math.min(15, Math.floor(u));
+      const q = curve(i / 1024);
+      const p = mix(vs[k], vs[k + 1], u - k);
+      largest = Math.max(largest, Math.hypot(q[0] - p[0], q[1] - p[1]));
+    }
+    const line = el.querySelector<SVGLineElement>("[data-gap-marker] line")!;
+    return {
+      largest,
+      witness: Math.hypot(
+        line.x2.baseVal.value - line.x1.baseVal.value,
+        line.y2.baseVal.value - line.y1.baseVal.value,
+      ),
+    };
+  });
+  expect(measured.witness).toBeCloseTo(measured.largest, 1);
+  await root.locator('[data-nk-scene-action="play"]').click();
+  await expect(root.locator('[data-nk-scene-action="pause"]')).toBeVisible();
+  await page.waitForTimeout(170);
+  await root.locator('[data-nk-scene-action="pause"]').click();
+  const held = await vertices(root);
+  await page.waitForTimeout(180);
+  expect(await vertices(root)).toEqual(held);
+});
+
+test("reduced motion keeps all five exact subdivision lessons", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+  const root = page.locator("#flatten-experiment");
+  const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+  await seek(slider, 0);
+  for (const n of [1, 2, 4, 8, 16]) {
+    await expect(root.locator(".bz-count")).toHaveText(String(n));
+    if (n !== 16) await root.getByRole("button", { name: "Next step", exact: true }).click();
+  }
+  await root.getByRole("button", { name: "Replay", exact: true }).click();
+  await expect(root.locator(".bz-count")).toHaveText("1");
+});
