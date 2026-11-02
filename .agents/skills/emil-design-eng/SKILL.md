@@ -16,3 +16,5 @@ Before adding motion, name its job: acknowledge an action, preserve continuity, 
 - Choose morph for correspondence, layers for contributions, ink for material. Connect each to the subject's model; do not append a component gallery.
 
 Verify actual intermediate frames, rapid reversal, clipboard failure, keyboard, reduced motion and 320/390px layouts. A status sentence, CSS declaration or static screenshot alone does not establish motion.
+
+Refresh renderer-specific snapshots on the named renderer, or inspect its CI captures. Never relabel local screenshots as Ubuntu references. Keep comparison thresholds intact.
