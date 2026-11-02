@@ -1,6 +1,6 @@
 # Unfold subdivision instead of replacing polygons
 
-Status: TODO. Base commit d0e9fea. High priority, explanatory mathematical motion.
+Status: implemented and independently approved at 4ecd915; release verification follows. Base commit d0e9fea. High priority, explanatory mathematical motion.
 
 ## Grounding
 
@@ -81,3 +81,12 @@ Sol rated its sampled educational figure10on all five axes. DeepSeek then suppli
 Fix the representation: a split from n→2n sweeps, for every coarse chord, the filled triangle [B(i/n),B((i+.5)/n),B((i+1)/n)]. Its union contains the entire moving white path for every alpha, not just sampled instants. Pass15filled triangles plus64true-curve sample segments to Handles. Distance is zero inside a nondegenerate triangle, otherwise the nearest edge distance; degenerate triangles use edge distances. A boundary-only quad graft does not establish avoidance of its interior and was therefore not taken. Keep memoization per shape/scale, so time cannot move labels. Use a conservative glyph/subscript clearance and retain bounded candidate fallback; if every candidate is obstructed, best clearance is not a universal guarantee. Actual real-glyph-box tests remain the acceptance surface.
 
 Also derive the Straight caption and accessible diagram description from the same status string (no visible1/announced8 mismatch). Preserve exact timeline stops/model/count metadata; no geometry, schedule, clock, dependencies or other figure behavior changes. Add the non-preset pose to browser guards at320/390/1440, with constant label coordinates and seven seek states, plus Straight caption/ARIA agreement at four widths. Rerun focused guards, broad affected checks/quality/export/audit and request fresh Sol High and DeepSeek closure; the old10rating must not be represented as approval of unreviewed fixes.
+
+
+## Accepted closure
+
+Sol High independently approved `4ecd915` with 10/10 on all five scoped axes: 14 cases / 98 seek states, 15 Straight description checks and 12 actual-helper checks. DeepSeek independently closed F1/F2 with a containment proof and real-pointer browser evidence at 320/390px, including the reported intermediate phase. Scores and sampled checks do not establish universal clearance: bounded candidates can be exhausted. No blocker remains in the reviewed change.
+
+Root verification passed: 273 source tests, 49 affected browser checks, a fresh independent source export/install/typecheck/dead-code/public build, and an opaque-note audit of 63 states / 31,726 checks with no findings or unverified states. Full CI run 41392266849 passed on `4ecd915`. Preserve concrete evidence rather than averaging provider scores. Antigravity's overstated coverage is excluded; Grok was unavailable (balance), Iceman Free unavailable (expired key). No fresh Opus approval is claimed.
+
+The reader contract records the transferable swept-area, glyph-box and shared-status lesson. Final documentation and portable-skill exports are verified separately; no application code changed after the reviewed source. Deployment targets the separate public beta Worker only. CS164 and the original School framework remain unchanged.
