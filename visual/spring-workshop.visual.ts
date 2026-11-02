@@ -189,3 +189,73 @@ test("reduced motion and offscreen pauses remain usable; example return navigati
     expect(align.right).toBeCloseTo(align.hright, 0);
   }
 });
+
+test("a batched leave/return delivery cannot freeze the released carriage", async ({
+  page,
+}, info) => {
+  await page.addInitScript(() => {
+    const Native = window.IntersectionObserver;
+    const visibility = {
+      hold: false,
+      latest: undefined as boolean | undefined,
+      entries: [] as boolean[],
+      flush: undefined as (() => void) | undefined,
+    };
+    Reflect.set(window, "springVisibility", visibility);
+    window.IntersectionObserver = class extends Native {
+      constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+        const pending: IntersectionObserverEntry[] = [];
+        super((entries, observer) => {
+          const spring = entries.filter((entry) => entry.target.id === "spring-instrument");
+          if (spring.length) {
+            visibility.latest = spring.at(-1)!.isIntersecting;
+            visibility.entries.push(...spring.map((entry) => entry.isIntersecting));
+            if (visibility.hold) {
+              pending.push(...entries);
+              visibility.flush = () => callback(pending.splice(0), observer);
+              return;
+            }
+          }
+          callback(entries, observer);
+        }, options);
+      }
+    };
+  });
+  await open(page, 320);
+  const root = page.locator("#spring-instrument"),
+    grip = page.getByRole("slider", { name: "Carriage displacement" });
+  await root.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.waitForFunction(() => Reflect.get(window, "springVisibility").latest === true);
+  await grip.press("End");
+  await grip.press("ArrowLeft");
+  expect((await pose(page)).x).toBe(28);
+  await page.evaluate(() => {
+    const visibility = Reflect.get(window, "springVisibility");
+    visibility.entries = [];
+    visibility.hold = true;
+    // Make a genuine offscreen position available even when references are collapsed.
+    const pad = document.createElement("div");
+    pad.style.height = "2000px";
+    document.body.append(pad);
+    scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
+  });
+  await page.waitForFunction(() => Reflect.get(window, "springVisibility").entries.includes(false));
+  await root.evaluate((el) => el.scrollIntoView({ block: "center", behavior: "instant" }));
+  await page.waitForFunction(() => Reflect.get(window, "springVisibility").latest === true);
+  const delivery = await page.evaluate(() => {
+    const visibility = Reflect.get(window, "springVisibility");
+    visibility.hold = false;
+    visibility.flush();
+    return visibility.entries;
+  });
+  expect(delivery[0]).toBe(false);
+  expect(delivery.at(-1)).toBe(true);
+  await info.attach("native-intersection-delivery", {
+    body: JSON.stringify(delivery),
+    contentType: "application/json",
+  });
+  await grip.press(" ");
+  await expect(root).toHaveAttribute("data-active", "true");
+  await expect.poll(async () => (await pose(page)).t).toBeGreaterThan(0);
+  await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.05);
+});

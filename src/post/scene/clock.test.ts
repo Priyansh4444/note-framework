@@ -167,7 +167,9 @@ test("active reacts immediately to hidden and offscreen gates without a clock fr
   });
   // Recreate with the event-capable document installed.
   dispose?.();
-  let intersection: (entries: { isIntersecting: boolean }[]) => void = () => {};
+  let intersection: (
+    entries: { target: HTMLElement; time: number; isIntersecting: boolean }[],
+  ) => void = () => {};
   install(
     "IntersectionObserver",
     class {
@@ -182,13 +184,14 @@ test("active reacts immediately to hidden and offscreen gates without a clock fr
     dispose = cleanup;
     return createScene([{ label: "Move", ms: 1000 }]);
   });
-  gated.attach({} as HTMLElement);
+  const target = {} as HTMLElement;
+  gated.attach(target);
   gated.play();
   expect(gated.active()).toBe(true);
-  intersection([{ isIntersecting: false }]);
+  intersection([{ target, time: 1, isIntersecting: false }]);
   expect(gated.playing()).toBe(true);
   expect(gated.active()).toBe(false);
-  intersection([{ isIntersecting: true }]);
+  intersection([{ target, time: 2, isIntersecting: true }]);
   expect(gated.active()).toBe(true);
   Object.assign(document, { hidden: true });
   listeners.get("visibilitychange")!();
@@ -203,3 +206,48 @@ test("active reacts immediately to hidden and offscreen gates without a clock fr
   expect(listeners.size).toBe(0);
   expect(scene.playing()).toBe(false);
 });
+
+for (const newestVisible of [true, false]) {
+  test(`the newest intersection in a delivery ${newestVisible ? "resumes" : "suspends"} the clock`, () => {
+    const scene = setup();
+    let intersection: (
+      entries: { target: HTMLElement; time: number; isIntersecting: boolean }[],
+    ) => void = () => {};
+    install(
+      "IntersectionObserver",
+      class {
+        constructor(callback: typeof intersection) {
+          intersection = callback;
+        }
+        observe() {}
+        disconnect() {}
+      },
+    );
+    const target = {} as HTMLElement;
+    scene.attach(target);
+    scene.play();
+    intersection([
+      { target, time: 1, isIntersecting: !newestVisible },
+      { target, time: 2, isIntersecting: newestVisible },
+    ]);
+    expect(scene.playing()).toBe(true);
+    expect(scene.active()).toBe(newestVisible);
+    frame(116);
+    expect(scene.t()).toBe(newestVisible ? 16 : 0);
+
+    // Timestamps determine freshness even if a delivery is not in time order.
+    clockSpy!.mockReturnValue(116);
+    intersection([
+      { target, time: 4, isIntersecting: !newestVisible },
+      { target, time: 3, isIntersecting: newestVisible },
+      { target: {} as HTMLElement, time: 5, isIntersecting: newestVisible },
+    ]);
+    expect(scene.active()).toBe(!newestVisible);
+    frame(132);
+    expect(scene.t()).toBe(16);
+
+    intersection([]);
+    intersection([{ target: {} as HTMLElement, time: 6, isIntersecting: newestVisible }]);
+    expect(scene.active()).toBe(!newestVisible);
+  });
+}
