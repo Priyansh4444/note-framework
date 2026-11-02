@@ -264,6 +264,7 @@ test("phone footer keeps every status clear of both buttons", async ({ page }) =
   await open(page, 320);
   const root = page.locator("#spring-instrument"),
     grip = page.getByRole("slider", { name: "Carriage displacement" });
+  let initialHeight: number | undefined;
   const checkStatus = async (text: string) => {
     await expect(root.locator(".spring-footer > span")).toHaveText(text);
     const measure = await root.locator(".spring-footer").evaluate((footer) => {
@@ -274,6 +275,7 @@ test("phone footer keeps every status clear of both buttons", async ({ page }) =
         el.getBoundingClientRect(),
       );
       return {
+        height: footer.closest("figure")!.getBoundingClientRect().height,
         lines: words.length,
         inside: words.every((r) => r.left >= 0 && r.right <= innerWidth),
         clearances: words.flatMap((word) =>
@@ -286,6 +288,8 @@ test("phone footer keeps every status clear of both buttons", async ({ page }) =
         ),
       };
     });
+    initialHeight ??= measure.height;
+    expect(Math.abs(measure.height - initialHeight)).toBeLessThan(1);
     expect(measure.lines).toBe(1);
     expect(measure.inside).toBe(true);
     expect(Math.min(...measure.clearances)).toBeGreaterThanOrEqual(8);
