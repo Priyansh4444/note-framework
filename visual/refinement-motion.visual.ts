@@ -243,3 +243,41 @@ test("gap ink fades to zero before its size cutoff instead of flashing", async (
   }
   expect(nearCutoff).toBeGreaterThan(0);
 });
+
+for (const width of [320, 390, 768, 1440])
+  test(`refinement caption stays compact and aligned at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    const root = page.locator("#flatten-experiment");
+    const measure = () =>
+      root.evaluate((el) => {
+        const caption = el.querySelector("figcaption")!.getBoundingClientRect();
+        const status = el.querySelector(".bz-refinement-status")!.getBoundingClientRect();
+        const gap = el.querySelector(".bz-refinement-gap")!.getBoundingClientRect();
+        return {
+          height: caption.height,
+          rowGap: gap.top - status.bottom,
+          sideGap: gap.left - status.right,
+          left: caption.left,
+          right: caption.right,
+        };
+      });
+    const original = await measure();
+    expect(original.height).toBeLessThanOrEqual(width > 900 ? 23 : 68);
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.getByRole("radio", { name: "S bend", exact: true }).click();
+    const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+    await slider.press("Home");
+    await slider.press("ArrowRight");
+    await expect(root.locator(".bz-refinement-status")).toContainText("already lies on the chord");
+    const stationary = await measure();
+    expect(stationary.height).toBeCloseTo(original.height, 2);
+    if (width > 900) expect(stationary.sideGap).toBeGreaterThanOrEqual(15);
+    else expect(Math.abs(stationary.rowGap)).toBeLessThanOrEqual(1);
+    expect(stationary.left).toBeGreaterThanOrEqual(0);
+    expect(stationary.right).toBeLessThanOrEqual(width);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
+      width,
+    );
+  });

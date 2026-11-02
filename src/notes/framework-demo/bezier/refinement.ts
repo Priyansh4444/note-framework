@@ -146,7 +146,9 @@ export function prepareRefinement(points: Cubic) {
       if (Number.isInteger(bounded)) return settled[bounded];
       const k = Math.floor(bounded),
         u = bounded - k,
-        alpha = ease(u);
+        // Geometry advances in proportion to scene time. Easing every split to
+        // rest makes a continuous construction feel like repeated starts/stops.
+        alpha = u;
       const from = levels[k],
         to = levels[k + 1];
       const measurement = measure(from.grid, to.grid, alpha);

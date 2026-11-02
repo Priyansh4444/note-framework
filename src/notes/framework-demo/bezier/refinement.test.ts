@@ -147,16 +147,28 @@ test("reverse seeks reproduce exactly and fixed-grid maxima remain continuous at
   for (const p of shapes) {
     const prepared = prepareRefinement(p);
     for (const stage of [1, 2, 3]) {
-      const before = prepared.frame(stage - 0.0001),
-        after = prepared.frame(stage + 0.0001);
-      for (let j = 0; j <= 16; j++)
-        expect(
-          Math.hypot(
-            before.vertices[j][0] - after.vertices[j][0],
-            before.vertices[j][1] - after.vertices[j][1],
-          ),
-        ).toBeLessThan(0.00001);
-      expect(Math.abs(before.gap.error - after.gap.error)).toBeLessThan(0.00001);
+      const delta = 0.0001;
+      const before = prepared.frame(stage - delta),
+        after = prepared.frame(stage + delta);
+      const at = prepared.frame(stage).vertices;
+      const left = prepared.frame(stage - 1).vertices;
+      const right = prepared.frame(stage + 1).vertices;
+      let maximumDisplacement = 0;
+      for (let j = 0; j <= 16; j++) {
+        const distance = Math.hypot(
+          before.vertices[j][0] - after.vertices[j][0],
+          before.vertices[j][1] - after.vertices[j][1],
+        );
+        const travel =
+          Math.hypot(left[j][0] - at[j][0], left[j][1] - at[j][1]) +
+          Math.hypot(right[j][0] - at[j][0], right[j][1] - at[j][1]);
+        expect(distance).toBeLessThanOrEqual(delta * travel + 1e-9);
+        maximumDisplacement = Math.max(maximumDisplacement, distance);
+      }
+      // A maximum distance is Lipschitz in its polygon: no fabricated readout jump.
+      expect(Math.abs(before.gap.error - after.gap.error)).toBeLessThanOrEqual(
+        maximumDisplacement + 1e-9,
+      );
     }
   }
 });
@@ -277,4 +289,18 @@ test("finite seeks clamp to the scene, invalid phases and control points fail at
   expect(prepared.frame(5)).toEqual(prepared.frame(4));
   for (const phase of [NaN, Infinity, -Infinity]) expect(() => prepared.frame(phase)).toThrow();
   expect(() => prepareRefinement([[NaN, 0], START[1], START[2], START[3]])).toThrow();
+});
+
+test("visible midpoint travel advances steadily instead of easing to a halt at every split", () => {
+  const prepared = prepareRefinement(START);
+  for (let stage = 0; stage < 4; stage++) {
+    const knot = 16 / 2 ** (stage + 1);
+    const a = prepared.frame(stage + 0.1).vertices[knot];
+    const b = prepared.frame(stage + 0.2).vertices[knot];
+    const c = prepared.frame(stage + 0.3).vertices[knot];
+    const first = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    const second = Math.hypot(c[0] - b[0], c[1] - b[1]);
+    expect(first).toBeGreaterThan(0);
+    expect(first).toBeCloseTo(second, 10);
+  }
 });

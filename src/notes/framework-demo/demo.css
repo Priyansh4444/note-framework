@@ -89,6 +89,14 @@
   font-variant-numeric: tabular-nums;
 }
 
+.note-framework-demo #flatten-experiment > figcaption {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  column-gap: 1rem;
+  align-content: start;
+  min-height: 1.5em;
+}
+
 .note-framework-demo .bz-refinement-gap {
   display: block;
   font-variant-numeric: tabular-nums;
@@ -96,11 +104,11 @@
 
 .note-framework-demo .bz-refinement-status {
   display: block;
-  min-height: 3em;
 }
 
-@media (max-width: 500px) {
-  .note-framework-demo .bz-refinement-status {
+@media (max-width: 900px) {
+  .note-framework-demo #flatten-experiment > figcaption {
+    grid-template-columns: minmax(0, 1fr);
     min-height: 4.5em;
   }
 }
