@@ -167,9 +167,17 @@ export function createScene(beats: readonly Beat[]): Scene {
     attach: (el) => {
       observer?.disconnect();
       observer = new IntersectionObserver(
-        ([e]) => {
+        (entries) => {
+          // One delivery may contain several records for the same target.
+          const latest = entries
+            .filter((entry) => entry.target === el)
+            .reduce<IntersectionObserverEntry | undefined>(
+              (a, b) => (!a || b.time >= a.time ? b : a),
+              undefined,
+            );
+          if (!latest) return;
           last = performance.now();
-          setVisible(e.isIntersecting);
+          setVisible(latest.isIntersecting);
         },
         { threshold: 0.15 },
       );
