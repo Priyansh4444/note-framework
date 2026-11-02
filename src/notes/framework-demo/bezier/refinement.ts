@@ -5,12 +5,13 @@ type State =
   | { kind: "settled"; n: Count }
   | { kind: "splitting"; from: Count; to: Count; alpha: number; stationary: boolean };
 type Gap = { error: number; at: readonly [Point, Point] };
+type Slots<T> = readonly [T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T, T];
 type Frame = {
   state: State;
-  vertices: readonly Point[];
+  vertices: Slots<Point>;
   gap: Gap;
   bound: number;
-  dotOpacity: readonly number[];
+  dotOpacity: Slots<number>;
   markerOpacity: number;
 };
 
@@ -21,8 +22,25 @@ type Pacing = {
   stops: readonly [number, number, number, number, number];
   phaseAt: (ms: number) => number;
 };
-const slots = <T>(f: (index: number) => T): readonly T[] =>
-  Array.from({ length: 17 }, (_, i) => f(i));
+const slots = <T>(f: (index: number) => T): Slots<T> => [
+  f(0),
+  f(1),
+  f(2),
+  f(3),
+  f(4),
+  f(5),
+  f(6),
+  f(7),
+  f(8),
+  f(9),
+  f(10),
+  f(11),
+  f(12),
+  f(13),
+  f(14),
+  f(15),
+  f(16),
+];
 const ease = (u: number) => (u <= 0 ? 0 : u >= 1 ? 1 : (1 - Math.cos(Math.PI * u)) / 2);
 
 /**
@@ -98,6 +116,21 @@ export function prepareRefinement(points: Cubic) {
     ),
   );
 
+  const firstMoving = travel.findIndex((distance) => distance > STATIONARY_TRAVEL);
+  const lastMoving = travel.findLastIndex((distance) => distance > STATIONARY_TRAVEL);
+  // Soften only the run's launch/landing; interior subdivisions keep travelling.
+  // Integrate a short linear velocity ramp, then normalize its total travel to one.
+  const progress = (u: number, stage: number) => {
+    const edge = 0.04,
+      start = stage === firstMoving,
+      end = stage === lastMoving;
+    let distance = u;
+    if (start) distance = u < edge ? (u * u) / (2 * edge) : u - edge / 2;
+    if (end && u > 1 - edge)
+      distance = 1 - (start ? edge / 2 : 0) - edge / 2 - ((1 - u) * (1 - u)) / (2 * edge);
+    return distance / (1 - (start ? edge / 2 : 0) - (end ? edge / 2 : 0));
+  };
+
   return {
     series: levels.map((level) => ({
       n: level.n,
@@ -146,9 +179,7 @@ export function prepareRefinement(points: Cubic) {
       if (Number.isInteger(bounded)) return settled[bounded];
       const k = Math.floor(bounded),
         u = bounded - k,
-        // Geometry advances in proportion to scene time. Easing every split to
-        // rest makes a continuous construction feel like repeated starts/stops.
-        alpha = u;
+        alpha = progress(u, k);
       const from = levels[k],
         to = levels[k + 1];
       const measurement = measure(from.grid, to.grid, alpha);

@@ -1,4 +1,4 @@
-import { For } from "solid-js";
+import { For, createMemo } from "solid-js";
 import { Handle, useDiagram } from "../../../kit";
 import type { Cubic, Point } from "./model";
 
@@ -12,6 +12,8 @@ export function Handles(props: {
   onMove: (i: number, q: Point) => void;
   onGrab?: () => void;
   labels?: boolean;
+  /** Static union of the figure paths: labels stay clear throughout playback. */
+  avoid?: readonly (readonly [Point, Point])[];
   /** Radius, in SVG units, of a mark around point i; its label sits just beyond it. */
   clearance?: (i: number, u: number) => number;
 }) {
@@ -36,7 +38,7 @@ export function Handles(props: {
           return l < 1e-6 ? [0, -1] : [dx / l, dy / l];
         };
         // Beyond the point, but always inside the figure: an edge pulls the label back in.
-        const label = () => {
+        const label = createMemo(() => {
           const em = 16 * diagram.u();
           const d = Math.max(1.8 * em, (props.clearance?.(i, diagram.u()) ?? 0) + 0.8 * em);
           const [bx, by, bw, bh] = diagram.box;
@@ -52,8 +54,49 @@ export function Handles(props: {
           if (p()[1] + ay * d + 0.35 * em < top || p()[1] + ay * d + 0.35 * em > bottom) ay = -ay;
           const x = p()[0] + ax * d,
             y = p()[1] + ay * d + 0.35 * em;
-          return [Math.min(right, Math.max(left, x)), Math.min(bottom, Math.max(top, y))];
-        };
+          const clamp = (x: number, y: number): Point => [
+            Math.min(right, Math.max(left, x)),
+            Math.min(bottom, Math.max(top, y)),
+          ];
+          const preferred = clamp(x, y);
+          const segments = props.avoid;
+          if (!segments?.length) return preferred;
+          const distance = (q: Point, [a, b]: readonly [Point, Point]) => {
+            const dx = b[0] - a[0],
+              dy = b[1] - a[1];
+            const t = Math.max(
+              0,
+              Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / (dx * dx + dy * dy || 1)),
+            );
+            return Math.hypot(q[0] - a[0] - t * dx, q[1] - a[1] - t * dy);
+          };
+          const clearance = ([x, y]: Point) => {
+            const centre: Point = [x, y - 0.35 * em];
+            return Math.min(
+              Math.hypot(centre[0] - p()[0], centre[1] - p()[1]) - 1.2 * em,
+              ...segments.map((segment) => distance(centre, segment) - 0.85 * em),
+            );
+          };
+          if (clearance(preferred) >= 0) return preferred;
+          const [ux, uy] = away();
+          const directions = [
+            [ux, uy],
+            [-ux, uy],
+            [ux, -uy],
+            [-ux, -uy],
+            [0, -1],
+            [0, 1],
+            [-1, 0],
+            [1, 0],
+          ];
+          const candidates = directions.map(([dx, dy]) =>
+            clamp(p()[0] + dx * d, p()[1] + dy * d + 0.35 * em),
+          );
+          return candidates.reduce(
+            (best, q) => (clearance(q) > clearance(best) ? q : best),
+            preferred,
+          );
+        });
         return (
           <Handle
             class={ROLE[i]}

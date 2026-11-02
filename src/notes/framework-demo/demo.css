@@ -109,7 +109,7 @@
 @media (max-width: 900px) {
   .note-framework-demo #flatten-experiment > figcaption {
     grid-template-columns: minmax(0, 1fr);
-    min-height: 4.5em;
+    min-height: 3em;
   }
 }
 

@@ -10,7 +10,7 @@ import {
   useDiagram,
   createScene,
 } from "../../../kit";
-import { BOX, chordBound, curvePath } from "../bezier/model";
+import { BOX, chordBound, curvePath, pointAt, type Point } from "../bezier/model";
 import { prepareRefinement } from "../bezier/refinement";
 import { Handles } from "../bezier/Handles";
 import { movePoint, points } from "../bezier/store";
@@ -43,6 +43,16 @@ export function Flatten() {
   );
   const phase = () => pacing().phaseAt(scene.t());
   const frame = createMemo(() => prepared().frame(phase()));
+  // Keep labels clear of every refinement stage, so they do not dance during playback.
+  const labelSegments = createMemo(() => {
+    const paths = [
+      ...[0, 1, 2, 3, 4].map((stage) => prepared().frame(stage).vertices),
+      Array.from({ length: 65 }, (_, i) => pointAt(points(), i / 64)),
+    ];
+    return paths.flatMap((path) =>
+      path.slice(1).map((p, i): readonly [Point, Point] => [path[i], p]),
+    );
+  });
   const dotSlots = Array.from({ length: 17 }, (_, i) => i);
   const series = () => prepared().series;
   const settledCount = () => {
@@ -57,7 +67,9 @@ export function Flatten() {
     const state = frame().state;
     return state.kind === "settled"
       ? `${state.n} straight ${state.n === 1 ? "piece" : "pieces"}`
-      : `Splitting ${state.from} → ${state.to} pieces`;
+      : state.stationary
+        ? `${state.from} → ${state.to} pieces; midpoint is on the chord`
+        : `Splitting ${state.from} → ${state.to} pieces`;
   };
   const hasCurvature = () => series()[0].error > 1e-10;
   // Include every positive sample and the proven bound; dragging cannot clip the data.
@@ -94,9 +106,9 @@ export function Flatten() {
   const DETAILS = (
     <More summary="Compare the gaps and error bounds">
       <p>
-        Distances are in figure units; at full desktop width one unit is about 1.2 screen pixels.
-        Gaps are measured against the current white polygon on a fixed grid of 1,025 parameters.
-        Sampling can only underestimate the largest gap; the dashed bound is proved below.
+        Distances are in figure units; their screen size changes with the figure width. Gaps are
+        measured against the current white polygon on a fixed grid of 1,025 parameters. Sampling can
+        only underestimate the largest gap; the dashed bound is proved below.
       </p>
       <p>
         During a split, each new midpoint moves from its parent chord to the curve. The moving
@@ -164,19 +176,16 @@ export function Flatten() {
         <>
           <span class="bz-refinement-status">
             {hasCurvature() ? (
-              <>
-                {settledCount() !== undefined ? (
-                  <>
-                    <b class="bz-count">{settledCount()}</b> straight{" "}
-                    {settledCount() === 1 ? "piece" : "pieces"}.
-                  </>
-                ) : (
-                  <>{description()}.</>
-                )}
-                {stationary() ? " Midpoint already lies on the chord." : ""}
-              </>
+              settledCount() !== undefined ? (
+                <>
+                  <b class="bz-count">{settledCount()}</b> straight{" "}
+                  {settledCount() === 1 ? "piece" : "pieces"}.
+                </>
+              ) : (
+                <>{description()}.</>
+              )
             ) : (
-              <>Zero error: one piece draws this straight line exactly.</>
+              <>Zero error: one straight piece.</>
             )}
           </span>
           <span class="bz-refinement-gap">
@@ -222,7 +231,12 @@ export function Flatten() {
             opacity={frame().markerOpacity}
             curved={hasCurvature()}
           />
-          <Handles points={points()} onMove={movePoint} onGrab={scene.pause} />
+          <Handles
+            points={points()}
+            onMove={movePoint}
+            onGrab={scene.pause}
+            avoid={labelSegments()}
+          />
         </DiagramViewer>
       </div>
     </Experiment>

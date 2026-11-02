@@ -66,13 +66,14 @@ test("new midpoints unfold from their parent chord while every old anchor stays 
     if (frame.state.kind !== "splitting") throw new Error("Expected an unfolding stage");
     expect(frame.state.from).toBe(from);
     expect(frame.state.to).toBe(to);
-    expect(frame.state.alpha).toBeCloseTo(0.5, 14);
+    const alpha = stage === 0 ? 24 / 49 : stage === 3 ? 25 / 49 : 0.5;
+    expect(frame.state.alpha).toBeCloseTo(alpha, 14);
     const coarse = chords(START, from);
     for (let j = 0; j <= 16; j += 16 / from) close(frame.vertices[j], pointAt(START, j / 16));
     for (let j = 16 / to; j < 16; j += 16 / from) {
       const start = onPolygon(coarse, j / 16),
         end = pointAt(START, j / 16);
-      close(frame.vertices[j], [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2]);
+      close(frame.vertices[j], [lerp(start[0], end[0], alpha), lerp(start[1], end[1], alpha)]);
       expect(Math.hypot(start[0] - end[0], start[1] - end[1])).toBeGreaterThan(0);
     }
   }
@@ -162,7 +163,8 @@ test("reverse seeks reproduce exactly and fixed-grid maxima remain continuous at
         const travel =
           Math.hypot(left[j][0] - at[j][0], left[j][1] - at[j][1]) +
           Math.hypot(right[j][0] - at[j][0], right[j][1] - at[j][1]);
-        expect(distance).toBeLessThanOrEqual(delta * travel + 1e-9);
+        // The two optional 4% edge ramps have normalized rate at most 1/.96.
+        expect(distance).toBeLessThanOrEqual((delta * travel) / 0.96 + 1e-9);
         maximumDisplacement = Math.max(maximumDisplacement, distance);
       }
       // A maximum distance is Lipschitz in its polygon: no fabricated readout jump.
@@ -256,7 +258,7 @@ test("only active subdivision knots appear, with a quiet eight-to-sixteen fade",
     }
   }
   expect(prepared.frame(4).dotOpacity.every((value) => value === 0)).toBe(true);
-  expect(prepared.frame(3.5).dotOpacity[2]).toBeCloseTo(0.5, 12);
+  expect(prepared.frame(3.5).dotOpacity[2]).toBeCloseTo(24 / 49, 12);
   expect(prepared.frame(3.5).dotOpacity[1]).toBe(0);
 });
 
@@ -302,5 +304,24 @@ test("visible midpoint travel advances steadily instead of easing to a halt at e
     const second = Math.hypot(c[0] - b[0], c[1] - b[1]);
     expect(first).toBeGreaterThan(0);
     expect(first).toBeCloseTo(second, 10);
+  }
+});
+
+test("only the first moving split launches softly and the final split lands softly", () => {
+  for (const points of [START, PRESETS[1].points]) {
+    const prepared = prepareRefinement(points);
+    const first = points === START ? 0 : 1;
+    const distance = (a: number, b: number) => {
+      const from = prepared.frame(a).vertices,
+        to = prepared.frame(b).vertices;
+      return Math.max(...from.map((p, i) => Math.hypot(p[0] - to[i][0], p[1] - to[i][1])));
+    };
+    expect(distance(first, first + 0.002) / distance(first, first + 0.001)).toBeCloseTo(4, 8);
+    expect(distance(4, 4 - 0.002) / distance(4, 4 - 0.001)).toBeCloseTo(4, 8);
+    // Interior handoffs retain movement; there is no per-split ease-to-rest.
+    for (let stage = first + 1; stage < 3; stage++) {
+      expect(distance(stage - 0.002, stage - 0.001)).toBeGreaterThan(0);
+      expect(distance(stage + 0.001, stage + 0.002)).toBeGreaterThan(0);
+    }
   }
 });

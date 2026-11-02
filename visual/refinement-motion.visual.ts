@@ -264,13 +264,13 @@ for (const width of [320, 390, 768, 1440])
         };
       });
     const original = await measure();
-    expect(original.height).toBeLessThanOrEqual(width > 900 ? 23 : 68);
+    expect(original.height).toBeLessThanOrEqual(width > 900 ? 23 : 45);
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.getByRole("radio", { name: "S bend", exact: true }).click();
     const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
     await slider.press("Home");
     await slider.press("ArrowRight");
-    await expect(root.locator(".bz-refinement-status")).toContainText("already lies on the chord");
+    await expect(root.locator(".bz-refinement-status")).toContainText("midpoint is on the chord");
     const stationary = await measure();
     expect(stationary.height).toBeCloseTo(original.height, 2);
     if (width > 900) expect(stationary.sideGap).toBeGreaterThanOrEqual(15);
@@ -280,4 +280,50 @@ for (const width of [320, 390, 768, 1440])
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );
+  });
+
+for (const width of [320, 390, 1440])
+  test(`folded endpoint labels clear the whole refinement at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+    await page.evaluate(() => document.fonts.ready);
+    await page.evaluate(async () => {
+      const source = "/src/notes/framework-demo/bezier/store.ts";
+      const { movePoint } = await import(source);
+      [
+        [45, 300],
+        [515, 35],
+        [50, 40],
+        [515, 285],
+      ].forEach((p, i) => movePoint(i, p));
+    });
+    const root = page.locator("#flatten-experiment");
+    const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+    await root.scrollIntoViewIfNeeded();
+    const labelPose = () =>
+      root
+        .locator(".nk-handle .nk-label")
+        .evaluateAll((nodes) => nodes.map((n) => [n.getAttribute("x"), n.getAttribute("y")]));
+    const pose = await labelPose();
+    for (const fraction of [0, 0.1, 0.4, 0.8, 1]) {
+      await seek(slider, fraction);
+      expect(await labelPose()).toEqual(pose);
+      const collisions = await root.evaluate((el) => {
+        const path = el.querySelector<SVGPathElement>("[data-refinement-path]")!;
+        const labels = Array.from(el.querySelectorAll<SVGTextElement>(".nk-handle .nk-label"));
+        return labels.map((label) => {
+          const b = label.getBoundingClientRect();
+          const m = path.getScreenCTM()!;
+          let hits = 0;
+          const length = path.getTotalLength();
+          for (let i = 0; i <= 1024; i++) {
+            const p = path.getPointAtLength((length * i) / 1024).matrixTransform(m);
+            if (p.x > b.left - 2 && p.x < b.right + 2 && p.y > b.top - 2 && p.y < b.bottom + 2)
+              hits++;
+          }
+          return hits;
+        });
+      });
+      expect(collisions).toEqual([0, 0, 0, 0]);
+    }
   });
