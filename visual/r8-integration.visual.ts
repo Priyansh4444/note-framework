@@ -23,7 +23,7 @@ for (const width of [390, 1440])
     expect(badFonts).toEqual([]);
     const outer = page
       .locator("#code details")
-      .filter({ has: page.locator(".nk-code-example") })
+      .filter({ has: page.locator('.nk-code-block[data-kind="diff"]') })
       .first();
     await outer.locator(":scope > summary").click();
     const diff = outer.locator(".nk-code-example").first();

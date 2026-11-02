@@ -16,9 +16,11 @@ export type ExperimentProps = {
   details?: JSX.Element;
   caption?: JSX.Element;
   scene?: Scene;
-  /** Opt in to a compact curved time control below the picture. */
+  /** Opt in to a compact curved time control for the picture. */
   timeline?: boolean | string;
-  /** A stable annotation between the picture and transport. Reserve its footprint when hidden. */
+  /** Put this figure's single transport before or after its picture. Defaults to below. */
+  transportPosition?: "above" | "below";
+  /** A stable annotation after the picture. Reserve its footprint when hidden. */
   annotation?: JSX.Element;
   /** Original quiet cues, off until this figure's sound button is activated. */
   sound?: CuePlan;
@@ -105,11 +107,32 @@ export function Experiment(props: ExperimentProps) {
       </div>
     </Show>
   );
+  const picture = (
+    <>
+      <div class="nk-experiment-stage">{props.children}</div>
+      <Show when={props.annotation}>
+        <div class="nk-experiment-annotation">{props.annotation}</div>
+      </Show>
+    </>
+  );
+  const transport = (
+    <Show when={props.timeline ? scene : undefined}>
+      {(s) => (
+        <CurveTimeline
+          scene={s()}
+          actions={<Actions />}
+          idle={idle()}
+          label={typeof props.timeline === "string" ? props.timeline : "Scene position"}
+        />
+      )}
+    </Show>
+  );
   return (
     <figure
       ref={root}
       id={props.id}
       class="nk-experiment"
+      data-transport-position={props.transportPosition ?? "below"}
       data-nk-scene={scene ? "" : undefined}
       data-nk-scene-beats={scene ? JSON.stringify(scene.beats) : undefined}
       data-nk-scene-length={scene?.length}
@@ -122,20 +145,7 @@ export function Experiment(props: ExperimentProps) {
         class="nk-experiment-body"
         classList={{ "nk-experiment-with-timeline": !!props.timeline && !!scene }}
       >
-        <div class="nk-experiment-stage">{props.children}</div>
-        <Show when={props.annotation}>
-          <div class="nk-experiment-annotation">{props.annotation}</div>
-        </Show>
-        <Show when={props.timeline ? scene : undefined}>
-          {(s) => (
-            <CurveTimeline
-              scene={s()}
-              actions={<Actions />}
-              idle={idle()}
-              label={typeof props.timeline === "string" ? props.timeline : "Scene position"}
-            />
-          )}
-        </Show>
+        {props.transportPosition === "above" ? [transport, picture] : [picture, transport]}
       </div>
       <Show when={!props.timeline || !scene}>
         <Actions />

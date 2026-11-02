@@ -68,7 +68,7 @@ export type ServiceFrame = Readonly<{
 const beats: readonly Beat[] = [
   { label: "Start", ms: 3700 },
   { label: "Join", ms: 2800 },
-  { label: "Add work", ms: 4300 },
+  { label: "More", ms: 4300 },
   { label: "Return", ms: 6000 },
 ];
 const stamp = (atMs: number, id: string, event: ServiceEvent): Stamp => ({ atMs, id, event });
@@ -304,29 +304,29 @@ export function buildServiceTrace(input: readonly Stamp[] = authored): ServiceTr
 function caption(e: ServiceEvent): string {
   switch (e.kind) {
     case "land":
-      return `${CLIENT_LABEL[e.client]} opens. Its connection is being drawn to the service.`;
+      return `${CLIENT_LABEL[e.client]} opens a connection.`;
     case "connect":
-      return `${CLIENT_LABEL[e.client]} is connected to the same service.`;
+      return `${CLIENT_LABEL[e.client]} connects to the service.`;
     case "starting":
-      return "Terminal’s connection starts one background service. No session exists yet.";
+      return "Terminal starts one background service.";
     case "running":
-      return "The service is running. PID 48213 is an illustrative process identifier; it stays the same.";
+      return "One service is ready for every window.";
     case "send":
-      return `${CLIENT_LABEL[e.client]} sends ${e.request.kind === "join" ? "a request to join" : "a request to start"} “${SESSION_LABEL[e.request.session]}”. The white packet travels down.`;
+      return `${CLIENT_LABEL[e.client]} asks to ${e.request.kind === "join" ? "join" : "start"} “${SESSION_LABEL[e.request.session]}”.`;
     case "arrive":
       return e.request.kind === "join"
-        ? "Web’s request arrives. Web and Terminal now subscribe to the same “Fix flaky test” session. There is still only one row."
-        : `${CLIENT_LABEL[e.client]}’s request arrives. “${SESSION_LABEL[e.request.session]}” now appears inside the service.`;
+        ? "Web joins Terminal’s “Fix flaky test”. They share one row."
+        : `“${SESSION_LABEL[e.request.session]}” starts inside the service.`;
     case "finish":
-      return `“${SESSION_LABEL[e.session]}” finishes inside the service. Its clients are still waiting for the update.`;
+      return `“${SESSION_LABEL[e.session]}” finishes. Its windows are waiting for the reply.`;
     case "update":
       return e.session === "flaky"
-        ? "One shared session, two subscribers: its update travels up to Terminal and Web together."
-        : `“${SESSION_LABEL[e.session]}” sends its update only to ${e.session === "theme" ? "Desktop" : "review.ts"}. The other clients keep waiting.`;
+        ? "One reply returns to Terminal and Web together."
+        : `Only ${e.session === "theme" ? "Desktop" : "review.ts"} gets this reply.`;
     case "deliver":
       return e.session === "flaky"
-        ? "Terminal and Web receive the same completion together. Four clients, three sessions, one service."
-        : `${CLIENT_LABEL[e.client]} receives “${SESSION_LABEL[e.session]}” complete. No other client receives that update.`;
+        ? "Terminal and Web finish together. Four windows, three sessions, one service."
+        : `${CLIENT_LABEL[e.client]} receives “${SESSION_LABEL[e.session]}” complete.`;
   }
 }
 

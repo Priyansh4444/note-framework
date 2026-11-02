@@ -228,14 +228,6 @@
   min-height: 3em;
   color: var(--text, #d6d6d6);
 }
-.note-shared-service .ss-caption-definition {
-  display: block;
-  margin-top: 8px;
-}
-.note-shared-service .ss-caption-definition strong {
-  font-weight: 500;
-  color: var(--text, #d6d6d6);
-}
 .note-shared-service .ss-result {
   font-size: 22px;
   line-height: 1.45;
@@ -300,4 +292,57 @@
   .note-shared-service-nav a:hover {
     color: var(--bright);
   }
+}
+
+/* The Service diagram needs both sound and playback: keep its labelled rail on a full row. */
+.note-shared-service #service-experiment .nk-timeline-transport {
+  row-gap: 4px;
+}
+.note-shared-service #service-experiment .nk-timeline-transport > .nk-experiment-actions {
+  flex-basis: 100%;
+  min-height: 44px;
+  padding-top: 0;
+}
+.note-shared-service #service-experiment .nk-timeline-track {
+  flex-basis: 100%;
+}
+.note-shared-service #service-experiment [data-nk-scene-action] {
+  padding: 0 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  background: var(--panel);
+  transition:
+    transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
+    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.note-shared-service #service-experiment [data-nk-scene-action]:active:not(:focus-visible) {
+  transform: scale(0.97);
+}
+.note-shared-service .ss-reason {
+  margin: 1.4rem 0;
+}
+.note-shared-service .ss-reason > div {
+  padding: 8px 0 16px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .note-shared-service #service-experiment [data-nk-scene-action]:hover {
+    border-color: var(--diagram-blue);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .note-shared-service #service-experiment [data-nk-scene-action] {
+    transition: none;
+    transform: none;
+  }
+}
+/* Phase links form a readable chapter row; End owns its own 44px target. */
+.note-shared-service #service-experiment .nk-timeline-labels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(44px, 1fr)) 44px;
+}
+.note-shared-service #service-experiment .nk-timeline-label {
+  position: static;
+  transform: none;
+  width: 100%;
+  padding-inline: 2px;
 }

@@ -39,6 +39,7 @@ export default function SpringWorkshop() {
         date="2026-10-25"
         kicker="An instrument you can feel"
         howTo={false}
+        references="compact"
         dek={<>A spring brings it home. A damper decides how.</>}
       >
         <Chapter id="feel">

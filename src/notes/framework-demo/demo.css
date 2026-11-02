@@ -117,3 +117,8 @@
 .note-framework-demo #weight-experiment .nk-diagram + .nk-diagram {
   margin-top: 12px;
 }
+
+/* A single linked morph is the chapter's picture, not a full-screen gallery. */
+.note-framework-demo #forms .nk-morph-stage {
+  height: clamp(240px, 38vw, 360px);
+}

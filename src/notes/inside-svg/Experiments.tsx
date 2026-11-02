@@ -32,19 +32,8 @@ export function DissectionExperiment() {
       scene={scene}
       timeline="Separation"
       question="Press Play to find the five shapes."
-      caption={
-        <>
-          <span class="svg-caption-main">
-            Pulling the layers apart is an inspection aid: SVG has no depth here.
-          </span>
-          <span>Sky · Sun · Rear hill · Front hill · Frame. The frame is a shape with a hole.</span>
-        </>
-      }
+      caption="Nothing new was drawn. These five pieces were here all along."
     >
-      <div class="svg-reference">
-        <span>Assembled</span>
-        <Artwork label="The assembled arch landscape" />
-      </div>
       <div
         ref={stage}
         class="svg-peel-stage"

@@ -41,7 +41,6 @@ export function SpringInstrument() {
   const [initial, setInitial] = createSignal<Pose>(rest);
   const [held, setHeld] = createSignal<Pose | null>(null);
   const [reduced, setReduced] = createSignal(false);
-  const [paper, setPaper] = createSignal(false);
   const [announcement, announce] = createSignal("");
   const [choice, setChoice] = createSignal(
     "At center. Arrow keys move the carriage; Space releases it.",
@@ -222,7 +221,6 @@ export function SpringInstrument() {
     setHeld({ x, v: 0 });
     say();
   };
-  const changeTheme = () => setPaper((v) => !v);
   return (
     <figure
       ref={root}
@@ -245,11 +243,8 @@ export function SpringInstrument() {
             )}
           </For>
         </div>
-        <button type="button" onClick={changeTheme} aria-pressed={paper()}>
-          Paper
-        </button>
       </div>
-      <div class="iso spring-card" data-theme={paper() ? "light" : "dark"}>
+      <div class="iso spring-card" data-theme="dark">
         <div class="spring-card-top">
           <span>Fig. 01</span>
           <span>Spring & damper</span>

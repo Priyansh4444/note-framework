@@ -65,7 +65,10 @@ for (const width of [320, 390, 768, 1440]) {
         wireHeight: box(el.querySelector(".ss-port-columns")!).height,
         minFont: Math.min(...labels.map((l) => parseFloat(getComputedStyle(l).fontSize))),
         font: getComputedStyle(clients[0]).fontFamily,
-        stageGap: box(timeline).top - box(stage).bottom,
+        stageGap:
+          box(timeline).top >= box(stage).bottom
+            ? box(timeline).top - box(stage).bottom
+            : box(stage).top - box(timeline).bottom,
         checkpointCount: el.querySelectorAll(".nk-timeline-labels button").length,
         diagramBottom: box(el.querySelector(".ss-diagram")!).bottom,
         labelsInsideCards: clients.every((c) =>

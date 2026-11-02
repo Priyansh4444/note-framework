@@ -136,3 +136,9 @@ figure.nk-experiment {
 .nk-experiment-sound:disabled {
   cursor: default;
 }
+
+/* Opt-in transport-first layout keeps one mounted transport and the same scene owner. */
+.nk-experiment[data-transport-position="above"] .nk-experiment-with-timeline > [data-nk-timeline] {
+  margin-top: 0;
+  margin-bottom: 12px;
+}

@@ -3,6 +3,9 @@ import lerpDiff from "./examples/lerp.diff?diff";
 import { ArrowLabel, Check, CodeBlock, Equation, More, Steps, Tex } from "../../kit";
 import { note } from "./chapters";
 import { T } from "./glossary";
+import { CurveMorphExample, InkExample } from "../../kit/patterns/recipes";
+import { points } from "./bezier/store";
+import { sampleCurve } from "../../kit/patterns/recipe-model";
 import { Mix } from "./figures/Mix";
 import { Construction } from "./figures/Construction";
 import { Weights } from "./figures/Weights";
@@ -31,16 +34,19 @@ export default function Demo() {
         date="2026-10-22"
         kicker="An example note"
         howTo={false}
+        references="compact"
         dek={<>Drag a dot. Bend the line. You already know enough to begin.</>}
       >
         <section class="bz-first-try" aria-label="Try drawing a curve">
           <Construction />
-          <p class="bz-first-fact">
-            The first and last dots hold the ends. The two in the middle bend the line. A mix places
-            a point partway between two neighbours. The same fraction, called t, turns four points
-            into three, then two, then the white point. The next section starts with just one of
-            those mixes.
-          </p>
+          <p class="bz-first-fact">The end dots hold the curve. The middle dots bend it.</p>
+          <More summary="How is the white point made?">
+            <p>
+              A mix places a point partway between two neighbours. The same fraction, called t,
+              turns four points into three, then two, then the white point. The next section starts
+              with just one of those mixes.
+            </p>
+          </More>
           <Check q="Can you make the curve straight?">
             <p>
               Choose Straight, or arrange the four dots along one line. The line follows the shape
@@ -132,25 +138,39 @@ export default function Demo() {
 
         <Chapter id="weights">
           <p>
-            Unroll the nesting and each curve point becomes one weighted sum of the four control
-            points. The weights are the <T k="bernstein">Bernstein polynomials</T> of degree three{" "}
-            <Cite k="bezier" />:
+            Each dot has a share of the pull. Move the grip below the chart to see that share change
+            along the curve.
           </p>
-          <Equation
-            tex="B(t)=(1-t)^3P_0+3t(1-t)^2P_1+3t^2(1-t)P_2+t^3P_3"
-            phone="\begin{aligned}B(t)={}&(1-t)^3P_0+3t(1-t)^2P_1\\&+3t^2(1-t)P_2+t^3P_3\end{aligned}"
-            label="Bernstein form of a cubic"
-          >
-            The same point as the nested mixing, for every t.
-          </Equation>
           <Weights />
           <p>
-            Near the start <Tex tex="P_0" /> pulls hardest; near the end, <Tex tex="P_3" />. No
-            weight is ever negative, and together they expand <Tex tex="\bigl((1-t)+t\bigr)^3=1" />.
-            So <Tex tex="B(t)" /> is a convex combination of the control points, and the curve
-            always lies in their <T k="hull" />. The weights depend only on <Tex tex="t" />: drag a
-            control point and the picture changes, but the chart does not.
+            Near the start, P₀ matters most. Near the end, P₃ does. Drag a control point: the curve
+            changes, but these shares do not.
           </p>
+          <More summary="The four weights, written out">
+            <p>
+              Unrolling the mixes gives the <T k="bernstein">Bernstein polynomials</T> of degree
+              three <Cite k="bezier" />.
+            </p>
+            <Equation
+              tex="B(t)=(1-t)^3P_0+3t(1-t)^2P_1+3t^2(1-t)P_2+t^3P_3"
+              phone="\begin{aligned}B(t)={}&(1-t)^3P_0+3t(1-t)^2P_1\\&+3t^2(1-t)P_2+t^3P_3\end{aligned}"
+              label="Bernstein form of a cubic"
+            >
+              The same point as the nested mixing, for every t.
+            </Equation>
+
+            <p>
+              Near the start <Tex tex="P_0" /> pulls hardest; near the end, <Tex tex="P_3" />. No
+              weight is ever negative, and together they expand{" "}
+              <Tex tex="\bigl((1-t)+t\bigr)^3=1" />. So <Tex tex="B(t)" /> is a convex combination
+              of the control points, and the curve always lies in their <T k="hull" />. The weights
+              depend only on <Tex tex="t" />: drag a control point and the picture changes, but the
+              chart does not.
+            </p>
+            <Check q="Can P₁ ever carry half the weight?">
+              <p>No. Its weight 3t(1 − t)² is largest at t = 1/3, where it equals 4/9 ≈ 0.444.</p>
+            </Check>
+          </More>
           <More summary="Why nested mixing gives these weights">
             <p>
               Follow a path down the construction from a control point to <Tex tex="B(t)" />. It
@@ -167,29 +187,32 @@ export default function Demo() {
               P₃)/8.
             </p>
           </Check>
-          <Check q="Can P₁ ever carry half the weight?">
-            <p>No. Its weight 3t(1 − t)² is largest at t = 1/3, where it equals 4/9 ≈ 0.444.</p>
-          </Check>
         </Chapter>
 
         <Chapter id="code">
           <p>
-            Every curve on this page is drawn with this file; the weight chart plots the same
-            polynomials in closed form. Each pass of the loop turns a row of points into a row one
-            shorter, exactly as in the construction above.
+            Keep mixing neighbours until only one point remains. The same recipe works for every
+            row.
           </p>
-          <CodeBlock artifact={casteljauCode} />
-          <p>
-            Each pass makes one point fewer, so a cubic takes 3 + 2 + 1 = 6 mixes per point. With{" "}
-            <Tex tex="n+1" /> control points that sum is <Tex tex="\tfrac12 n(n+1)" />.
-          </p>
-          <p>
-            Floating point adds one trap. The common form <Tex tex="a+(b-a)t" /> need not return{" "}
-            <Tex tex="b" /> at <Tex tex="t=1" /> <Cite k="p0811" />. With <Tex tex="a=0.1" /> and{" "}
-            <Tex tex="b=0.45" />, it returns 0.44999999999999996, so a closed outline may fail to
-            close.
-          </p>
+          <More summary="Read the working code">
+            <p>
+              The construction and straight-piece figures evaluate their curve with this file. Each
+              pass turns a row of points into a row one shorter. The weight chart and visual
+              treatments use the equivalent cubic polynomials.
+            </p>
+            <CodeBlock artifact={casteljauCode} />
+            <p>
+              Each pass makes one point fewer, so a cubic takes 3 + 2 + 1 = 6 mixes per point. With{" "}
+              <Tex tex="n+1" /> control points that sum is <Tex tex="\tfrac12 n(n+1)" />.
+            </p>
+          </More>
           <More summary="See the one-line fix and what it gives up">
+            <p>
+              Floating point adds one trap. The common form <Tex tex="a+(b-a)t" /> need not return{" "}
+              <Tex tex="b" /> at <Tex tex="t=1" /> <Cite k="p0811" />. With <Tex tex="a=0.1" /> and{" "}
+              <Tex tex="b=0.45" />, it returns 0.44999999999999996, so a closed outline may fail to
+              close.
+            </p>
             <CodeBlock artifact={lerpDiff} initial="after" />
             <p>
               For some <Tex tex="a" /> and <Tex tex="b" /> with the same sign, the exact form is not
@@ -197,25 +220,29 @@ export default function Demo() {
               C++20’s <code>std::lerp</code>, treats exactness and monotonicity as separate
               requirements. Here, exact endpoints matter more.
             </p>
+            <Check q="Why does (1 − t)a + tb return exactly b at t = 1?">
+              <p>
+                Every step is exact: 1 − 1 is 0, 0 · a is 0 for any finite a, 1 · b is b, and 0 + b
+                is b. No operation has anything to round.
+              </p>
+            </Check>
           </More>
-          <Check q="Why does (1 − t)a + tb return exactly b at t = 1?">
-            <p>
-              Every step is exact: 1 − 1 is 0, 0 · a is 0 for any finite a, 1 · b is b, and 0 + b is
-              b. No operation has anything to round.
-            </p>
-          </Check>
         </Chapter>
 
         <Chapter id="flatten">
           <p>
-            Screens, plotters and cutters draw straight lines, so renderers{" "}
-            <T k="flatten">flatten</T> curves first. The simplest way picks <Tex tex="n+1" /> evenly
-            spaced values of <Tex tex="t" /> from 0 to 1 and joins their curve points with straight
-            pieces. Play to split pieces and move new midpoints onto the curve.
+            <T k="flatten">Flattening</T> means drawing a curve with straight pieces. Press Play to
+            split each piece and bring it closer to the curve.
           </p>
           <Flatten />
           <FlattenSummary />
           <More summary="Why the gap shrinks as 1/n²">
+            <p>
+              Screens, plotters and cutters draw straight lines, so renderers{" "}
+              <T k="flatten">flatten</T> curves first. The simplest way picks <Tex tex="n+1" />{" "}
+              evenly spaced values of <Tex tex="t" /> from 0 to 1 and joins their curve points with
+              straight pieces. Play to split pieces and move new midpoints onto the curve.
+            </p>
             <p>
               On each piece of parameter length <Tex tex="h=1/n" />, the <T k="chord">chord</T> is
               the linear interpolant of <Tex tex="B" /> in <Tex tex="t" />. The standard
@@ -247,6 +274,25 @@ export default function Demo() {
               itself, traversed at constant speed.
             </p>
           </Check>
+        </Chapter>
+        <Chapter id="forms">
+          <p>Choose another form. The strips keep their order.</p>
+          <CurveMorphExample points={points()} />
+          <p>Your edits in the earlier pictures carry through here.</p>
+          <More summary="What if the path were painted?">
+            <p>
+              These brush marks are built from the same edited curve. Changing the material moves
+              the same seeded marks; their texture is a treatment, not a measurement of error.
+            </p>
+            <InkExample points={sampleCurve(points())} />
+          </More>
+          <More summary="What do the in-between shapes mean?">
+            <p>
+              The morph pairs 24 ribbon strips across three views. Curve follows the cubic; Handles
+              follows its three-edge control polygon; Straight joins its endpoints. In-flight shapes
+              are visual interpolations, not new Bézier calculations.
+            </p>
+          </More>
         </Chapter>
         <aside class="bz-authoring">
           <p class="bz-authoring-k">Behind this note</p>

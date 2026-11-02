@@ -63,11 +63,7 @@
   border: 1px solid var(--rule);
   border-radius: 10px;
 }
-.note-spring-workshop .spring-card[data-theme="light"] {
-  --anatomy-card: #f5f2ec;
-  --anatomy-paper: #f5f2ec;
-  background: var(--anatomy-card);
-}
+
 .spring-card-top,
 .spring-card-bottom {
   display: flex;

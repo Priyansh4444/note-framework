@@ -20,26 +20,30 @@ export default function InsideSvg() {
         date="2026-10-25"
         kicker="An explanation you can play"
         howTo={false}
+        references="compact"
         dek={<>A sky, a circle, two hills, and a little window.</>}
       >
         <Chapter id="layers">
           <p>
-            <strong>SVG</strong> is a way to describe a picture with shapes. This original landscape
-            uses just five. Pull them apart, then follow the same shapes through two small
-            experiments.
+            <strong>SVG</strong> describes a picture with shapes. Pull this landscape apart to find
+            its five pieces.
           </p>
           <DissectionExperiment />
-          <p>
-            The sky is a rectangle; the sun is a circle. The window still crops each colored layer.
-            The hills and frame are <strong>paths</strong>: outlines drawn with straight or curved
-            segments.
-          </p>
+          <p>Five shapes, one picture. The window crops the scenery; the frame surrounds it.</p>
+          <details class="svg-reason">
+            <DisclosureSummary>What are the shapes?</DisclosureSummary>
+            <div>
+              <p>
+                The sky is a rectangle; the sun is a circle. The hills and frame are
+                <strong> paths</strong>: outlines drawn with straight or curved segments. Pulling
+                the layers apart is an inspection aid. SVG has no depth here. The frame is a path
+                with a hole.
+              </p>
+            </div>
+          </details>
         </Chapter>
         <Chapter id="order">
-          <p>
-            SVG paints these shapes in order, like laying pieces of paper on a table. A later shape
-            covers an earlier one wherever they overlap.
-          </p>
+          <p>SVG paints in order, like laying paper on a table. Which shape should be on top?</p>
           <PaintOrderExperiment />
           <details class="svg-reason">
             <DisclosureSummary>What changed in the SVG?</DisclosureSummary>
@@ -59,9 +63,8 @@ export default function InsideSvg() {
         </Chapter>
         <Chapter id="window">
           <p>
-            A <strong>clipping path</strong> is an invisible boundary that limits where paint
-            appears. Here it matches the opening in the frame. The frame is visible; the clipping
-            boundary is not.
+            A <strong>clipping path</strong> acts like a window: it hides paint outside the opening.
+            Move the window and watch what stays put.
           </p>
           <ClippingExperiment />
           <p>
@@ -72,9 +75,10 @@ export default function InsideSvg() {
             <DisclosureSummary>Why are the shapes still there?</DisclosureSummary>
             <div>
               <p>
-                The clipping boundary moves, along with the frame. The rectangle, circle, and hill
-                paths keep their original coordinates and sizes. Removing clipping exposes their
-                paint outside the opening; it does not change which hill covers the sun.
+                The frame is visible; the clipping boundary is not. Here that boundary matches the
+                opening. The clipping boundary moves, along with the frame. The rectangle, circle,
+                and hill paths keep their original coordinates and sizes. Removing clipping exposes
+                their paint outside the opening; it does not change which hill covers the sun.
               </p>
               <p>
                 <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath">

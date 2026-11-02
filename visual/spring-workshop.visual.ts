@@ -61,11 +61,17 @@ for (const width of [320, 390, 768, 1440])
       expect(h).toBeGreaterThanOrEqual(44);
     }
     await root.screenshot({ path: info.outputPath("dark.png") });
-    const paper = page.getByRole("button", { name: "Paper", exact: true });
-    await expect(paper).toHaveAttribute("aria-pressed", "false");
-    await paper.click();
-    await expect(paper).toHaveAttribute("aria-pressed", "true");
-    await root.screenshot({ path: info.outputPath("paper.png") });
+    await expect(page.getByRole("button", { name: "Paper", exact: true })).toHaveCount(0);
+    await page.emulateMedia({ colorScheme: "light" });
+    await expect(root.locator(".spring-card")).toHaveAttribute("data-theme", "dark");
+    const background = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
+    expect(
+      background
+        .match(/\d+/g)!
+        .slice(0, 3)
+        .map(Number)
+        .every((channel) => channel < 50),
+    ).toBe(true);
     await grip.press(" ");
     await expect(root).toHaveAttribute("data-active", "true");
     await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.05);

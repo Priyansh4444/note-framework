@@ -40,19 +40,6 @@
   margin: 0 auto;
   overflow: visible;
 }
-.note-inside-svg .svg-reference {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 20px;
-  font-size: 15px;
-  color: var(--muted);
-}
-.note-inside-svg .svg-reference .svg-artwork {
-  width: 78px;
-  margin: 0;
-}
 .note-inside-svg .svg-peel-stage {
   position: relative;
   width: 100%;
@@ -77,11 +64,6 @@
   line-height: 23px;
   text-align: center;
   white-space: nowrap;
-}
-.note-inside-svg .svg-caption-main {
-  display: block;
-  color: var(--text);
-  margin-bottom: 5px;
 }
 .note-inside-svg .svg-button {
   min-width: 44px;

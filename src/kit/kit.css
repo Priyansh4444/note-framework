@@ -780,3 +780,11 @@
   width: 1em;
   height: 1em;
 }
+
+/* Reference detail stays available without dominating a short note. */
+.nk-reference-details > .nk-disclosure-summary {
+  min-height: 44px;
+}
+.nk-reference-body {
+  padding-block: 12px;
+}

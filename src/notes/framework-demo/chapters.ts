@@ -33,6 +33,12 @@ export const note = defineNote({
       question: "How close can straight pieces get?",
       takeaway: "Adding more straight pieces makes a closer fit to the curve.",
     },
+    {
+      id: "forms",
+      title: "Change the view",
+      question: "Can you follow one strip as it moves?",
+      takeaway: "The same ordered strips can reveal the curve, its handles, or its endpoint chord.",
+    },
   ],
   sources: {
     pomax: {
