@@ -259,3 +259,42 @@ test("a batched leave/return delivery cannot freeze the released carriage", asyn
   await expect.poll(async () => (await pose(page)).t).toBeGreaterThan(0);
   await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.05);
 });
+
+test("phone footer keeps every status clear of both buttons", async ({ page }) => {
+  await open(page, 320);
+  const root = page.locator("#spring-instrument"),
+    grip = page.getByRole("slider", { name: "Carriage displacement" });
+  const checkStatus = async (text: string) => {
+    await expect(root.locator(".spring-footer > span")).toHaveText(text);
+    const measure = await root.locator(".spring-footer").evaluate((footer) => {
+      const range = document.createRange();
+      range.selectNodeContents(footer.querySelector("span")!);
+      const words = [...range.getClientRects()];
+      const buttons = [...footer.querySelectorAll("button")].map((el) =>
+        el.getBoundingClientRect(),
+      );
+      return {
+        lines: words.length,
+        inside: words.every((r) => r.left >= 0 && r.right <= innerWidth),
+        clearances: words.flatMap((word) =>
+          buttons.map((button) =>
+            Math.hypot(
+              Math.max(0, word.left - button.right, button.left - word.right),
+              Math.max(0, word.top - button.bottom, button.top - word.bottom),
+            ),
+          ),
+        ),
+      };
+    });
+    expect(measure.lines).toBe(1);
+    expect(measure.inside).toBe(true);
+    expect(Math.min(...measure.clearances)).toBeGreaterThanOrEqual(8);
+  };
+  await checkStatus("At center");
+  await grip.press("End");
+  await checkStatus("Held");
+  await grip.press(" ");
+  await checkStatus("Returning");
+  await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.005);
+  await checkStatus("At center");
+});
