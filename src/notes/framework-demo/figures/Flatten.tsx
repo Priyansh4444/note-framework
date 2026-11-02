@@ -10,9 +10,9 @@ import {
   useDiagram,
   createScene,
 } from "../../../kit";
-import { BOX, chordBound, curvePath, pointAt, type Point } from "../bezier/model";
+import { BOX, chordBound, curvePath, pointAt } from "../bezier/model";
 import { prepareRefinement } from "../bezier/refinement";
-import { Handles } from "../bezier/Handles";
+import { Handles, type LabelObstacle } from "../bezier/Handles";
 import { movePoint, points } from "../bezier/store";
 
 const N_MAX = 32,
@@ -43,15 +43,18 @@ export function Flatten() {
   );
   const phase = () => pacing().phaseAt(scene.t());
   const frame = createMemo(() => prepared().frame(phase()));
-  // Keep labels clear of every refinement stage, so they do not dance during playback.
-  const labelSegments = createMemo(() => {
-    const paths = [
-      ...[0, 1, 2, 3, 4].map((stage) => prepared().frame(stage).vertices),
-      Array.from({ length: 65 }, (_, i) => pointAt(points(), i / 64)),
-    ];
-    return paths.flatMap((path) =>
-      path.slice(1).map((p, i): readonly [Point, Point] => [path[i], p]),
+  // Each split sweeps the filled triangle between its chord and new midpoint.
+  // Avoid the whole area, not merely the settled outlines or their boundaries.
+  const labelObstacles = createMemo(() => {
+    const curve = Array.from({ length: 65 }, (_, i) => pointAt(points(), i / 64));
+    const swept = [1, 2, 4, 8].flatMap((n) =>
+      Array.from({ length: n }, (_, j): LabelObstacle => [
+        curve[(j * 64) / n],
+        curve[((j + 0.5) * 64) / n],
+        curve[((j + 1) * 64) / n],
+      ]),
     );
+    return [...swept, ...curve.slice(1).map((p, i): LabelObstacle => [curve[i], p])];
   });
   const dotSlots = Array.from({ length: 17 }, (_, i) => i);
   const series = () => prepared().series;
@@ -63,7 +66,9 @@ export function Flatten() {
     const state = frame().state;
     return state.kind === "splitting" && state.stationary;
   };
+  const hasCurvature = () => series()[0].error > 1e-10;
   const description = () => {
+    if (!hasCurvature()) return "Zero error: one straight piece";
     const state = frame().state;
     return state.kind === "settled"
       ? `${state.n} straight ${state.n === 1 ? "piece" : "pieces"}`
@@ -71,7 +76,6 @@ export function Flatten() {
         ? `${state.from} → ${state.to} pieces; midpoint is on the chord`
         : `Splitting ${state.from} → ${state.to} pieces`;
   };
-  const hasCurvature = () => series()[0].error > 1e-10;
   // Include every positive sample and the proven bound; dragging cannot clip the data.
   const range = createMemo(() => {
     const positive = series()
@@ -175,17 +179,13 @@ export function Flatten() {
       caption={
         <>
           <span class="bz-refinement-status">
-            {hasCurvature() ? (
-              settledCount() !== undefined ? (
-                <>
-                  <b class="bz-count">{settledCount()}</b> straight{" "}
-                  {settledCount() === 1 ? "piece" : "pieces"}.
-                </>
-              ) : (
-                <>{description()}.</>
-              )
+            {hasCurvature() && settledCount() !== undefined ? (
+              <>
+                <b class="bz-count">{settledCount()}</b> straight{" "}
+                {settledCount() === 1 ? "piece" : "pieces"}.
+              </>
             ) : (
-              <>Zero error: one straight piece.</>
+              <>{description()}.</>
             )}
           </span>
           <span class="bz-refinement-gap">
@@ -235,7 +235,7 @@ export function Flatten() {
             points={points()}
             onMove={movePoint}
             onGrab={scene.pause}
-            avoid={labelSegments()}
+            avoid={labelObstacles()}
           />
         </DiagramViewer>
       </div>

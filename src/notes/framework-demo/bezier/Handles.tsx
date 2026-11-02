@@ -6,14 +6,40 @@ import type { Cubic, Point } from "./model";
 export const ROLE = ["nk-orange", "nk-magenta", "nk-green", "nk-blue"] as const;
 export const NAME = ["P₀", "P₁", "P₂", "P₃"] as const;
 
+/** A line or a filled triangle that a label must avoid. */
+export type LabelObstacle = readonly [Point, Point] | readonly [Point, Point, Point];
+
+const segmentDistance = (q: Point, [a, b]: readonly [Point, Point]) => {
+  const dx = b[0] - a[0],
+    dy = b[1] - a[1];
+  const t = Math.max(
+    0,
+    Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / (dx * dx + dy * dy || 1)),
+  );
+  return Math.hypot(q[0] - a[0] - t * dx, q[1] - a[1] - t * dy);
+};
+const obstacleDistance = (q: Point, obstacle: LabelObstacle): number => {
+  if (obstacle.length === 2) return segmentDistance(q, obstacle);
+  const [a, b, c] = obstacle;
+  const cross = (a: Point, b: Point, c: Point) =>
+    (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+  const sides = [cross(a, b, q), cross(b, c, q), cross(c, a, q)];
+  if (cross(a, b, c) !== 0 && (sides.every((v) => v >= 0) || sides.every((v) => v <= 0))) return 0;
+  return Math.min(
+    segmentDistance(q, [a, b]),
+    segmentDistance(q, [b, c]),
+    segmentDistance(q, [c, a]),
+  );
+};
+
 /** Four draggable control points, each labelled on the side away from the curve. */
 export function Handles(props: {
   points: Cubic;
   onMove: (i: number, q: Point) => void;
   onGrab?: () => void;
   labels?: boolean;
-  /** Static union of the figure paths: labels stay clear throughout playback. */
-  avoid?: readonly (readonly [Point, Point])[];
+  /** Static paths or swept areas used to place labels independently of playback. */
+  avoid?: readonly LabelObstacle[];
   /** Radius, in SVG units, of a mark around point i; its label sits just beyond it. */
   clearance?: (i: number, u: number) => number;
 }) {
@@ -40,7 +66,10 @@ export function Handles(props: {
         // Beyond the point, but always inside the figure: an edge pulls the label back in.
         const label = createMemo(() => {
           const em = 16 * diagram.u();
-          const d = Math.max(1.8 * em, (props.clearance?.(i, diagram.u()) ?? 0) + 0.8 * em);
+          const d = Math.max(
+            (props.avoid ? 2 : 1.8) * em,
+            (props.clearance?.(i, diagram.u()) ?? 0) + 0.8 * em,
+          );
           const [bx, by, bw, bh] = diagram.box;
           const [left, right, top, bottom] = [
             bx + 0.9 * em,
@@ -59,22 +88,14 @@ export function Handles(props: {
             Math.min(bottom, Math.max(top, y)),
           ];
           const preferred = clamp(x, y);
-          const segments = props.avoid;
-          if (!segments?.length) return preferred;
-          const distance = (q: Point, [a, b]: readonly [Point, Point]) => {
-            const dx = b[0] - a[0],
-              dy = b[1] - a[1];
-            const t = Math.max(
-              0,
-              Math.min(1, ((q[0] - a[0]) * dx + (q[1] - a[1]) * dy) / (dx * dx + dy * dy || 1)),
-            );
-            return Math.hypot(q[0] - a[0] - t * dx, q[1] - a[1] - t * dy);
-          };
+          const obstacles = props.avoid;
+          if (!obstacles?.length) return preferred;
+          // Include the subscript's glyph box and a visible gap around the mark/line.
           const clearance = ([x, y]: Point) => {
             const centre: Point = [x, y - 0.35 * em];
             return Math.min(
-              Math.hypot(centre[0] - p()[0], centre[1] - p()[1]) - 1.2 * em,
-              ...segments.map((segment) => distance(centre, segment) - 0.85 * em),
+              Math.hypot(centre[0] - p()[0], centre[1] - p()[1]) - 1.7 * em,
+              ...obstacles.map((obstacle) => obstacleDistance(centre, obstacle) - 1.2 * em),
             );
           };
           if (clearance(preferred) >= 0) return preferred;

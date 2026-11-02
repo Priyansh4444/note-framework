@@ -277,53 +277,78 @@ for (const width of [320, 390, 768, 1440])
     else expect(Math.abs(stationary.rowGap)).toBeLessThanOrEqual(1);
     expect(stationary.left).toBeGreaterThanOrEqual(0);
     expect(stationary.right).toBeLessThanOrEqual(width);
+    await page.getByRole("radio", { name: "Straight", exact: true }).click();
+    await slider.press("End");
+    await expect(root.locator(".bz-refinement-status")).toHaveText(
+      "Zero error: one straight piece.",
+    );
+    await expect(root.getByRole("img", { name: /^Zero error: one straight piece;/ })).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,
     );
   });
 
-for (const width of [320, 390, 1440])
-  test(`folded endpoint labels clear the whole refinement at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 900 });
-    await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
-    await page.evaluate(() => document.fonts.ready);
-    await page.evaluate(async () => {
-      const source = "/src/notes/framework-demo/bezier/store.ts";
-      const { movePoint } = await import(source);
-      [
-        [45, 300],
-        [515, 35],
-        [50, 40],
-        [515, 285],
-      ].forEach((p, i) => movePoint(i, p));
-    });
-    const root = page.locator("#flatten-experiment");
-    const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
-    await root.scrollIntoViewIfNeeded();
-    const labelPose = () =>
-      root
-        .locator(".nk-handle .nk-label")
-        .evaluateAll((nodes) => nodes.map((n) => [n.getAttribute("x"), n.getAttribute("y")]));
-    const pose = await labelPose();
-    for (const fraction of [0, 0.1, 0.4, 0.8, 1]) {
-      await seek(slider, fraction);
-      expect(await labelPose()).toEqual(pose);
-      const collisions = await root.evaluate((el) => {
-        const path = el.querySelector<SVGPathElement>("[data-refinement-path]")!;
-        const labels = Array.from(el.querySelectorAll<SVGTextElement>(".nk-handle .nk-label"));
-        return labels.map((label) => {
-          const b = label.getBoundingClientRect();
-          const m = path.getScreenCTM()!;
-          let hits = 0;
-          const length = path.getTotalLength();
-          for (let i = 0; i <= 1024; i++) {
-            const p = path.getPointAtLength((length * i) / 1024).matrixTransform(m);
-            if (p.x > b.left - 2 && p.x < b.right + 2 && p.y > b.top - 2 && p.y < b.bottom + 2)
-              hits++;
-          }
-          return hits;
+for (const [shape, controls] of [
+  [
+    "folded",
+    [
+      [45, 300],
+      [515, 35],
+      [50, 40],
+      [515, 285],
+    ],
+  ],
+  [
+    "swept-interior",
+    [
+      [217, 298],
+      [60, 146],
+      [407, 48],
+      [460, 231],
+    ],
+  ],
+] as const)
+  for (const width of [320, 390, 1440])
+    test(`${shape} endpoint labels clear the whole refinement at ${width}px`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+      await page.evaluate(() => document.fonts.ready);
+      await page.evaluate(async (controls) => {
+        const source = "/src/notes/framework-demo/bezier/store.ts";
+        const { movePoint } = await import(source);
+        controls.forEach((p, i) => movePoint(i, p));
+      }, controls);
+      const root = page.locator("#flatten-experiment");
+      const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+      await root.scrollIntoViewIfNeeded();
+      const labelPose = () =>
+        root
+          .locator(".nk-handle .nk-label")
+          .evaluateAll((nodes) => nodes.map((n) => [n.getAttribute("x"), n.getAttribute("y")]));
+      const pose = await labelPose();
+      for (const fraction of [0.2, 0, 0.1, 0.3, 0.4, 0.8, 1]) {
+        await seek(slider, fraction);
+        expect(await labelPose()).toEqual(pose);
+        const collisions = await root.evaluate((el) => {
+          const path = el.querySelector<SVGPathElement>("[data-refinement-path]")!;
+          const labels = Array.from(el.querySelectorAll<SVGTextElement>(".nk-handle .nk-label"));
+          return labels.map((label) => {
+            const b = label.getBoundingClientRect();
+            const m = path.getScreenCTM()!;
+            let hits = 0;
+            const length = path.getTotalLength();
+            for (let i = 0; i <= 1024; i++) {
+              const p = path.getPointAtLength((length * i) / 1024).matrixTransform(m);
+              if (p.x > b.left - 2 && p.x < b.right + 2 && p.y > b.top - 2 && p.y < b.bottom + 2)
+                hits++;
+            }
+            return hits;
+          });
         });
-      });
-      expect(collisions).toEqual([0, 0, 0, 0]);
-    }
-  });
+        if (collisions.some((n) => n > 0))
+          await root.screenshot({
+            path: `artifacts/refinement-motion/${shape}-${width}-${fraction}-collision.png`,
+          });
+        expect(collisions).toEqual([0, 0, 0, 0]);
+      }
+    });
