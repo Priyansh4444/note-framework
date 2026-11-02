@@ -118,18 +118,21 @@ for (const width of [1280, 390, 320])
   test(`existing P0–P3 labels stay readable and in bounds through presets and point keys at ${width}px`, async ({
     page,
   }) => {
+    // Presets glide; this test measures labels at rest, so presets land at once.
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height: 1000 });
     await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
     const figure = page.locator(".bz-first-try figure");
-    const handles = figure.locator(".bz-handle");
-    const labels = handles.locator(".bz-label");
+    const handles = figure.locator(".nk-handle");
+    const labels = handles.locator(".nk-label");
     await expect(labels).toHaveText(["P0", "P1", "P2", "P3"]);
+    await expect(labels.locator('tspan[baseline-shift="sub"]')).toHaveText(["0", "1", "2", "3"]);
     // Retain actual browser node references across preset and coordinate updates.
     const persistent = await figure.evaluateHandle((el) =>
-      [...el.querySelectorAll(".bz-handle")].flatMap((handle) => [
+      [...el.querySelectorAll(".nk-handle")].flatMap((handle) => [
         handle,
-        handle.querySelector(".bz-label"),
+        handle.querySelector(".nk-label"),
       ]),
     );
     const measurements: unknown[] = [];
@@ -138,7 +141,7 @@ for (const width of [1280, 390, 320])
       for (const label of await labels.all()) await expect(label).toBeVisible();
       const geometry = await figure.evaluate((el) => {
         const box = el.querySelector(".nk-diagram")!.getBoundingClientRect();
-        return [...el.querySelectorAll<SVGTextElement>(".bz-handle .bz-label")].map((label) => {
+        return [...el.querySelectorAll<SVGTextElement>(".nk-handle .nk-label")].map((label) => {
           const b = label.getBoundingClientRect(),
             m = label.getScreenCTM()!,
             s = getComputedStyle(label);
@@ -181,9 +184,9 @@ for (const width of [1280, 390, 320])
       }
       expect(
         await figure.evaluate((el, prior) => {
-          const current = [...el.querySelectorAll(".bz-handle")].flatMap((handle) => [
+          const current = [...el.querySelectorAll(".nk-handle")].flatMap((handle) => [
             handle,
-            handle.querySelector(".bz-label"),
+            handle.querySelector(".nk-label"),
           ]);
           return prior.every((node, i) => node === current[i]);
         }, persistent),
@@ -191,24 +194,27 @@ for (const width of [1280, 390, 320])
       measurements.push({ state, labels: geometry });
     }
     for (const preset of ["Arch", "S bend", "Straight"]) {
-      await figure.getByRole("button", { name: preset, exact: true }).click();
+      await figure.getByRole("radio", { name: preset, exact: true }).click();
       await measure(preset);
       await page.screenshot({ path: `${artifacts}/labels-${width}-${preset}.png` });
     }
     for (let i = 0; i < 4; i++) {
-      await figure.getByRole("button", { name: "Arch", exact: true }).click();
+      await figure.getByRole("radio", { name: "Arch", exact: true }).click();
       const handle = handles.nth(i);
-      const start = await handle.locator(".bz-dot").getAttribute("cx");
+      const start = await handle.locator(".nk-handle-dot").getAttribute("cx");
       await handle.press("ArrowRight");
-      await expect(handle.locator(".bz-dot")).toHaveAttribute("cx", String(Number(start) + 4));
+      await expect(handle.locator(".nk-handle-dot")).toHaveAttribute(
+        "cx",
+        String(Number(start) + 4),
+      );
       await measure(`P${i} ArrowRight`);
       for (const key of [
         i < 2 ? "Shift+ArrowLeft" : "Shift+ArrowRight",
         i === 0 || i === 3 ? "Shift+ArrowDown" : "Shift+ArrowUp",
       ])
         for (let step = 0; step < 28; step++) await handle.press(key);
-      await expect(handle.locator(".bz-dot")).toHaveAttribute("cx", i < 2 ? "24" : "536");
-      await expect(handle.locator(".bz-dot")).toHaveAttribute(
+      await expect(handle.locator(".nk-handle-dot")).toHaveAttribute("cx", i < 2 ? "24" : "536");
+      await expect(handle.locator(".nk-handle-dot")).toHaveAttribute(
         "cy",
         i === 0 || i === 3 ? "316" : "24",
       );

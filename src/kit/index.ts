@@ -34,7 +34,21 @@ export { tip } from "../post/scene/tooltip";
 export { Tex } from "../components/ui/Tex";
 export { MathMorph } from "../components/ui/MathMorph";
 
-export { DiagramViewer } from "./DiagramViewer";
+export { DiagramViewer, useDiagram } from "./DiagramViewer";
+export { Handle, type HandleProps, type Point } from "./Handle";
+export { Axes, type Tick } from "./Axes";
+export {
+  Action,
+  Choice,
+  Legend,
+  More,
+  Readout,
+  Panels,
+  Toolbar,
+  type ChoiceOption,
+  type LegendItem,
+} from "./ui";
+export { blend, glide, jump, resize, still } from "./motion";
 export { Parameter, type ParameterProps } from "./Parameter";
 export { Experiment, type ExperimentProps } from "./Experiment";
 export { CodeBlock, type CodeArtifact } from "./CodeBlock";

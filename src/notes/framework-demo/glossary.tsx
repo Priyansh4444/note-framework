@@ -1,6 +1,16 @@
 import { note } from "./chapters";
 
 export const { T } = note.glossary({
+  chord: {
+    name: "Chord",
+    home: "flatten",
+    says: () => (
+      <>
+        The straight segment joining two points of a curve. Flattening draws a curve as a chain of
+        chords.
+      </>
+    ),
+  },
   lerp: {
     name: "Linear interpolation",
     home: "mix",

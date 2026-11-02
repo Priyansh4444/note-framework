@@ -16,9 +16,12 @@
     details:not(.nk-check):has(> .nk-disclosure-summary) {
       interpolate-size: allow-keywords;
     }
+    /* The clip margin leaves room for marks that sit on a first child's top edge
+       (code titles), without changing the disclosure's rhythm. */
     details:not(.nk-check):has(> .nk-disclosure-summary)::details-content {
       block-size: 0;
       overflow: clip;
+      overflow-clip-margin: 12px;
       transition:
         block-size var(--nk-motion-reveal) var(--nk-motion-ease),
         content-visibility var(--nk-motion-reveal) allow-discrete;

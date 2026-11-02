@@ -231,6 +231,7 @@ export function SpringInstrument() {
       data-x={pose().x}
       data-v={pose().v}
       data-time={scene.t()}
+      data-nk-scene-time={scene.t()}
       data-active={scene.active()}
       data-held={!!held()}
     >
@@ -245,7 +246,7 @@ export function SpringInstrument() {
           </For>
         </div>
         <button type="button" onClick={changeTheme} aria-pressed={paper()}>
-          Paper {paper() ? "on" : "off"}
+          Paper
         </button>
       </div>
       <div class="iso spring-card" data-theme={paper() ? "light" : "dark"}>

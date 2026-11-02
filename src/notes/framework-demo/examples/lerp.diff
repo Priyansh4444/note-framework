@@ -1,10 +1,12 @@
 diff --git a/de-casteljau.ts b/de-casteljau.ts
 --- a/de-casteljau.ts
 +++ b/de-casteljau.ts
-@@ -1,4 +1,4 @@
+@@ -1,6 +1,6 @@
  export type Point = readonly [x: number, y: number];
  
 -/** Start at a and move t of the way to b. */
--export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 +/** Mix two numbers: t = 0 gives a and t = 1 gives b, exactly. */
-+export const lerp = (a: number, b: number, t: number) => (1 - t) * a + t * b;
+ export function lerp(a: number, b: number, t: number) {
+-  return a + (b - a) * t;
++  return (1 - t) * a + t * b;
+ }

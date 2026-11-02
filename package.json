@@ -21,6 +21,7 @@
     "share:deploy": "bun scripts/sharing-deploy.ts",
     "note:audit": "bun scripts/note.ts audit",
     "visual:check": "bun scripts/audit.ts",
+    "taste": "bun scripts/taste.ts",
     "visual:install": "bunx playwright install chromium",
     "dev:framework": "VITE_FRAMEWORK_PREVIEW=1 vite",
     "build:framework-preview": "VITE_FRAMEWORK_PREVIEW=1 vite build --outDir dist-framework-preview",

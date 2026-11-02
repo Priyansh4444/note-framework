@@ -481,12 +481,12 @@ input[type="range"] {
   border: 0;
   border-radius: 6px;
   color: var(--bright);
-  background: radial-gradient(closest-side, rgb(8 8 7 / 55%), transparent);
+  background: radial-gradient(closest-side, var(--scrim), transparent);
 }
 
 .scene-gate:hover:not(:disabled) {
   border: 0;
-  background: radial-gradient(closest-side, rgb(8 8 7 / 65%), transparent);
+  background: radial-gradient(closest-side, var(--scrim), transparent);
 }
 
 .gate-icon,
@@ -501,7 +501,7 @@ input[type="range"] {
 .gate-icon svg {
   width: 34px;
   height: 34px;
-  filter: drop-shadow(0 0 18px rgb(246 243 236 / 35%));
+  filter: drop-shadow(0 0 18px var(--glow));
   transition: transform var(--spring-land-dur) var(--spring-land);
 }
 
@@ -654,9 +654,9 @@ input[type="range"] {
   padding: 0.45rem 0.65rem;
   border: 1px solid var(--rule-strong);
   border-radius: 6px;
-  background: rgb(22 21 19 / 92%);
+  background: var(--overlay);
   backdrop-filter: blur(10px);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 45%);
+  box-shadow: 0 8px 28px var(--shadow);
   color: var(--text);
   font-family: var(--mono);
   font-size: 12px;

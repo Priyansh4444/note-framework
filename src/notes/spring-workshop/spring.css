@@ -113,17 +113,19 @@
 .spring-needle-hub {
   fill: var(--anatomy-lit);
 }
+/* A grid, not a wrapping row: the status never drops onto a line of its own. */
 .note-spring-workshop .spring-footer {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
   gap: 12px;
   align-items: center;
   margin-top: 20px;
 }
 .spring-footer > span {
-  margin-left: auto;
+  justify-self: end;
   color: var(--muted);
   font-size: 16px;
+  text-align: right;
 }
 .note-spring-workshop .spring-instrument figcaption {
   margin-top: 24px;

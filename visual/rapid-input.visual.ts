@@ -90,29 +90,34 @@ test("a new grab continues the visible release pose without a rest snap", async 
   await page.mouse.up();
 });
 
-test("small refinement drags move smoothly inside a whole-piece stage", async ({ page }) => {
+test("small refinement drags move the polygon continuously inside a split", async ({ page }) => {
   await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
   const root = page.locator("#flatten-experiment"),
     slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
   await slider.scrollIntoViewIfNeeded();
-  await root.getByRole("button", { name: "17–24 pieces", exact: false }).click();
+  // A small drag must update the same continuous split, without a queued tween.
+  await root.getByRole("button", { name: "Double n", exact: true }).click();
   const grab = await railPoint(slider, 0.5);
   await page.mouse.move(grab.x, grab.y);
   await page.mouse.down();
   const values: number[] = [],
-    counts: number[] = [];
+    paths: (string | null)[] = [];
   for (const fraction of [0.502, 0.504, 0.506, 0.508, 0.506, 0.504, 0.502]) {
     const point = await railPoint(slider, fraction);
     await page.mouse.move(point.x, point.y);
     values.push(Number(await slider.getAttribute("aria-valuenow")));
-    counts.push(Number(await root.locator(".bz-piece-count").textContent()));
+    paths.push(await root.locator("[data-refinement-path]").getAttribute("d"));
+    await expect(root.locator("[data-refinement-state]")).toHaveAttribute(
+      "data-refinement-state",
+      "splitting",
+    );
   }
   expect(new Set(values).size).toBeGreaterThanOrEqual(4);
-  expect(new Set(counts).size).toBe(1);
-  expect(counts[0]).toBe(17);
+  expect(new Set(paths).size).toBeGreaterThanOrEqual(4);
   await page.mouse.up();
-  const n = Number(await root.locator(".bz-piece-count").textContent());
-  expect(await root.locator(".bz-chord-dot[visibility=visible]").count()).toBe(n + 1);
+  await expect(root.locator("figcaption .bz-count")).toHaveCount(0);
+  await page.waitForTimeout(80);
+  expect(await root.locator("[data-refinement-path]").getAttribute("d")).toBe(paths.at(-1));
 });
 
 test("rapid input keeps the contour root attached and one motion owner", async ({ page }) => {

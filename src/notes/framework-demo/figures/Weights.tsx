@@ -1,16 +1,16 @@
-import { For } from "solid-js";
-import { DiagramViewer, Experiment, Tex, createScene, createPlayback } from "../../../kit";
+import { createSignal, For } from "solid-js";
+import { Axes, DiagramViewer, Experiment, Handle, useDiagram } from "../../../kit";
 import { Handles, NAME, ROLE } from "../bezier/Handles";
 import { bernstein, BOX, convexHull, curvePath, pathOf, pointAt, weights } from "../bezier/model";
 import { movePoint, points } from "../bezier/store";
 
 // Basis chart geometry, in its own SVG units.
 const CW = 560,
-  CH = 230,
+  CH = 240,
   X0 = 44,
   X1 = 540,
-  Y0 = 196,
-  Y1 = 18;
+  Y0 = 148,
+  Y1 = 16;
 const cx = (t: number) => X0 + t * (X1 - X0);
 const cy = (w: number) => Y0 - w * (Y0 - Y1);
 const basis = (i: number) =>
@@ -19,165 +19,157 @@ const basis = (i: number) =>
     return `${k ? "L" : "M"}${cx(t).toFixed(2)} ${cy(bernstein(3, i, t)).toFixed(2)}`;
   }).join("");
 const BASIS = [0, 1, 2, 3].map(basis);
-const TEX = ["(1-t)^3", "3t(1-t)^2", "3t^2(1-t)", "t^3"];
+/** The t control: a faint grip a fixed 22px below the baseline, clear of every weight dot. */
+function Grip(props: { t: number; onSeek: (t: number) => void }) {
+  const { u } = useDiagram();
+  const y = () => Y0 + 22 * u();
+  return (
+    <>
+      <line class="nk-cursor" x1={cx(props.t)} x2={cx(props.t)} y1={Y1} y2={y()} />
+      <Handle
+        class="nk-faint"
+        mark="bar"
+        x={cx(props.t)}
+        y={y()}
+        label="Chart cursor t"
+        value={`t = ${props.t.toFixed(2)}`}
+        now={props.t}
+        min={0}
+        max={1}
+        onDrag={(q) => props.onSeek((q[0] - X0) / (X1 - X0))}
+        onStep={(dx, dy, big) => props.onSeek(props.t + (dx || -dy) * (big ? 0.1 : 0.01))}
+        onLimit={props.onSeek}
+      />
+    </>
+  );
+}
+
+/** Equal data stays at its true position; coloured ticks identify the coincident series. */
+function Ties(props: { t: number; w: readonly number[] }) {
+  const { u } = useDiagram();
+  const groups = () =>
+    props.w.flatMap((weight, i) => {
+      if (props.w.slice(0, i).some((v) => v === weight)) return [];
+      const indices = props.w.flatMap((v, j) => (v === weight ? [j] : []));
+      return indices.length > 1 ? [{ weight, indices }] : [];
+    });
+  const side = () => (props.t > 0.85 ? -1 : 1);
+  return (
+    <For each={groups()}>
+      {(group) => (
+        <g
+          data-weight-tie=""
+          role="img"
+          aria-label={`${group.indices.map((i) => NAME[i]).join(" and ")} have equal weight ${group.weight.toFixed(3)}`}
+        >
+          <For each={group.indices}>
+            {(i, j) => (
+              <line
+                class={`nk-stroke ${ROLE[i]}`}
+                x1={cx(props.t) + side() * 11 * u()}
+                x2={cx(props.t) + side() * 17 * u()}
+                y1={cy(group.weight) + (j() - (group.indices.length - 1) / 2) * 4 * u()}
+                y2={cy(group.weight) + (j() - (group.indices.length - 1) / 2) * 4 * u()}
+                stroke-width="2"
+              />
+            )}
+          </For>
+        </g>
+      )}
+    </For>
+  );
+}
+// Each curve is named where it is tallest, so the chart needs no legend.
+const PEAK = [0.06, 1 / 3, 2 / 3, 0.94];
 
 export function Weights() {
-  const scene = createScene([
-    { label: "First point", ms: 1800 },
-    { label: "Middle pair", ms: 2400 },
-    { label: "Last point", ms: 1800 },
-  ]);
-  const playback = createPlayback(scene, { min: 0, max: 1, initial: 0.3 });
-  const t = playback.value;
+  // No clock here: the reader sets t directly on the chart, and every view follows it.
+  const [t, setT] = createSignal(0.45);
+  const seek = (v: number) => {
+    const bounded = Math.max(0, Math.min(1, v));
+    // Inverse SVG transforms introduce sub-pixel noise at the exact symmetric midpoint.
+    // Canonicalize only that numerical neighbourhood; all other drags remain continuous.
+    setT(Math.abs(bounded - 0.5) <= 1e-7 ? 0.5 : bounded);
+  };
   const w = () => weights(t());
   const b = () => pointAt(points(), t());
-  // Scrub along the chart: x maps through the SVG's own transform to t.
-  let scrubbing: number | undefined;
-  const scrub = (event: PointerEvent) => {
-    const svg =
-      (event.currentTarget as SVGElement).ownerSVGElement ?? (event.currentTarget as SVGSVGElement);
-    const m = svg.getScreenCTM();
-    if (!m) return;
-    const x = new DOMPoint(event.clientX, event.clientY).matrixTransform(m.inverse()).x;
-    playback.seek(Math.min(1, Math.max(0, (x - X0) / (X1 - X0))));
-  };
   return (
     <Experiment
-      scene={scene}
-      timeline="Weight playback"
       id="weight-experiment"
       question="Each control point pulls on B(t). How hard?"
       caption={
         <>
-          Each control point’s ring area and line opacity show its weight. Weights never go negative
-          and always add up to one, so B(t) never leaves the shaded hull. Drag the chart to scrub{" "}
-          <var>t</var>.
+          Drag the grey grip under the chart to change <var>t</var>. The chart gives each point’s
+          weight; small coloured ticks mark equal weights. All four weights are nonnegative and add
+          to one, keeping B(t) in the shaded hull.
         </>
       }
     >
-      <DiagramViewer
-        viewBox={[BOX.x, BOX.y, BOX.w, BOX.h]}
-        label={`The curve inside the convex hull of its control points. At t = ${t().toFixed(2)} the weights are ${w()
-          .map((v) => v.toFixed(2))
-          .join(", ")}.`}
-      >
-        <path class="bz-hull" d={pathOf(convexHull(points()))} />
-        <path class="bz-curve bz-curve-quiet" d={curvePath(points())} />
-        <For each={[0, 1, 2, 3]}>
-          {(i) => (
-            <>
-              <line
-                class={`bz-pull bz-${ROLE[i]}`}
-                x1={b()[0]}
-                y1={b()[1]}
-                x2={points()[i][0]}
-                y2={points()[i][1]}
-                stroke-opacity={0.15 + 0.85 * w()[i]}
-              />
+      <div style={{ "max-width": "560px", margin: "0 auto", width: "100%" }}>
+        <DiagramViewer
+          viewBox={[BOX.x, BOX.y, BOX.w, BOX.h]}
+          label={`The curve inside the convex hull of its control points. At t = ${t().toFixed(2)} the weights are ${w()
+            .map((v) => v.toFixed(3))
+            .join(", ")}.`}
+        >
+          <path class="nk-area" d={pathOf(convexHull(points()))} />
+          <path class="nk-stroke" d={curvePath(points())} />
+          {/* B(t) under the handles: a control point is never painted over. */}
+          <circle class="nk-halo" cx={b()[0]} cy={b()[1]} />
+          <circle class="nk-point" cx={b()[0]} cy={b()[1]} />
+          <Handles points={points()} onMove={movePoint} />
+        </DiagramViewer>
+        <DiagramViewer
+          viewBox={[0, 0, CW, CH]}
+          label="The four Bernstein weight curves for t from 0 to 1, with a cursor at the chosen t."
+        >
+          <Axes
+            grid
+            x0={X0}
+            x1={X1}
+            y0={Y0}
+            y1={Y1}
+            x={[
+              { at: cx(0), label: "0" },
+              { at: cx(1), label: "1" },
+            ]}
+            xLabelGap="3.1em"
+            xTitle="t"
+            y={[
+              { at: cy(0), label: "0" },
+              { at: cy(1), label: "1" },
+            ]}
+          />
+          <For each={[0, 1, 2, 3]}>
+            {(i) => (
+              <>
+                <path class={`nk-stroke ${ROLE[i]}`} d={BASIS[i]} />
+                <text
+                  class={`nk-label ${ROLE[i]}`}
+                  x={cx(PEAK[i])}
+                  y={cy(bernstein(3, i, PEAK[i]))}
+                  dy="-0.6em"
+                  text-anchor="middle"
+                >
+                  {NAME[i]}
+                </text>
+              </>
+            )}
+          </For>
+          <Grip t={t()} onSeek={seek} />
+          <For each={[0, 1, 2, 3]}>
+            {(i) => (
               <circle
-                class={`bz-weight bz-${ROLE[i]}`}
-                cx={points()[i][0]}
-                cy={points()[i][1]}
-                r={34 * Math.sqrt(w()[i])}
+                data-weight-point={i}
+                class={`nk-point ${ROLE[i]}`}
+                cx={cx(t())}
+                cy={cy(w()[i])}
               />
-            </>
-          )}
-        </For>
-        <Handles points={points()} onMove={movePoint} onGrab={playback.pause} />
-        <circle class="bz-point-halo" cx={b()[0]} cy={b()[1]} r="15" />
-        <circle class="bz-point" cx={b()[0]} cy={b()[1]} r="7.5" />
-      </DiagramViewer>
-      <div
-        class="bz-bar"
-        role="img"
-        aria-label={`Weights: ${w()
-          .map((v, i) => `${NAME[i]} ${v.toFixed(3)}`)
-          .join(", ")}; sum 1.`}
-      >
-        <For each={[0, 1, 2, 3]}>
-          {(i) => <span class={`bz-bar-part bz-${ROLE[i]}`} style={{ "flex-grow": w()[i] }} />}
-        </For>
+            )}
+          </For>
+          <Ties t={t()} w={w()} />
+        </DiagramViewer>
       </div>
-      <dl class="bz-weights">
-        <For each={[0, 1, 2, 3]}>
-          {(i) => (
-            <div class={`bz-c${i}`}>
-              <dt>{NAME[i]}</dt>
-              <dd>{w()[i].toFixed(3)}</dd>
-            </div>
-          )}
-        </For>
-        <div class="bz-weights-sum">
-          <dt>Sum</dt>
-          <dd>
-            {w()
-              .reduce((a, v) => a + v, 0)
-              .toFixed(3)}
-          </dd>
-        </div>
-      </dl>
-      <DiagramViewer
-        viewBox={[0, 0, CW, CH]}
-        label="The four Bernstein weight curves for t from 0 to 1, with a cursor at the chosen t."
-      >
-        <g class="bz-axes">
-          <line x1={X0} y1={Y0} x2={X1} y2={Y0} />
-          <line x1={X0} y1={Y1} x2={X1} y2={Y1} class="bz-axis-faint" />
-          <text x={X0 - 10} y={Y0} dy="0.35em" text-anchor="end">
-            0
-          </text>
-          <text x={X0 - 10} y={Y1} dy="0.35em" text-anchor="end">
-            1
-          </text>
-          <text x={X0} y={Y0} dy="1.4em" text-anchor="middle">
-            t = 0
-          </text>
-          <text x={X1} y={Y0} dy="1.4em" text-anchor="end">
-            1
-          </text>
-        </g>
-        <For each={[0, 1, 2, 3]}>
-          {(i) => <path class={`bz-basis bz-${ROLE[i]}`} d={BASIS[i]} />}
-        </For>
-        <line class="bz-cursor" x1={cx(t())} x2={cx(t())} y1={Y1 - 6} y2={Y0} />
-        <For each={[0, 1, 2, 3]}>
-          {(i) => (
-            <circle class={`bz-basis-dot bz-${ROLE[i]}`} cx={cx(t())} cy={cy(w()[i])} r="5" />
-          )}
-        </For>
-        <rect
-          class="bz-scrub"
-          x={X0 - 12}
-          y={0}
-          width={X1 - X0 + 24}
-          height={CH}
-          onPointerDown={(e) => {
-            if (e.button) return;
-            playback.pause();
-            scrubbing = e.pointerId;
-            e.currentTarget.setPointerCapture(e.pointerId);
-            scrub(e);
-          }}
-          onPointerMove={(e) => {
-            if (scrubbing === e.pointerId) scrub(e);
-          }}
-          onPointerUp={() => (scrubbing = undefined)}
-          onPointerCancel={() => (scrubbing = undefined)}
-        />
-      </DiagramViewer>
-      <p class="bz-legend">
-        <For each={[0, 1, 2, 3]}>
-          {(i) => (
-            <span class={`bz-c${i}`}>
-              <i />
-              {NAME[i]}
-              <span class="bz-legend-tex">
-                <Tex tex={TEX[i]} />
-              </span>
-            </span>
-          )}
-        </For>
-      </p>
     </Experiment>
   );
 }

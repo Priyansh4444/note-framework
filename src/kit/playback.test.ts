@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { createRoot } from "solid-js";
 import { createScene } from "../post/scene/clock";
-import { createPlayback, playbackDomain } from "./playback";
+import { createPlayback, eased, playbackDomain } from "./playback";
 
 test("continuous playback preserves sub-step geometry and reverses exactly", () => {
   const domain = playbackDomain({ min: -2, max: 3, initial: 0.5 }, 6000);
@@ -25,12 +25,12 @@ test("the binding initializes once and choices are clock seeks, without another 
   createRoot((dispose) => {
     const scene = createScene([{ label: "Sweep", ms: 6000 }]);
     const playback = createPlayback(scene, { min: 0, max: 1, initial: 0.5 });
-    expect(scene.t()).toBe(3000);
+    expect(scene.t()).toBeCloseTo(3000, 9);
     playback.seek(0.99);
-    expect(scene.t()).toBe(5940);
+    expect(playback.value()).toBeCloseTo(0.99, 12);
     expect(scene.playing()).toBe(false);
     scene.seek(1234.567);
-    expect(playback.value()).toBeCloseTo(1234.567 / 6000, 12);
+    expect(playback.value()).toBeCloseTo(eased(1234.567 / 6000), 12);
     dispose();
   });
 });
@@ -70,4 +70,15 @@ test("discrete seeks round trip for non-power-of-two bins with ordered adjacent 
         }
       }
     }
+});
+
+test("continuous playback eases into and out of exact ends", () => {
+  const domain = playbackDomain({ min: 0, max: 1, initial: 0 }, 1000);
+  expect(domain.value(0)).toBe(0);
+  expect(domain.value(1000)).toBe(1);
+  // Speed is zero at both ends and greatest in the middle.
+  const speed = (ms: number) => domain.value(ms + 1) - domain.value(ms);
+  expect(speed(0)).toBeLessThan(speed(499) / 100);
+  expect(speed(998)).toBeLessThan(speed(499) / 100);
+  for (const v of [0.01, 0.3, 0.5, 0.97]) expect(domain.value(domain.time(v))).toBeCloseTo(v, 12);
 });

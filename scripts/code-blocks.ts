@@ -181,7 +181,7 @@ export async function compileCodeArtifact(
         overflow: "scroll",
         unsafeCSS: `${shadowCSS}
 :host { padding:0; border-radius:0; background:transparent; color:#e1e4e8; --diffs-font-size:inherit; --diffs-line-height:1.7; }
-pre { display:block; margin:0; padding:20px 22px 24px; font:inherit; line-height:1.7; overflow-x:auto; white-space:pre; }
+pre { --diffs-bg:transparent !important; display:block; margin:0; padding:20px 22px 24px; background:transparent; font:inherit; line-height:1.7; overflow-x:auto; white-space:pre; }
 [data-code] { display:block; width:max-content; min-width:100%; overflow-wrap:normal; }
 [data-gutter] { display:none; }
 [data-line], [data-no-newline] { padding:0; white-space:pre; }

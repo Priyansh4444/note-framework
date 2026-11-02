@@ -285,6 +285,9 @@ export async function runAudit(options: AuditOptions): Promise<AuditReport> {
             );
             return false;
           }
+          // Restart the way a reader does: the timeline's Home key, then Play.
+          const rail = scene.locator(".nk-timeline-slider");
+          if (!(await replay.count()) && (await rail.count())) await rail.first().press("Home");
           await click(play.first());
           const time = Number(await scene.getAttribute("data-nk-scene-time"));
           if (

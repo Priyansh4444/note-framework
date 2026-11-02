@@ -14,3 +14,30 @@ Use these rules after the figure and the math are correct. Each rule names a che
 10. **Make focus quiet and visible, and leave mouse behaviour alone.** On keyboard focus, show a 2px accent cue on the marker or text, not a full-row rectangle. Never cancel mousedown to hide a focus ring, because that also blocks text selection.
 11. **Selection inverts.** Selected text is ink on the text colour, both in the page and in code shadow roots.
 12. **Controls are calm until wanted.** Mono at 11–13px in muted colour, at least 44px rows on touch. Hover brightens the colour, press darkens the background, and there is no bounce.
+
+## Enforced
+
+`bun run taste` scans source; `bun run taste --url <page>` measures any page, including course sites; `visual/taste.visual.ts` runs both on every route, with disclosures closed and then open. Fix the cause: silence a line only with `taste-allow <rule>: <reason>`. Each rule is a repeated reader complaint:
+
+| Rule | Complaint |
+| --- | --- |
+| `near-miss-alignment`, `off-center` | "things are constantly misaligned" |
+| `stacked-dividers`, `divider-density` | "too many dividers" |
+| `redundant-controls`, `duplicate-readout`, `disclosure-budget` | "too many sliders… redundant", "too many drop downs" |
+| control stability test | "Play→Pause shifts Replay" |
+| `instruction-without-handle`, `motion-promise` | "slide the white dot" had no handler; "moving strips" never moved |
+| first-press test | the first Play started mid-way and skipped the opening |
+| handle-reachability test | the result dot covered P₃ after End: unclickable, then still painted over it |
+| `orphan-wrap`, `wrapped-label`, `label-off-beat` | "End" stranded alone; "Through the middle" breaking inside its button; step labels sliding off their beats |
+| `uneven-scale` | "0 1 2 not correctly spaced" |
+| `long-inline-math`, `broken-inline-math` | "math equations go on each line"; "n+" and "1" split across lines |
+| `wall-of-text`, `filler-prose` | "bloatware with dead sentences" |
+| `linear-motion`, `hover-zoom`, `anchor-jump` | "bland and linear", "zoom", "JUMP" |
+| `tall-figure` | "Play scrolls the curve away" |
+| `clipped-math` | "centring hides the left-hand expressions"; a formula scrolling silently inside its box |
+| `mark-through-label` | "rings cut through the P₁ label" |
+| drag-to-edge test | "dragging P₁ to the edge sends its label offscreen" |
+| `mixed-notation` | "P0" in figures, P₀ in prose |
+| `dark-only`, `palette-tokens`, `selection-not-inverted`, `no-mermaid` | dark terminal palette, hand-drawn SVG |
+
+Correctness comes first: a passing taste run never excuses an unverified number or a frame that shows an untrue state.

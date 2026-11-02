@@ -1,11 +1,17 @@
-import { createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
+import { type JSX, createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
 import type { Scene } from "../post/scene/clock";
 import { animationRail, playheadGrabOffset } from "./timeline-model";
 import { PathPlayhead } from "./PathPlayhead";
 import "./curve-timeline.css";
 
 /** One continuous time control; normal-flow buttons select exact beat starts. */
-export function CurveTimeline(props: { scene: Scene; label: string }) {
+export function CurveTimeline(props: {
+  scene: Scene;
+  label: string;
+  actions?: JSX.Element;
+  /** The figure rests on its opening picture: no step is marked as under way. */
+  idle?: boolean;
+}) {
   const scene = props.scene;
   const stops = [
     ...scene.beats.map((beat, i) => ({ label: beat.label, time: scene.start(i) })),
@@ -120,80 +126,89 @@ export function CurveTimeline(props: { scene: Scene; label: string }) {
       removeEventListener("resize", stopDragging);
     });
   });
+  const here = (i: number) =>
+    !props.idle && (scene.ended() ? i === stops.length - 1 : i === Math.max(0, scene.beat()));
+  const x = (time: number) => rail().pointAt((time / scene.length) * rail().length).x;
+  const center = (i: number) => (x(stops[i].time) + x(stops[i + 1].time)) / 2;
   const current = () => (scene.ended() ? "End" : scene.beats[Math.max(0, scene.beat())]?.label);
   return (
     <div class="nk-timeline" data-nk-timeline aria-label={props.label}>
-      <div
-        class="nk-timeline-slider"
-        ref={root}
-        role="slider"
-        tabIndex={0}
-        aria-label={props.label}
-        aria-orientation="horizontal"
-        aria-valuemin={0}
-        aria-valuemax={scene.length}
-        aria-valuenow={scene.t()}
-        aria-valuetext={`${current()}, ${Math.round(fraction() * 100)} percent`}
-        onPointerDown={down}
-        onPointerMove={(event) => {
-          if (drag?.pointer === event.pointerId) scrub(event);
-        }}
-        onPointerUp={finish}
-        onPointerCancel={finish}
-        onLostPointerCapture={finish}
-        onKeyDown={key}
-      >
-        <svg ref={svg} width={width()} height="88" viewBox={`0 0 ${width()} 88`} aria-hidden="true">
-          <path class="nk-timeline-hit" d={rail().path} />
-          <path class="nk-timeline-rail" d={rail().path} />
-          <For each={stops}>
-            {(stop) => {
-              const point = () => rail().pointAt((stop.time / scene.length) * rail().length);
-              return (
-                <line
-                  class="nk-timeline-beat"
-                  x1={point().x}
-                  x2={point().x}
-                  y1={point().y - 4}
-                  y2={point().y + 4}
-                />
-              );
+      <div class="nk-timeline-transport">
+        {props.actions}
+        <div class="nk-timeline-track">
+          <div
+            class="nk-timeline-slider"
+            ref={root}
+            role="slider"
+            tabIndex={0}
+            aria-label={props.label}
+            aria-orientation="horizontal"
+            aria-valuemin={0}
+            aria-valuemax={scene.length}
+            aria-valuenow={scene.t()}
+            aria-valuetext={`${current()}, ${Math.round(fraction() * 100)} percent`}
+            onPointerDown={down}
+            onPointerMove={(event) => {
+              if (drag?.pointer === event.pointerId) scrub(event);
             }}
-          </For>
-          <PathPlayhead class="nk-timeline-thumb" rail={rail()} distance={distance()} />
-        </svg>
-      </div>
-      <p class="nk-timeline-current">
-        {current()} <span>{Math.round(fraction() * 100)}%</span>
-      </p>
-      <div class="nk-timeline-labels">
-        <For each={stops}>
-          {(stop, i) => (
-            <button
-              type="button"
-              class="nk-timeline-label"
-              data-active={
-                (scene.ended() ? i() === stops.length - 1 : i() === Math.max(0, scene.beat()))
-                  ? ""
-                  : undefined
-              }
-              aria-current={
-                (scene.ended() ? i() === stops.length - 1 : i() === Math.max(0, scene.beat()))
-                  ? "step"
-                  : undefined
-              }
-              onClick={() => {
-                stopDragging();
-                select(stop.time);
-              }}
+            onPointerUp={finish}
+            onPointerCancel={finish}
+            onLostPointerCapture={finish}
+            onKeyDown={key}
+          >
+            <svg
+              ref={svg}
+              width={width()}
+              height="64"
+              viewBox={`0 0 ${width()} 64`}
+              aria-hidden="true"
             >
-              <span class="nk-timeline-number" aria-hidden="true">
-                {i() === stops.length - 1 ? "↳" : String(i() + 1).padStart(2, "0")}
-              </span>
-              <span>{stop.label}</span>
-            </button>
-          )}
-        </For>
+              <path class="nk-timeline-hit" d={rail().path} />
+              <path class="nk-timeline-rail" d={rail().path} />
+              <For each={stops}>
+                {(stop) => {
+                  const point = () => rail().pointAt((stop.time / scene.length) * rail().length);
+                  return (
+                    <line
+                      class="nk-timeline-beat"
+                      x1={point().x}
+                      x2={point().x}
+                      y1={point().y - 4}
+                      y2={point().y + 4}
+                    />
+                  );
+                }}
+              </For>
+              <PathPlayhead class="nk-timeline-thumb" rail={rail()} distance={distance()} />
+            </svg>
+          </div>
+          {/* Each label sits under the middle of the beat it names; End sits at the end. */}
+          <div class="nk-timeline-labels">
+            <For each={stops}>
+              {(stop, i) => (
+                <button
+                  type="button"
+                  class="nk-timeline-label"
+                  data-end={i() === stops.length - 1 ? "" : undefined}
+                  aria-label={i() === stops.length - 1 ? stop.label : undefined}
+                  style={i() === stops.length - 1 ? undefined : { left: `${center(i())}px` }}
+                  data-active={here(i()) ? "" : undefined}
+                  aria-current={here(i()) ? "step" : undefined}
+                  onClick={() => {
+                    stopDragging();
+                    select(stop.time);
+                  }}
+                >
+                  {i() === stops.length - 1 ? (
+                    <span aria-hidden="true">⇥</span>
+                  ) : (
+                    <span>{stop.label}</span>
+                  )}
+                </button>
+              )}
+            </For>
+          </div>
+        </div>
       </div>
     </div>
   );

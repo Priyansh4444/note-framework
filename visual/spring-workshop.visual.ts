@@ -61,7 +61,10 @@ for (const width of [320, 390, 768, 1440])
       expect(h).toBeGreaterThanOrEqual(44);
     }
     await root.screenshot({ path: info.outputPath("dark.png") });
-    await page.getByRole("button", { name: "Paper off", exact: true }).click();
+    const paper = page.getByRole("button", { name: "Paper", exact: true });
+    await expect(paper).toHaveAttribute("aria-pressed", "false");
+    await paper.click();
+    await expect(paper).toHaveAttribute("aria-pressed", "true");
     await root.screenshot({ path: info.outputPath("paper.png") });
     await grip.press(" ");
     await expect(root).toHaveAttribute("data-active", "true");

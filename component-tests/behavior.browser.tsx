@@ -67,9 +67,9 @@ test("all recipes update the selected visual without replacing persistent drawin
   expect(canvas).not.toBeNull();
   expect(layer).not.toBeNull();
   expect(marks).toHaveLength(240);
-  await page.getByRole("button", { name: "Straight", exact: true }).click();
-  await page.getByRole("button", { name: "Chords", exact: true }).click();
-  await page.getByRole("button", { name: "Hatching", exact: true }).click();
+  await page.getByRole("radio", { name: "Straight", exact: true }).click();
+  await page.getByRole("radio", { name: "Chords", exact: true }).click();
+  await page.getByRole("radio", { name: "Hatching", exact: true }).click();
   expect(container.querySelector("canvas")).toBe(canvas);
   expect(container.querySelector('[data-layer-id="guides"]')).toBe(layer);
   expect([...container.querySelectorAll(".nk-ink-mark")]).toEqual(marks);

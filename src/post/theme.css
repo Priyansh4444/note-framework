@@ -23,9 +23,32 @@
   --diagram-red: var(--bad);
   --diagram-magenta: #ee64ac;
   --diagram-faint: #777777;
+  /* Surfaces and depth */
+  --plate: #101214;
+  --overlay: rgb(14 14 13 / 92%);
+  --scrim: rgb(8 8 7 / 60%);
+  --shadow: rgb(0 0 0 / 45%);
+  --glow: rgb(246 243 236 / 35%);
+  --wash: rgb(224 224 224 / 4%);
+  /* Code (measured GitHub Dark) */
+  --code-text: #e1e4e8;
+  --code-rule: #ffffff26;
+  --code-comment: #958f85;
+  --code-dim: #6a6a6a;
+  --code-faint: #4a4a4a;
 }
 
 ::selection {
   color: var(--bg);
   background: var(--text);
+}
+html {
+  scroll-behavior: smooth;
+  scroll-padding-block-start: 2rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

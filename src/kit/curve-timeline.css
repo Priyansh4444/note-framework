@@ -3,9 +3,21 @@
   width: 100%;
   color: var(--muted, #aaa);
 }
+.nk-timeline-transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0 8px;
+}
+.nk-timeline-transport > .nk-experiment-actions {
+  min-height: 64px;
+  box-sizing: border-box;
+  align-items: flex-start;
+  padding-top: 10px;
+}
 .nk-timeline-slider {
   width: 100%;
-  height: 88px;
+  height: 64px;
   min-height: 44px;
   border-radius: 4px;
   outline: none;
@@ -52,65 +64,42 @@
 .nk-timeline-slider:focus-visible .nk-timeline-thumb-focus {
   opacity: 1;
 }
-.nk-timeline .nk-timeline-current {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  margin: 0 0 8px;
-  font: 15px/1.4 var(--serif, Georgia, serif);
+.nk-timeline-track {
+  flex: 1 1 96px;
+  min-width: 96px;
+  position: relative;
 }
-.nk-timeline-current > span {
-  font-variant-numeric: tabular-nums;
-}
+/* Labels hang under their beats on the rail: one line each, centred on the span. */
 .nk-timeline-labels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 16px;
-  min-width: 0;
+  position: relative;
+  height: 44px;
 }
 .nk-timeline-label {
-  position: static;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
   min-width: 44px;
-  max-width: 100%;
   min-height: 44px;
   box-sizing: border-box;
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   padding: 10px 4px;
   border: 0;
   border-radius: 4px;
   background: transparent;
   color: var(--muted, #aaa);
-  font: 16px/1.4 var(--serif, Georgia, serif);
-  text-align: left;
+  font: 15px/1.4 var(--serif, Georgia, serif);
+  white-space: nowrap;
   cursor: pointer;
-  transition:
-    color var(--nk-motion-fast, 160ms) var(--nk-motion-ease, cubic-bezier(0.23, 1, 0.32, 1)),
-    background-color var(--nk-motion-fast, 160ms)
-      var(--nk-motion-ease, cubic-bezier(0.23, 1, 0.32, 1));
 }
-.nk-timeline-label > span:last-child {
-  overflow-wrap: anywhere;
-}
-.nk-timeline-number {
-  flex: 0 0 18px;
-  color: var(--faint, #888);
-  font: 11px/1.5 var(--mono, monospace);
+.nk-timeline-label[data-end] {
+  right: 0;
+  transform: none;
 }
 .nk-timeline-label[data-active] {
   color: var(--bright, #eee);
-  background: var(--code-bg, rgb(255 255 255 / 4%));
-}
-.nk-timeline-label[data-active] .nk-timeline-number {
-  color: var(--diagram-blue, #87c5d1);
 }
 .nk-timeline-label:focus-visible {
   outline: 2px solid var(--diagram-blue, #87c5d1);
   outline-offset: 2px;
-}
-.nk-timeline-label:active {
-  background: var(--rule, #444);
 }
 @media (hover: hover) and (pointer: fine) {
   .nk-timeline-label:hover {

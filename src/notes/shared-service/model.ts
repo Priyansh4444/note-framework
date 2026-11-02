@@ -66,10 +66,10 @@ export type ServiceFrame = Readonly<{
 }>;
 
 const beats: readonly Beat[] = [
-  { label: "Start one service", ms: 3700 },
-  { label: "Join the same work", ms: 2800 },
-  { label: "Add separate work", ms: 4300 },
-  { label: "Return to subscribers", ms: 6000 },
+  { label: "Start", ms: 3700 },
+  { label: "Join", ms: 2800 },
+  { label: "Add work", ms: 4300 },
+  { label: "Return", ms: 6000 },
 ];
 const stamp = (atMs: number, id: string, event: ServiceEvent): Stamp => ({ atMs, id, event });
 const create = (session: SessionId): Request => ({ kind: "create", session });

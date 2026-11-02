@@ -18,7 +18,6 @@ export function mountCurveTimelineFixture() {
         scene={scene}
         timeline="Scene position"
         question="Follow the same scene clock"
-        actionsPlacement="bottom"
         controls={<span>One seekable picture</span>}
         caption="Drag the blue line along the curve, or choose a checkpoint."
       >

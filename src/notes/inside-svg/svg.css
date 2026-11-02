@@ -138,6 +138,14 @@
   margin: 0 9px;
   color: var(--faint);
 }
+@media (max-width: 600px) {
+  .note-inside-svg .svg-order-strip ol {
+    font-size: 15px;
+  }
+  .note-inside-svg .svg-order-strip li:not(:last-child)::after {
+    margin: 0 5px;
+  }
+}
 .note-inside-svg .svg-reason {
   margin-top: 24px;
   border-top: 1px solid var(--rule);

@@ -144,7 +144,8 @@ export const Steps: Component<{
               </Show>
             </span>
             <span class="nk-steps-rhs">
-              <Tex tex={`\\displaystyle ${rhs}`} />
+              {/* A row with a left side states "= rhs"; a row without one continues the line above. */}
+              <Tex tex={`\\displaystyle ${lhs ? "{}=" : ""}${rhs}`} />
             </span>
             <span class="nk-steps-why">{why}</span>
           </>

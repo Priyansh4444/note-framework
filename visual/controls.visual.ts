@@ -4,7 +4,7 @@ for (const width of [1280, 390, 320]) {
   test(`disclosure focus belongs to its text or marker at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/notes/framework-demo");
-    const summary = page.locator("#mix .bz-deeper > summary");
+    const summary = page.locator("#mix .nk-more > summary").first();
     await summary.focus();
     await expect(summary).toBeFocused();
     // A full-width summary is still a full-width target; its focus cue must stay local.

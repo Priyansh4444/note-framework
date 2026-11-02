@@ -63,13 +63,14 @@ export function curvedRail(
 export function animationRail(width: number): Rail {
   if (!Number.isFinite(width) || width < 96)
     throw new Error("Animation rail needs at least 96 pixels.");
-  const left = { x: 24, y: 44 },
-    middle = { x: width / 2, y: 44 },
-    right = { x: width - 24, y: 44 };
+  // The same shallow S as before (±22px), in a 64px band instead of 88px.
+  const left = { x: 24, y: 32 },
+    middle = { x: width / 2, y: 32 },
+    right = { x: width - 24, y: 32 };
   const quarter = (width - 48) / 4;
   return sampledRail([
-    { from: left, control: { x: left.x + quarter, y: -4 }, to: middle },
-    { from: middle, control: { x: middle.x + quarter, y: 92 }, to: right },
+    { from: left, control: { x: left.x + quarter, y: -12 }, to: middle },
+    { from: middle, control: { x: middle.x + quarter, y: 76 }, to: right },
   ]);
 }
 

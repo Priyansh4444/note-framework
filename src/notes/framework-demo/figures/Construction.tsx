@@ -1,7 +1,7 @@
-import { batch, createSignal, For, onMount } from "solid-js";
-import { DisclosureSummary, createScene, createPlayback, Experiment } from "../../../kit";
+import { batch, createSignal, onMount } from "solid-js";
+import { Action, Choice, Toolbar, createScene, createPlayback, Experiment } from "../../../kit";
 import { CurveScene } from "../bezier/CurveScene";
-import { pointAt, PRESETS } from "../bezier/model";
+import { PRESETS } from "../bezier/model";
 import {
   moved,
   movePoint,
@@ -12,116 +12,77 @@ import {
 } from "../bezier/store";
 
 export function Construction() {
-  const scene = createScene([
-    { label: "Near start", ms: 1800 },
-    { label: "Middle mixes", ms: 2400 },
-    { label: "Near end", ms: 1800 },
-  ]);
+  // One beat, named for what happens in it: t sweeps and every row of mixes moves together.
+  const scene = createScene([{ label: "Sweep t", ms: 6000 }]);
+  // The full range: B(t) draws under the handles, so P₀ and P₃ stay visible at the ends.
   const playback = createPlayback(scene, { min: 0, max: 1, initial: 0.5 });
   const tNow = playback.value;
   onMount(() => {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) scene.seek(scene.length);
   });
-  const [showGuides, setShowGuides] = createSignal(false);
-  const guides = showGuides;
+  const [guides, setGuides] = createSignal(true);
   const take = playback.pause;
-  const b = () => pointAt(points(), tNow());
+  const shown = () => (guides() ? 1 : 0);
   return (
     <Experiment
       timeline="Curve playback"
       id="construction"
       scene={scene}
-      question="Drag a coloured dot to bend the line."
-      details={
-        <details class="bz-numbers">
-          <DisclosureSummary>See the position numbers</DisclosureSummary>
-          <p class="bz-readout" aria-live={scene.playing() ? "off" : "polite"}>
-            <span>
-              t = <b>{tNow().toFixed(2)}</b>
-            </span>
-            <span>
-              B(t) = (<b>{Math.round(b()[0])}</b>, <b>{Math.round(b()[1])}</b>)
-            </span>
-          </p>
-        </details>
-      }
+      question="Can you bend the curve without moving its ends?"
       controls={
-        <>
-          <div class="bz-presets" role="group" aria-label="Curve shape">
-            <span>Try a shape</span>
-            <For each={PRESETS}>
-              {(preset) => (
-                <button
-                  type="button"
-                  aria-pressed={selectedPreset() === preset.id}
-                  onClick={() =>
-                    batch(() => {
-                      take();
-                      selectPreset(preset.id);
-                    })
-                  }
-                >
-                  {preset.label}
-                </button>
-              )}
-            </For>
-          </div>
-          <div class="bz-simple-actions">
-            <button
-              type="button"
-              class="bz-reset"
-              aria-pressed={guides()}
-              onClick={() => {
-                const next = !guides();
+        <Toolbar
+          end={
+            <>
+              <Action
+                pressed={guides()}
+                onClick={() => {
+                  take();
+                  setGuides(!guides());
+                }}
+              >
+                Guide lines
+              </Action>
+              <Action
+                disabled={!moved()}
+                onClick={() => {
+                  take();
+                  resetPoints();
+                }}
+              >
+                Reset
+              </Action>
+            </>
+          }
+        >
+          <Choice
+            label="Curve shape"
+            options={PRESETS}
+            value={selectedPreset()}
+            onChange={(id) =>
+              batch(() => {
                 take();
-                setShowGuides(next);
-              }}
-            >
-              {guides() ? "Hide the guide lines" : "Show the guide lines"}
-            </button>
-            <button
-              type="button"
-              class="bz-reset"
-              disabled={!moved()}
-              onClick={() => {
-                take();
-                resetPoints();
-              }}
-            >
-              Reset shape
-            </button>
-          </div>
-        </>
+                selectPreset(id);
+              })
+            }
+          />
+        </Toolbar>
       }
       caption={
-        <>
-          Choose a shape or make your own. Use arrow keys on a coloured dot for small moves; Shift
-          makes bigger moves.
-        </>
+        <>Drag a coloured dot, or focus it and use the arrow keys. Shift makes larger moves.</>
       }
     >
       <CurveScene
         points={points()}
         t={tNow()}
-        drawn={tNow()}
+        drawn={1}
         ghost
         labels
-        levels={[guides() ? 1 : 0, guides() ? 1 : 0, 1]}
+        counts={guides()}
+        levels={[shown(), shown(), 1]}
         onMove={movePoint}
         onGrab={take}
-        label={`A smooth curve held by four coloured dots. The white dot is ${Math.round(tNow() * 100)} percent of the way through drawing it.`}
+        label={`A smooth curve held by four coloured dots. The white dot uses parameter t = ${tNow().toFixed(2)} on the complete curve.`}
       />
-      <ol hidden={!guides()} class="bz-chain" aria-label="Points at each level">
-        {["starting dots", "", "", "one final dot"].map((text, i) => (
-          <li
-            data-active=""
-            aria-label={`${4 - i} ${i === 0 ? "control points" : i === 3 ? "point: B(t)" : "mixed points"}`}
-          >
-            <span class="bz-chain-n">{4 - i}</span>
-            {text}
-          </li>
-        ))}
-      </ol>
     </Experiment>
   );
 }

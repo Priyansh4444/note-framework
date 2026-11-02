@@ -14,18 +14,14 @@ export default function Studies() {
     <main class="fw-page fw-studies">
       <Masthead here="studies" />
       <header class="study-intro">
-        <p class="fw-eyebrow">Studies in motion</p>
-        <h1>
-          Something
-          <br />
-          you can move.
-        </h1>
+        <p class="fw-eyebrow">Try a mechanism</p>
+        <h1>Five studies in motion.</h1>
         <p class="fw-dek">
-          Five small experiences. A fine line, a working mechanism, a shape in transition, a little
-          ink on paper. Open one and try it with your hand.
+          Five small experiences: a folio tray, a mechanical arm, a changing shape, ink on paper,
+          and a spring. Open one and see what stays connected as you move it.
         </p>
         <p>
-          <a class="study-open" href="/notes/framework-demo#patterns">
+          <a class="study-open" href="/docs#patterns">
             <ArrowLabel>Use the patterns in a note</ArrowLabel>
           </a>
         </p>
@@ -34,15 +30,6 @@ export default function Studies() {
         <For each={studies}>
           {(study, index) => (
             <article class="study-card" data-study={study.id}>
-              <a class="study-poster" href={study.href} tabindex="-1" aria-hidden="true">
-                <img
-                  src={`/studies/previews/${study.id}.webp`}
-                  width="720"
-                  height="450"
-                  alt=""
-                  loading={index() > 1 ? "lazy" : "eager"}
-                />
-              </a>
               <div class="study-card-body">
                 <p class="study-kicker">
                   <span>{String(index() + 1).padStart(2, "0")}</span>
@@ -57,6 +44,15 @@ export default function Studies() {
                   {study.credit} ↗
                 </a>
               </div>
+              <a class="study-poster" href={study.href} tabindex="-1" aria-hidden="true">
+                <img
+                  src={`/studies/previews/${study.id}.webp`}
+                  width="720"
+                  height="450"
+                  alt=""
+                  loading={index() > 1 ? "lazy" : "eager"}
+                />
+              </a>
             </article>
           )}
         </For>

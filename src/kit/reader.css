@@ -208,10 +208,9 @@
 }
 /* One map at a time: a page with its own in-flow Contents keeps that index on phones. */
 @media (max-width: 1439px) {
-  /* Below the masthead, a ruled band: the map, then the reading begins. */
+  /* Below the masthead: the map, then space, then the reading begins. */
   .nk-note .nk-reader-outline {
-    margin-bottom: 0;
-    border-bottom: 1px solid var(--rule);
+    margin-bottom: 1rem;
   }
   .nk-note .nk-reader-outline .nk-outline-slider {
     display: none;
@@ -327,7 +326,7 @@
   border-radius: 6px;
   background: var(--panel);
   color: var(--text);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 45%);
+  box-shadow: 0 8px 28px var(--shadow);
   font: 12px/1.5 var(--mono);
   pointer-events: auto;
   overflow-wrap: anywhere;

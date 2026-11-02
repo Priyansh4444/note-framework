@@ -149,7 +149,8 @@ test("hidden gate, replay and reduced-motion checkpoint steps remain silent", as
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.emulateMedia({ reducedMotion: "reduce" });
   const before = await probe(page);
-  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  // Restart is a seek to the first step, which stays silent.
+  await page.getByRole("slider", { name: "Request time", exact: true }).press("Home");
   await page.getByRole("button", { name: "Next step", exact: true }).click();
   expect((await probe(page)).starts).toBe(before.starts);
   await expect(page.locator("figure")).toHaveAttribute("data-nk-scene-active", "false");

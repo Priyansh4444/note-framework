@@ -35,20 +35,22 @@ test("grabbing the curve slider pauses playback on pointer down", async ({ page 
 
 async function inspectCurve(page: import("@playwright/test").Page) {
   return page.locator("#construction").evaluate((el) => {
-    const points = [...el.querySelectorAll<SVGCircleElement>(".bz-dot")].map((n) => [
+    const points = [...el.querySelectorAll<SVGCircleElement>(".nk-handle-dot")].map((n) => [
       Number(n.getAttribute("cx")),
       Number(n.getAttribute("cy")),
     ]);
-    const t =
+    const u =
       Number(el.getAttribute("data-nk-scene-time")) /
       Number(el.getAttribute("data-nk-scene-length"));
+    // Kit playback eases its ends: t = (1 − cos πu) / 2.
+    const t = (1 - Math.cos(Math.PI * u)) / 2;
     const w = [(1 - t) ** 3, 3 * t * (1 - t) ** 2, 3 * t * t * (1 - t), t ** 3];
     const expected = [0, 1].map((axis) =>
       w.reduce((sum, weight, i) => sum + weight * points[i][axis], 0),
     );
-    const dot = el.querySelector(".bz-point")!;
+    const dot = el.querySelector(".nk-point")!;
     return {
-      t,
+      t: u,
       expected,
       actual: [Number(dot.getAttribute("cx")), Number(dot.getAttribute("cy"))],
       position:
@@ -121,20 +123,9 @@ test("reduced-motion playback stays still while manual seeking remains usable", 
   );
 });
 
-test("line mixing, weights and subdivisions keep their measured models during playback", async ({
-  page,
-}) => {
+test("line mixing and subdivision keep their measured models during playback", async ({ page }) => {
   await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
-  // The more detailed weights explanation is intentionally folded on the beginner page.
-  await page.locator("#weight-experiment").evaluate((el) => {
-    for (let p = el.parentElement; p; p = p.parentElement)
-      if (p instanceof HTMLDetailsElement) p.open = true;
-  });
-  for (const selector of [
-    "#mix figure[data-nk-scene]",
-    "#weight-experiment",
-    "#flatten-experiment",
-  ]) {
+  for (const selector of ["#mix figure[data-nk-scene]", "#flatten-experiment"]) {
     const root = page.locator(selector).first();
     await root.scrollIntoViewIfNeeded();
     const action = root.locator("[data-nk-scene-action]");
@@ -154,10 +145,9 @@ test("line mixing, weights and subdivisions keep their measured models during pl
       const t =
         Number(el.getAttribute("data-nk-scene-time")) /
         Number(el.getAttribute("data-nk-scene-length"));
-      const sum = el.querySelector(".bz-weights-sum dd")?.textContent;
-      const point = el.querySelector<SVGCircleElement>(".bz-point");
-      const end = el.querySelector<SVGLineElement>(".bz-mix-done");
-      const chordDots = [...el.querySelectorAll<SVGCircleElement>(".bz-chord-dot")].filter(
+      const point = el.querySelector<SVGCircleElement>(".nk-handle-dot");
+      const end = el.querySelector<SVGLineElement>("line.nk-curve.nk-blue");
+      const chordDots = [...el.querySelectorAll<SVGCircleElement>(".nk-dot[visibility]")].filter(
         (n) =>
           getComputedStyle(n).display !== "none" && getComputedStyle(n).visibility !== "hidden",
       );
@@ -165,22 +155,39 @@ test("line mixing, weights and subdivisions keep their measured models during pl
         t,
         position,
         length: Number(el.getAttribute("data-nk-scene-length")),
-        pieces: Number(el.querySelector(".bz-piece-count")?.textContent),
-        sum: sum ? Number(sum) : null,
+        pieces: Number(el.querySelector("figcaption .bz-count")?.textContent),
         point: point ? [Number(point.getAttribute("cx")), Number(point.getAttribute("cy"))] : null,
         lineEnd: end ? [Number(end.getAttribute("x2")), Number(end.getAttribute("y2"))] : null,
         chords: chordDots.length,
+        state: el.querySelector("[data-refinement-state]")?.getAttribute("data-refinement-state"),
+        phase: Number(
+          el.querySelector("[data-refinement-phase]")?.getAttribute("data-refinement-phase"),
+        ),
+        caption: el.querySelector("figcaption")?.textContent,
+        vertices: el.querySelectorAll("[data-refinement-dot]").length,
       };
     });
     if (selector.startsWith("#mix")) {
-      expect(model.point![0]).toBeCloseTo(80 + 400 * model.t, 5);
-      expect(model.point![1]).toBeCloseTo(120 - 60 * model.t, 5);
+      // Continuous playback eases its ends: t = (1 − cos πu) / 2.
+      const t = (1 - Math.cos(Math.PI * model.t)) / 2;
+      expect(model.point![0]).toBeCloseTo(80 + 400 * t, 5);
+      expect(model.point![1]).toBeCloseTo(120 - 60 * t, 5);
       expect(model.lineEnd).toEqual(model.point);
-    } else if (selector.startsWith("#weight")) expect(model.sum).toBeCloseTo(1, 3);
-    else {
+    } else {
       expect(model.position).toBeCloseTo(model.t * model.length, 6);
-      expect(model.pieces).toBe(Math.min(32, Math.floor(model.t * 32) + 1));
-      expect(model.chords).toBe(model.pieces + 1);
+      const phase = model.phase;
+      const n = 2 ** Math.floor(phase);
+      expect(model.vertices).toBe(17);
+      if (Number.isInteger(phase)) {
+        expect(model.state).toBe("settled");
+        expect(model.pieces).toBe(n);
+        expect(model.chords).toBe(n === 16 ? 0 : n + 1);
+      } else {
+        expect(model.state).toBe("splitting");
+        expect(model.caption).toContain(`Splitting ${n}`);
+        expect(Number.isNaN(model.pieces)).toBe(true);
+        expect(model.chords).toBe(n === 8 ? 9 : n * 2 + 1);
+      }
     }
   }
 });
@@ -188,7 +195,7 @@ test("line mixing, weights and subdivisions keep their measured models during pl
 test("explanations open smoothly and keep native reduced-motion behavior", async ({ page }) => {
   await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
   await page.evaluate(() => document.fonts.ready);
-  const details = page.locator("#mix .bz-deeper").first();
+  const details = page.locator("#mix .nk-more").first();
   const summary = details.locator(":scope > summary");
   await summary.scrollIntoViewIfNeeded();
   await summary.click();
@@ -260,55 +267,94 @@ test("mix labels stay separate throughout the sweep, including coincident endpoi
   }
 });
 
-test("curved refinement keeps exact whole-piece bins, endpoints and keyboard", async ({ page }) => {
+test("curved refinement names splits honestly and keeps endpoints and keyboard", async ({
+  page,
+}) => {
   await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
   const root = page.locator("#flatten-experiment");
   const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
-  await expect(root.locator(".bz-piece-count")).toHaveText("4");
-  await expect(slider).toHaveAttribute("aria-valuemin", "0");
-  await expect(slider).toHaveAttribute("aria-valuemax", "9600");
-  // Retain the fine probes on either side of the old percentage input's bin boundaries.
-  for (const fraction of [0.031, 0.032, 0.499, 0.501, 0.999]) {
-    await scrubTo(page, slider, fraction);
-    const n = Math.min(32, Math.floor(fraction * 32) + 1);
-    await expect(root.locator(".bz-piece-count")).toHaveText(String(n));
-    expect(await root.locator('.bz-chord-dot[visibility="visible"]').count()).toBe(n + 1);
-    expect(Number(await root.getAttribute("data-nk-scene-time")) / 9600).toBeCloseTo(fraction, 4);
-  }
-  // Beat buttons select exact starts, including the n=17 boundary; arrows move 1%.
-  for (const [beat, keys, fraction] of [
-    ["1–8 pieces", [], 0],
-    ["1–8 pieces", ["ArrowRight", "ArrowRight", "ArrowRight"], 0.03],
-    ["1–8 pieces", ["ArrowRight", "ArrowRight", "ArrowRight", "ArrowRight"], 0.04],
-    ["17–24 pieces", ["ArrowLeft"], 0.49],
-    ["17–24 pieces", [], 0.5],
-    ["17–24 pieces", ["ArrowRight"], 0.51],
-    ["End", ["ArrowLeft"], 0.99],
-    ["End", [], 1],
-  ] as const) {
-    await root.getByRole("button", { name: beat, exact: false }).click();
-    for (const key of keys) await slider.press(key);
-    const n = Math.min(32, Math.floor(fraction * 32) + 1);
-    await expect(root.locator(".bz-piece-count")).toHaveText(String(n));
-    expect(await root.locator('.bz-chord-dot[visibility="visible"]').count()).toBe(n + 1);
-    expect(Number(await root.getAttribute("data-nk-scene-time"))).toBeCloseTo(fraction * 9600, 6);
+  const LENGTH = Number(await slider.getAttribute("aria-valuemax"));
+  async function check(fraction: number) {
+    const time = Number(await slider.getAttribute("aria-valuenow"));
+    expect(time / LENGTH).toBeCloseTo(fraction, 4);
+    const phase = Number(
+      await root.locator("[data-refinement-phase]").getAttribute("data-refinement-phase"),
+    );
+    const n = 2 ** Math.floor(phase);
+    if (Number.isInteger(phase)) {
+      await expect(root.locator("figcaption .bz-count")).toHaveText(String(n));
+      expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(
+        n === 16 ? 0 : n + 1,
+      );
+    } else {
+      await expect(root.locator("figcaption .bz-count")).toHaveCount(0);
+      await expect(root.locator("figcaption")).toContainText(`Splitting ${n}`);
+      expect(await root.locator('.nk-dot[visibility="visible"]').count()).toBe(
+        n === 8 ? 9 : n * 2 + 1,
+      );
+    }
     await expect(slider).toHaveAttribute(
       "aria-valuetext",
       new RegExp(`${Math.round(fraction * 100)} percent$`),
     );
   }
-  for (const [key, fraction, n] of [
-    ["Home", 0, "1"],
-    ["ArrowRight", 0.01, "1"],
-    ["End", 1, "32"],
-    ["ArrowLeft", 0.99, "32"],
+  await expect(root.locator("figcaption .bz-count")).toHaveText("4");
+  await expect(slider).toHaveAttribute("aria-valuemin", "0");
+  await expect(slider).toHaveAttribute("aria-valuemax", String(LENGTH));
+  for (const fraction of [0.19, 0.21, 0.59, 0.61, 0.999]) {
+    await scrubTo(page, slider, fraction);
+    await check(fraction);
+  }
+  for (const [beat, keys, fraction] of [
+    ["Double n", [], 0],
+    ["Double n", ["ArrowRight", "ArrowRight", "ArrowRight"], 0.03],
+    ["End", ["ArrowLeft"], 0.99],
+    ["End", [], 1],
+  ] as const) {
+    await root.getByRole("button", { name: beat, exact: true }).click();
+    for (const key of keys) await slider.press(key);
+    await check(fraction);
+  }
+  for (const [key, fraction] of [
+    ["Home", 0],
+    ["ArrowRight", 0.01],
+    ["End", 1],
+    ["ArrowLeft", 0.99],
   ] as const) {
     await slider.press(key);
-    expect(Number(await slider.getAttribute("aria-valuenow"))).toBeCloseTo(fraction * 9600, 6);
-    await expect(root.locator(".bz-piece-count")).toHaveText(n);
+    await check(fraction);
     await expect(root.locator("[data-nk-scene-action]")).not.toHaveAttribute(
       "data-nk-scene-action",
       "pause",
     );
   }
+});
+
+test("the weights chart knob sets t by pointer and keys; the weights always sum to one", async ({
+  page,
+}) => {
+  await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
+  const root = page.locator("#weight-experiment");
+  await root.scrollIntoViewIfNeeded();
+  const knob = root.getByRole("slider", { name: "Chart cursor t", exact: true });
+  const sum = () =>
+    root.evaluate((el) =>
+      [...el.querySelectorAll(".nk-diagram")[1].querySelectorAll(".nk-point")].reduce(
+        (a, n) => a + (148 - Number(n.getAttribute("cy"))) / 132,
+        0,
+      ),
+    );
+  for (const key of ["Home", "ArrowRight", "End", "ArrowLeft"]) {
+    await knob.press(key);
+    expect(await sum()).toBeCloseTo(1, 9);
+  }
+  await knob.press("Home");
+  await expect(knob).toHaveAttribute("aria-valuenow", "0");
+  const box = (await knob.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2 + 200, box.y + box.height / 2);
+  await page.mouse.up();
+  expect(Number(await knob.getAttribute("aria-valuenow"))).toBeGreaterThan(0.2);
+  expect(await sum()).toBeCloseTo(1, 9);
 });

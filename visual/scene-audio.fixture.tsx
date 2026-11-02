@@ -44,7 +44,6 @@ export function mountSceneAudioFixture() {
           scene={scene}
           timeline="Request time"
           sound={plan}
-          actionsPlacement="bottom"
           question="Watch and hear one scene"
           caption="Original quiet synthesis; sound starts off."
         >

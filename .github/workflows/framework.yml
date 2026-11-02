@@ -21,7 +21,8 @@ jobs:
         env:
           VITE_VISUAL_BASELINE: ubuntu-24
       - run: bun run public:build
-      - run: bun run test:components
+      - id: page_tests
+        run: bun run test:components
         env:
           VISUAL_BASELINE: ubuntu-24
       - name: Test the public Worker and account UI
@@ -39,6 +40,11 @@ jobs:
           done
           curl --fail --silent http://localhost:3160/healthz
           PUBLIC_TEST_URL=http://localhost:3160 UI_TEST_URL=http://localhost:3160 bunx playwright test visual/public-account.visual.ts visual/public-navigation.visual.ts
+      - name: Capture Ubuntu reference candidates after a page-test failure
+        if: failure() && steps.page_tests.outcome == 'failure'
+        env:
+          VISUAL_BASELINE: ubuntu-24
+        run: bunx playwright test visual/controls.visual.ts visual/motion.visual.ts --update-snapshots --output artifacts/baseline-candidates
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: failure()
         with:
@@ -47,4 +53,5 @@ jobs:
           path: |
             .vitest/
             artifacts/
+            visual/baselines/ubuntu-24/
           retention-days: 7

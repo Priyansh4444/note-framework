@@ -3,6 +3,14 @@ import { deCasteljau, lerp, pointAt, type Point } from "../examples/de-casteljau
 export type { Point };
 export type Cubic = readonly [Point, Point, Point, Point];
 
+/** Map each control point, keeping exactly four. */
+export const mapCubic = (p: Cubic, f: (q: Point, i: number) => Point): Cubic => [
+  f(p[0], 0),
+  f(p[1], 1),
+  f(p[2], 2),
+  f(p[3], 3),
+];
+
 /** The figure's coordinate box. Control points stay inside it. */
 export const BOX = { x: 0, y: 0, w: 560, h: 340, pad: 24 } as const;
 export const START: Cubic = [
@@ -90,24 +98,28 @@ export const chords = (p: Cubic, n: number): Point[] =>
 const dist = (a: Point, b: Point) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 
 /**
- * Largest gap, sampled, between the curve and the chord at the same parameter.
+ * The largest sampled gap between the curve and its n uniform chords, and where it is.
  * Sampling can only miss a larger gap, so this is a lower estimate of the true maximum.
  */
-export function chordError(p: Cubic, n: number, perSegment = 64): number {
-  let worst = 0;
+export function worstChordGap(p: Cubic, n: number, perSegment = 64) {
+  let error = 0,
+    at: [Point, Point] = [p[0], p[0]];
   for (let k = 0; k < n; k++) {
     const a = pointAt(p, k / n),
       b = pointAt(p, (k + 1) / n);
     for (let s = 0; s <= perSegment; s++) {
       const u = s / perSegment;
-      worst = Math.max(
-        worst,
-        dist(pointAt(p, (k + u) / n), [lerp(a[0], b[0], u), lerp(a[1], b[1], u)]),
-      );
+      const q = pointAt(p, (k + u) / n),
+        c: Point = [lerp(a[0], b[0], u), lerp(a[1], b[1], u)];
+      const d = dist(q, c);
+      if (d > error) [error, at] = [d, [q, c]];
     }
   }
-  return worst;
+  return { error, at };
 }
+
+export const chordError = (p: Cubic, n: number, perSegment = 64) =>
+  worstChordGap(p, n, perSegment).error;
 
 /** max‖B''‖ for a cubic: B'' is linear in t, so the largest value is at an end. */
 export const maxSecond = (p: Cubic) =>

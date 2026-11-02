@@ -383,7 +383,7 @@ test("production probe wraps aligned split rows and preserves manual views and e
         expect(motion.middle.height).toBeLessThan(motion.after.height - 0.2);
       }
       const tools = figure.locator("..").locator(".nk-code-source-tools");
-      await tools.locator("summary").click();
+      await tools.locator(".nk-code-source-toggle").click();
       const unified = tools.getByRole("button", { name: "Show unified diff", exact: true });
       const split = tools.getByRole("button", { name: "Show split diff", exact: true });
       expect(await unified.getAttribute("aria-pressed")).toBe("true");
@@ -435,7 +435,10 @@ test("production probe wraps aligned split rows and preserves manual views and e
         await page.setViewportSize({ width, height: 1000 });
       } else {
         expect(layout.scroll).toBeGreaterThan(layout.client);
-        await tools.locator(".nk-code-block-scroll-hint").waitFor({ state: "visible" });
+        await figure
+          .locator("..")
+          .locator(":scope > .nk-code-block-scroll-hint")
+          .waitFor({ state: "visible" });
         await tools.locator(".nk-code-inspector-render").focus();
         await page.keyboard.press("ArrowRight");
         expect(await listing.evaluate((pre) => pre.scrollLeft)).toBeGreaterThan(0);
@@ -479,8 +482,13 @@ test("production probe wraps aligned split rows and preserves manual views and e
       expect(await unified.getAttribute("aria-pressed")).toBe("true");
       expect(await listing.count()).toBe(1);
       expect(await tools.locator("[data-content]").count()).toBe(1);
-      await tools.locator(".nk-code-block-scroll-hint").waitFor({ state: "detached" });
-      expect(await tools.locator(".nk-code-block-scroll-hint").count()).toBe(0);
+      await figure
+        .locator("..")
+        .locator(":scope > .nk-code-block-scroll-hint")
+        .waitFor({ state: "detached" });
+      expect(
+        await figure.locator("..").locator(":scope > .nk-code-block-scroll-hint").count(),
+      ).toBe(0);
     }
   } finally {
     await browser.close();
