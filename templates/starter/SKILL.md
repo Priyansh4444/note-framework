@@ -26,3 +26,5 @@ For visual polish, read [taste](references/taste.md): editorial scale, restraine
 For mechanism-focused interactive articles, use [explorable explanations](../explorable-explanations/SKILL.md); its case studies are optional.
 
 For reusable dark visual patterns, read only the matching skill: [morphs](../morph-figures/SKILL.md), [layers](../layer-figures/SKILL.md), or [ink](../ink-figures/SKILL.md). Helpers own settling; use a scene for seekable mathematical time.
+
+For control feedback and a calmer reading path, use the local [design-engineering skill](../emil-design-eng/SKILL.md).

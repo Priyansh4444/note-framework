@@ -76,3 +76,5 @@ export {
   type InkScene,
   type BrushOptions,
 } from "./patterns/InkFigure";
+
+export { CopyButton, type CopyResult } from "./CopyButton";

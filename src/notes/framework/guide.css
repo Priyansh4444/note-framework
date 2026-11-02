@@ -122,10 +122,6 @@
   gap: 12px 20px;
   margin-top: 16px;
 }
-.fw-guide .fw-guide-prompt-actions [role="status"] {
-  color: var(--muted);
-  font-size: 16px;
-}
 .fw-guide .fw-guide-checklist {
   max-width: 660px;
   margin: 24px 0;

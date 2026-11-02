@@ -14,3 +14,5 @@
 - Use precise words to compress meaning, with a short visible first-use definition and hover/focus/tap reminder. Tautology means true under every truth assignment in classical propositional logic; it is not a synonym for an invariant or an empirical pattern.
 - Use sourced graphs and data analysis when they answer a comparison, distribution or trend question. Show units and distinguish observations from illustrative data. Hand-author diagrams in SVG; use strict KaTeX for math, never Mermaid.
 - Run the framework visual audit on declared alignment/spacing/visibility contracts and relevant figure states. Inspect screenshots too; diagnostics cannot infer every intended overlap or semantic mistake.
+
+- A chapter needs one main experiment, not a pile of pattern demonstrations. Use morph for corresponding forms, layers for contributions and ink for material; bind them to the subject model. Disclose optional derivations/references, keep first-use meanings visible, and verify that playback and copy feedback are operable and perceptible on phones.

@@ -1,6 +1,7 @@
 import { createEffect, createSignal, Show, onCleanup, onMount } from "solid-js";
 import "./code-block.css";
 import { tip } from "../post/scene/tooltip";
+import { CopyButton, type CopyResult } from "./CopyButton";
 import { mountCodeMorph } from "./code-morph";
 import type { CodeMorphPlan, CodeSide } from "./code-morph-plan";
 
@@ -48,7 +49,7 @@ export function CodeBlock(props: CodeBlockProps) {
   let updateOverflow = () => {};
   const [view, setView] = createSignal<"unified" | "split">("unified");
   const [scrollable, setScrollable] = createSignal(false);
-  const [copied, setCopied] = createSignal<"" | "Copied" | "Selected">("");
+  let active = true;
   const name = () => props.artifact.filename.split("/").at(-1) ?? props.artifact.filename;
   onMount(() => {
     shadow = host.attachShadow({ mode: "open" });
@@ -111,26 +112,22 @@ export function CodeBlock(props: CodeBlockProps) {
 
   // An opaque sandbox may refuse the async clipboard. The fallback copy event carries the
   // exact imported text (patch headers included); if even that is blocked, the code stays selected.
-  let reset: ReturnType<typeof setTimeout> | undefined;
-  const say = (state: "Copied" | "Selected") => {
-    clearTimeout(reset);
-    setCopied(state);
-    reset = setTimeout(() => setCopied(""), 1600);
-  };
   onCleanup(() => {
-    clearTimeout(reset);
+    active = false;
     clearTimeout(flashReset);
   });
-  const copy = async () => {
-    const text = props.artifact.source;
+  const copy = async (): Promise<CopyResult> => {
+    const artifact = props.artifact;
+    const text = artifact.source;
     try {
       await navigator.clipboard.writeText(text);
-      return say("Copied");
+      return "copied";
     } catch {}
+    if (!active || props.artifact !== artifact) throw new Error("Copy source changed.");
     mounted?.settle();
     const target = (toolsOpen() ? inspectorShadow : shadow)?.querySelector("pre");
     const selection = getSelection();
-    if (!target || !selection) return;
+    if (!target || !selection) throw new Error("No source selection available.");
     const range = document.createRange();
     range.selectNodeContents(target);
     selection.removeAllRanges();
@@ -150,7 +147,7 @@ export function CodeBlock(props: CodeBlockProps) {
     } finally {
       document.removeEventListener("copy", onCopy);
     }
-    say(exact ? "Copied" : "Selected");
+    return exact ? "copied" : "selected";
   };
 
   const choose = (next: CodeSide, animate = true) => {
@@ -272,18 +269,14 @@ export function CodeBlock(props: CodeBlockProps) {
                 </button>
               </div>
             </Show>
-            <button
-              type="button"
+            <CopyButton
+              label="Copy"
               class="nk-code-block-copy"
-              onClick={copy}
-              aria-label={`Copy ${props.artifact.kind === "diff" ? "patch" : "source"}`}
-            >
-              {copied() || "Copy"}
-            </button>
+              onCopy={copy}
+              resetKey={props.artifact}
+              ariaLabel={`Copy ${props.artifact.kind === "diff" ? "patch" : "source"}`}
+            />
           </div>
-          <span class="nk-code-block-status" role="status">
-            {copied()}
-          </span>
           <div
             ref={inspector}
             class="nk-code-inspector-render"

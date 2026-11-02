@@ -1,5 +1,6 @@
 import { ArrowLabel, DisclosureSummary } from "../../kit/parts";
-import { createSignal, Show, type Component } from "solid-js";
+import { Show, type Component } from "solid-js";
+import { CopyButton } from "../../kit/CopyButton";
 import { usePageHead } from "../../kit/note";
 import "./framework.css";
 import { UploadForm } from "./UploadForm";
@@ -62,17 +63,17 @@ const FrameworkHome: Component = () => {
     "Note Framework — notes you can play with",
     "A kit for short visual explanations: figures the reader can operate, terms explained in place, and a link you can share.",
   );
-  const [copied, setCopied] = createSignal(false);
   const prompt = () =>
     `Use ${location.origin}/llms.txt to create a compact, source-checked visual note about [topic] for [audience]. Explain terms, verify the diagrams, and give me the published link.`;
   const copyPrompt = async () => {
+    const target = document.querySelector<HTMLTextAreaElement>("#agent-prompt");
     try {
       await navigator.clipboard.writeText(prompt());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      return "copied" as const;
     } catch {
-      setCopied(false);
-      document.querySelector<HTMLTextAreaElement>("#agent-prompt")?.select();
+      if (!target?.isConnected) throw new Error("Prompt is no longer available.");
+      target.select();
+      return "selected" as const;
     }
   };
   return (
@@ -113,9 +114,12 @@ const FrameworkHome: Component = () => {
             Prompt
           </label>
           <textarea id="agent-prompt" rows="3" readOnly value={prompt()} />
-          <button type="button" class="fw-button" onClick={copyPrompt} aria-live="polite">
-            {copied() ? "Copied ✓" : "Copy prompt"}
-          </button>
+          <CopyButton
+            label="Copy prompt"
+            class="fw-button"
+            onCopy={copyPrompt}
+            resetKey={prompt()}
+          />
         </div>
         <ol class="fw-steps">
           <li>

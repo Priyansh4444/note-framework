@@ -54,3 +54,5 @@ Read this when authoring or condensing course notes, or polishing a note site's 
 ## Finish on the actual surface
 
 Run the project's archive/coverage guards, mathematical tests, typecheck, and per-note build. Verify direct routes and in-app transitions in a real browser at desktop and phone widths. Wait for the lazy page body before counting its content; a persistent global header is not proof that the new route is ready. Inspect screenshots and motion frames, preserve original figure nodes, and check TeX, links, tables, console errors, and overflow. Publish only through the configured per-note command within existing user authorization, verify the live artifact and requested downloads, and record the tested source revision.
+
+- A chapter needs one main experiment, not a pile of pattern demonstrations. Use morph for corresponding forms, layers for contributions and ink for material; bind them to the subject model. Disclose optional derivations/references, keep first-use meanings visible, and verify that playback and copy feedback are operable and perceptible on phones.

@@ -1,5 +1,5 @@
 import { createSignal, For, Match, Switch, onMount, onCleanup, type Component } from "solid-js";
-import { ArrowLabel, DisclosureSummary, CodeBlock, usePageHead } from "../../kit";
+import { ArrowLabel, DisclosureSummary, CodeBlock, CopyButton, usePageHead } from "../../kit";
 import { Footer, Masthead } from "./index";
 import { EXAMPLE } from "./home/links";
 import { Prose } from "./guide/Prose";
@@ -52,15 +52,9 @@ export const Docs: Component = () => {
     onCleanup(() => window.removeEventListener("hashchange", openLinkedSection));
   });
   const [prompt, setPrompt] = createSignal(firstPrompt(location.origin));
-  const [copyStatus, setCopyStatus] = createSignal("");
   const copyPrompt = async () => {
-    const text = prompt();
-    try {
-      await navigator.clipboard.writeText(text);
-      if (prompt() === text) setCopyStatus("Copied. Paste it into your agent to begin.");
-    } catch {
-      setCopyStatus("Select the prompt and copy it to paste into your agent.");
-    }
+    await navigator.clipboard.writeText(prompt());
+    return "copied" as const;
   };
   return (
     <main ref={root} class="fw-page fw-guide">
@@ -146,14 +140,15 @@ export const Docs: Component = () => {
                         value={prompt()}
                         onInput={(event) => {
                           setPrompt(event.currentTarget.value);
-                          setCopyStatus("");
                         }}
                       />
                       <div class="fw-guide-prompt-actions">
-                        <button class="fw-button" type="button" onClick={copyPrompt}>
-                          Copy prompt
-                        </button>
-                        <span role="status">{copyStatus()}</span>
+                        <CopyButton
+                          label="Copy prompt"
+                          class="fw-button"
+                          onCopy={copyPrompt}
+                          resetKey={prompt()}
+                        />
                       </div>
                     </div>
                     <p class="fw-guide-aside">
