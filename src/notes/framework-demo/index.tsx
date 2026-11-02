@@ -167,9 +167,10 @@ export default function Demo() {
               depend only on <Tex tex="t" />: drag a control point and the picture changes, but the
               chart does not.
             </p>
-            <Check q="Can P₁ ever carry half the weight?">
-              <p>No. Its weight 3t(1 − t)² is largest at t = 1/3, where it equals 4/9 ≈ 0.444.</p>
-            </Check>
+            <p>
+              <strong>Can P₁ ever carry half the weight?</strong> No. Its weight 3t(1 − t)² is
+              largest at t = 1/3, where it equals 4/9 ≈ 0.444.
+            </p>
           </More>
           <More summary="Why nested mixing gives these weights">
             <p>
@@ -220,12 +221,11 @@ export default function Demo() {
               C++20’s <code>std::lerp</code>, treats exactness and monotonicity as separate
               requirements. Here, exact endpoints matter more.
             </p>
-            <Check q="Why does (1 − t)a + tb return exactly b at t = 1?">
-              <p>
-                Every step is exact: 1 − 1 is 0, 0 · a is 0 for any finite a, 1 · b is b, and 0 + b
-                is b. No operation has anything to round.
-              </p>
-            </Check>
+            <p>
+              <strong>Why does (1 − t)a + tb return exactly b at t = 1?</strong> Every step is
+              exact: 1 − 1 is 0, 0 · a is 0 for any finite a, 1 · b is b, and 0 + b is b. No
+              operation has anything to round.
+            </p>
           </More>
         </Chapter>
 
@@ -276,9 +276,15 @@ export default function Demo() {
           </Check>
         </Chapter>
         <Chapter id="forms">
-          <p>Choose another form. The strips keep their order.</p>
+          <p>
+            Curve follows the Bézier path; Handles follows its control polygon; Straight joins the
+            endpoints. Follow the blue strip as you switch between them.
+          </p>
           <CurveMorphExample points={points()} />
-          <p>Your edits in the earlier pictures carry through here.</p>
+          <p>
+            Your earlier edits carry through. The in-between shapes are visual transitions, not new
+            Bézier calculations.
+          </p>
           <More summary="What if the path were painted?">
             <p>
               These brush marks are built from the same edited curve. Changing the material moves

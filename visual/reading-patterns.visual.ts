@@ -23,6 +23,22 @@ for (const width of [390, 1440])
     const snapshot = () => canvas.evaluate((n) => Reflect.get(n, "morphSnapshot")());
     const before = await snapshot();
     expect(before.contours).toHaveLength(24);
+    const accentPixels = () =>
+      canvas.evaluate((node: HTMLCanvasElement) => {
+        const pixels = node.getContext("2d")!.getImageData(0, 0, node.width, node.height).data;
+        let count = 0;
+        for (let i = 0; i < pixels.length; i += 4)
+          if (
+            pixels[i + 3] > 200 &&
+            pixels[i + 1] > pixels[i] * 1.5 &&
+            pixels[i + 2] > pixels[i] * 1.5
+          )
+            count++;
+        return count;
+      });
+    expect(await accentPixels()).toBeGreaterThan(10);
+    await expect(forms).toContainText("Straight joins the endpoints");
+    await expect(forms).toContainText("visual transitions, not new Bézier calculations");
     const originalNode = await canvas.elementHandle();
     const handle = page
       .locator(".bz-first-try")
@@ -39,6 +55,7 @@ for (const width of [390, 1440])
       "aria-checked",
       "true",
     );
+    expect(await accentPixels()).toBeGreaterThan(10);
     await morph.getByRole("radio", { name: "Handles", exact: true }).click();
     await morph.getByRole("radio", { name: "Curve", exact: true }).click();
     await forms.screenshot({ path: info.outputPath(`forms-${width}.png`) });

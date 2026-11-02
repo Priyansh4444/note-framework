@@ -21,7 +21,10 @@ for (const width of [1440, 390]) {
     await expect(figure.locator('.nk-dot[visibility="visible"]')).toHaveCount(0);
     expect((await figure.boundingBox())!.height).toBeLessThan(765);
     await figure.screenshot({ path: test.info().outputPath(`flatten-${width}.png`) });
-    await page.getByRole("radio", { name: "Straight", exact: true }).click();
+    await page
+      .getByRole("radiogroup", { name: "Curve shape", exact: true })
+      .getByRole("radio", { name: "Straight", exact: true })
+      .click();
     await expect(summary.locator("[data-gap-eight]")).toHaveText("0.00");
     await expect(summary.locator("[data-gap-sixteen]")).toHaveText("0.00");
     await expect(summary).toContainText("one segment already draws it exactly");

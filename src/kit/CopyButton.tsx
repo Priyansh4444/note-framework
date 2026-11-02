@@ -10,7 +10,7 @@ export function CopyButton(props: {
   label?: string;
   ariaLabel?: string;
   class?: string;
-  onCopy: () => CopyResult | Promise<CopyResult>;
+  onCopy: (signal: AbortSignal) => CopyResult | Promise<CopyResult>;
   /** Changing the source invalidates a pending result and clears stale confirmation. */
   resetKey?: unknown;
   errorMessage?: string;
@@ -18,15 +18,18 @@ export function CopyButton(props: {
   const [state, setState] = createSignal<CopyState>("idle");
   const [pointer, setPointer] = createSignal(false);
   let revision = 0;
+  let operation: AbortController | undefined;
   let reset: ReturnType<typeof setTimeout> | undefined;
   const invalidate = () => {
     revision++;
+    operation?.abort();
     clearTimeout(reset);
     setState("idle");
   };
   createEffect(on(() => props.resetKey, invalidate, { defer: true }));
   onCleanup(() => {
     revision++;
+    operation?.abort();
     clearTimeout(reset);
   });
   const text = (id: CopyState) =>
@@ -47,11 +50,14 @@ export function CopyButton(props: {
           : "";
   const copy = async (animate: boolean) => {
     const current = ++revision;
+    operation?.abort();
+    operation = new AbortController();
+    const { signal } = operation;
     clearTimeout(reset);
     setPointer(animate);
     setState("pending");
     try {
-      const result = await props.onCopy();
+      const result = await props.onCopy(signal);
       if (current !== revision) return;
       setState(result);
     } catch {

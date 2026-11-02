@@ -116,14 +116,15 @@ export function CodeBlock(props: CodeBlockProps) {
     active = false;
     clearTimeout(flashReset);
   });
-  const copy = async (): Promise<CopyResult> => {
+  const copy = async (signal: AbortSignal): Promise<CopyResult> => {
     const artifact = props.artifact;
     const text = artifact.source;
     try {
       await navigator.clipboard.writeText(text);
       return "copied";
     } catch {}
-    if (!active || props.artifact !== artifact) throw new Error("Copy source changed.");
+    if (signal.aborted || !active || props.artifact !== artifact)
+      throw new Error("Copy source changed.");
     mounted?.settle();
     const target = (toolsOpen() ? inspectorShadow : shadow)?.querySelector("pre");
     const selection = getSelection();

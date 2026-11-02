@@ -213,3 +213,37 @@ test("a delayed denied copy cannot alter selection after its code block unmounts
       .evaluate((el: HTMLTextAreaElement) => [el.selectionStart, el.selectionEnd]),
   ).toEqual([0, 7]);
 });
+
+test("a superseded denied copy cannot run a fallback after a newer success", async ({ page }) => {
+  await page.addInitScript(() => {
+    let calls = 0;
+    Reflect.set(window, "fallbackCalls", 0);
+    document.execCommand = () => {
+      Reflect.set(window, "fallbackCalls", Reflect.get(window, "fallbackCalls") + 1);
+      return false;
+    };
+    Object.defineProperty(navigator, "clipboard", {
+      value: {
+        writeText: () =>
+          ++calls === 1
+            ? new Promise((_resolve, reject) =>
+                Reflect.set(window, "denyOldCopy", () => reject(Error("old denied"))),
+              )
+            : Promise.resolve(),
+      },
+    });
+  });
+  await page.goto("/visual/fixture.html", { waitUntil: "networkidle" });
+  await page.evaluate(async () => {
+    const source = "/visual/copy-feedback.fixture.tsx";
+    (await import(source)).mountCopyFixture();
+  });
+  await page.locator(".nk-code-source-toggle").click();
+  const button = page.getByRole("button", { name: "Copy patch", exact: true });
+  await button.click();
+  await button.click();
+  await expect(button).toHaveAttribute("data-copy-state", "copied");
+  await page.evaluate(() => Reflect.get(window, "denyOldCopy")());
+  expect(await page.evaluate(() => Reflect.get(window, "fallbackCalls"))).toBe(0);
+  await expect(button).toHaveAttribute("data-copy-state", "copied");
+});

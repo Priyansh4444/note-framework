@@ -1,6 +1,6 @@
 # A calmer reading path and operable motion
 
-Status: implementing. Base dfcf8de. Standalone framework only; CS164 and School/note-framework untouched.
+Status: final verification and independent review. Base dfcf8de. Standalone framework only; CS164 and School/note-framework untouched.
 
 Trace: guide Copy prompt only changes an adjacent sentence; CodeBlock uses a separate copied signal. Service is an Experiment already, so reproduce transport visibility/operation before replacing anything. Supplemental notes show definitions, figures and extended references; readers need a shorter default path and visual patterns serving different questions.
 
@@ -13,3 +13,5 @@ Throughput checkpoint:
 - Smallest safe decomposition: three coherent owners; each owns its behavior and focused tests. Parent reviews all diffs before publication.
 
 Acceptance: actual pointer feedback has visible intermediate transform/opacity frames, bounded cancellation, keyboard immediacy and reduced motion. Copy success requires successful copy; exact bytes/fallback remain. Service has visible Play/Pause/Replay and normal/reduced-motion operation. Notes teach one question then a useful experiment; morph/layers/ink connect to numerical or semantic source state. No bright mode. Verify desktop/phone, loaded fonts, no clipping, build and independent starter export if kit changes. Local and portable guidance must both ship.
+
+Review follow-up: reproduced late denied-copy fallback after a newer success (1 stale execCommand); callbacks now receive an AbortSignal and guard delayed selection. Added red/green regression. Morph defines all three views visibly and highlights one retained contour, without another clock. Corrected singular reference counts centrally. Full CI caught ambiguous global preset test locators, two nested checks and a 765px Service figure: scoped tests to the semantic Curve shape group, kept advanced questions inside their existing disclosure as ordinary prose, and placed service name/PID on one wrapping line (741px, unchanged font size). No audit thresholds relaxed. The four-client phone scroller remains deliberate to preserve the requested layout and legibility; responsive rewiring is not disguised as a motion fix.

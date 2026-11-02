@@ -65,13 +65,13 @@ const FrameworkHome: Component = () => {
   );
   const prompt = () =>
     `Use ${location.origin}/llms.txt to create a compact, source-checked visual note about [topic] for [audience]. Explain terms, verify the diagrams, and give me the published link.`;
-  const copyPrompt = async () => {
+  const copyPrompt = async (signal: AbortSignal) => {
     const target = document.querySelector<HTMLTextAreaElement>("#agent-prompt");
     try {
       await navigator.clipboard.writeText(prompt());
       return "copied" as const;
     } catch {
-      if (!target?.isConnected) throw new Error("Prompt is no longer available.");
+      if (signal.aborted || !target?.isConnected) throw new Error("Prompt is no longer available.");
       target.select();
       return "selected" as const;
     }

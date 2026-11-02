@@ -54,6 +54,7 @@ export function CurveMorphExample(props: { points?: CurveControls } = {}) {
       viewBox={RECIPE_VIEW_BOX}
       label="The same 24 strips, three constructions"
       edgeLight={false}
+      accentContour={12}
     />
   );
 }

@@ -252,7 +252,7 @@ export function defineNote<const C extends string, const S extends string = neve
       </h2>
       <ReferenceBody
         compact={props.compact}
-        label={`${Object.keys(terms).length} terms from this note`}
+        label={`${Object.keys(terms).length} ${Object.keys(terms).length === 1 ? "term" : "terms"} from this note`}
       >
         <p>Every reminder from the text, grouped by the chapter that introduces it.</p>
         <For each={groups()}>
@@ -299,7 +299,7 @@ export function defineNote<const C extends string, const S extends string = neve
       </h2>
       <ReferenceBody
         compact={props.compact}
-        label={`${Object.keys(sources).length} sources and where they apply`}
+        label={`${Object.keys(sources).length} ${Object.keys(sources).length === 1 ? "source and where it applies" : "sources and where they apply"}`}
       >
         <ol class="nk-sources">
           <For each={Object.values(sources) as Source[]}>

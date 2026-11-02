@@ -172,7 +172,10 @@ test("S bend skips a perceptually stationary opening while retaining every manua
   page,
 }) => {
   await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
-  await page.getByRole("radio", { name: "S bend", exact: true }).click();
+  await page
+    .getByRole("radiogroup", { name: "Curve shape", exact: true })
+    .getByRole("radio", { name: "S bend", exact: true })
+    .click();
   const root = page.locator("#flatten-experiment");
   await root.scrollIntoViewIfNeeded();
   // The preset itself glides. Measure a stationary S only after its exact target arrives.
@@ -266,7 +269,8 @@ for (const width of [320, 390, 768, 1440])
     const original = await measure();
     expect(original.height).toBeLessThanOrEqual(width > 900 ? 23 : 45);
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.getByRole("radio", { name: "S bend", exact: true }).click();
+    const curveShape = page.getByRole("radiogroup", { name: "Curve shape", exact: true });
+    await curveShape.getByRole("radio", { name: "S bend", exact: true }).click();
     const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
     await slider.press("Home");
     await slider.press("ArrowRight");
@@ -277,7 +281,7 @@ for (const width of [320, 390, 768, 1440])
     else expect(Math.abs(stationary.rowGap)).toBeLessThanOrEqual(1);
     expect(stationary.left).toBeGreaterThanOrEqual(0);
     expect(stationary.right).toBeLessThanOrEqual(width);
-    await page.getByRole("radio", { name: "Straight", exact: true }).click();
+    await curveShape.getByRole("radio", { name: "Straight", exact: true }).click();
     await slider.press("End");
     await expect(root.locator(".bz-refinement-status")).toHaveText(
       "Zero error: one straight piece.",

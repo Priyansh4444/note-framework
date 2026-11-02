@@ -15,6 +15,10 @@ for (const route of ["framework-demo", "inside-svg", "shared-service", "spring-w
     });
     await expect(sources.locator("details")).toHaveAttribute("open");
     await expect(sources.locator("ol a").first()).toBeVisible();
+    const count = await sources.locator("li").count();
+    await expect(sources.locator("summary")).toContainText(
+      `${count} ${count === 1 ? "source and where it applies" : "sources and where they apply"}`,
+    );
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       390,
     );
