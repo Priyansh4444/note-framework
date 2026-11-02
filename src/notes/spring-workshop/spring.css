@@ -66,14 +66,24 @@
 
 .spring-card-top,
 .spring-card-bottom {
+  color: var(--anatomy-muted);
+  font: 15px/1.5 var(--mono);
+}
+.spring-card-top {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 8px 20px;
-  color: var(--anatomy-muted);
-  font: 15px/1.5 var(--mono);
+}
+.spring-card-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) max-content;
+  align-items: end;
+  gap: 8px 12px;
 }
 .spring-card-bottom output {
+  min-width: 8ch;
+  text-align: right;
   font-variant-numeric: tabular-nums;
   color: var(--anatomy-text);
 }
@@ -109,10 +119,10 @@
 .spring-needle-hub {
   fill: var(--anatomy-lit);
 }
-/* A grid, not a wrapping row: the status never drops onto a line of its own. */
+/* Keep button labels and playback status independently readable. */
 .note-spring-workshop .spring-footer {
   display: grid;
-  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-columns: max-content max-content 1fr;
   gap: 12px;
   align-items: center;
   margin-top: 20px;
@@ -122,6 +132,7 @@
   color: var(--muted);
   font-size: 16px;
   text-align: right;
+  white-space: nowrap;
 }
 .note-spring-workshop .spring-instrument figcaption {
   margin-top: 24px;
@@ -180,4 +191,17 @@
   --anatomy-muted: var(--muted);
   --anatomy-text: var(--text);
   --anatomy-weight: 0.8px;
+}
+
+@media (max-width: 360px) {
+  .note-spring-workshop .spring-footer {
+    grid-template-columns: 1fr 1fr;
+  }
+  .note-spring-workshop .spring-footer > span {
+    grid-column: 1 / -1;
+    justify-self: start;
+    min-height: 24px;
+    line-height: 1.5;
+    text-align: left;
+  }
 }
