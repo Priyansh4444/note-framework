@@ -18,10 +18,20 @@ type Frame = {
 const COUNTS = [1, 2, 4, 8, 16] as const;
 const GRID = 1024;
 const STATIONARY_TRAVEL = 1e-8;
+/** Each stage's share spent fading the gap marker out at its start and back in at its end. */
+type MarkerFade = { start: number; end: number };
 type Pacing = {
   stops: readonly [number, number, number, number, number];
   phaseAt: (ms: number) => number;
+  timeAt: (phase: number) => number;
+  fades: readonly MarkerFade[];
 };
+const DEFAULT_FADE: MarkerFade = { start: 0.15, end: 0.15 };
+const STAGE_FADES = [DEFAULT_FADE, DEFAULT_FADE, DEFAULT_FADE, DEFAULT_FADE];
+/** Each side of a marker's return takes at least this long, or the return reads as a blink. */
+const MARKER_FADE_MS = 100;
+/** A stage shorter than this cannot carry a fade, so the marker skips its boundary. */
+const MARKER_STAGE_MS = 250;
 const slots = <T>(f: (index: number) => T): Slots<T> => [
   f(0),
   f(1),
@@ -160,8 +170,23 @@ export function prepareRefinement(points: Cubic) {
         durations[0] + durations[1] + durations[2],
         length,
       ];
+      const returns = (boundary: number) =>
+        boundary === 0 ||
+        boundary === 4 ||
+        (durations[boundary - 1] >= MARKER_STAGE_MS && durations[boundary] >= MARKER_STAGE_MS);
+      const fade = (stage: number, boundary: number) =>
+        returns(boundary)
+          ? Math.min(0.5, Math.max(DEFAULT_FADE.start, MARKER_FADE_MS / durations[stage]))
+          : 0;
       return {
         stops,
+        fades: durations.map((_, k) => ({ start: fade(k, k), end: fade(k, k + 1) })),
+        timeAt(phase) {
+          if (!Number.isFinite(phase)) throw new Error("Refinement phase must be finite.");
+          const bounded = Math.max(0, Math.min(4, phase));
+          const k = Math.min(3, Math.floor(bounded));
+          return stops[k] + (bounded - k) * (stops[k + 1] - stops[k]);
+        },
         phaseAt(ms) {
           if (!Number.isFinite(ms)) throw new Error("Refinement time must be finite.");
           const bounded = Math.max(0, Math.min(length, ms));
@@ -173,7 +198,7 @@ export function prepareRefinement(points: Cubic) {
         },
       };
     },
-    frame(phase: number): Frame {
+    frame(phase: number, fades: readonly MarkerFade[] = STAGE_FADES): Frame {
       if (!Number.isFinite(phase)) throw new Error("Refinement phase must be finite.");
       const bounded = Math.max(0, Math.min(4, phase));
       if (Number.isInteger(bounded)) return settled[bounded];
@@ -183,6 +208,7 @@ export function prepareRefinement(points: Cubic) {
       const from = levels[k],
         to = levels[k + 1];
       const measurement = measure(from.grid, to.grid, alpha);
+      const fade = fades[k];
       return {
         state: {
           kind: "splitting",
@@ -209,10 +235,10 @@ export function prepareRefinement(points: Cubic) {
         // animating a fictitious witness between two genuine maximum-gap lines.
         markerOpacity: measurement.ambiguous
           ? 0
-          : u < 0.15
-            ? 1 - ease(u / 0.15)
-            : u > 0.85
-              ? ease((u - 0.85) / 0.15)
+          : u < fade.start
+            ? 1 - ease(u / fade.start)
+            : u > 1 - fade.end
+              ? ease((u - (1 - fade.end)) / fade.end)
               : 0,
       };
     },

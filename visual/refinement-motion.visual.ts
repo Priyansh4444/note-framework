@@ -43,7 +43,9 @@ for (const width of [390, 1440])
     await page.evaluate(() => document.fonts.ready);
     const root = page.locator("#flatten-experiment");
     const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
-    await expect(root.locator(".bz-count")).toHaveText("4");
+    // The first Play starts from what the reader already sees: no opening cut.
+    await expect(root.locator(".bz-count")).toHaveText("1");
+    await expect(root).toHaveAttribute("data-nk-scene-time", "0");
     const retained = await root.evaluateHandle((el) => [
       el.querySelector("[data-refinement-path]"),
       ...el.querySelectorAll("[data-refinement-dot]"),
@@ -356,3 +358,24 @@ for (const [shape, controls] of [
         expect(collisions).toEqual([0, 0, 0, 0]);
       }
     });
+
+test("Play refits a stale schedule without losing the reader's phase", async ({ page }) => {
+  await page.goto("/notes/framework-demo#flatten", { waitUntil: "networkidle" });
+  const first = page.locator("#first-try, .bz-first-try");
+  const root = page.locator("#flatten-experiment");
+  const slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
+  const state = root.locator("[data-refinement-phase]");
+  await seek(slider, 0.5);
+  const paused = Number(await state.getAttribute("data-refinement-phase"));
+  const before = await state.getAttribute("data-refinement-stops");
+  await first.getByRole("radio", { name: "S bend", exact: true }).click();
+  // Editing keeps the old schedule, so phase does not move beneath the reader's hand.
+  expect(await state.getAttribute("data-refinement-stops")).toBe(before);
+  expect(Number(await state.getAttribute("data-refinement-phase"))).toBe(paused);
+  await root.getByRole("button", { name: "Play", exact: true }).click();
+  await expect.poll(() => state.getAttribute("data-refinement-stops")).not.toBe(before);
+  await root.getByRole("button", { name: "Pause", exact: true }).click();
+  const resumed = Number(await state.getAttribute("data-refinement-phase"));
+  expect(resumed).toBeGreaterThanOrEqual(paused);
+  expect(resumed - paused).toBeLessThan(1);
+});

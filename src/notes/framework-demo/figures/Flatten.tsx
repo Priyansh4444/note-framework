@@ -33,16 +33,19 @@ export function Flatten() {
   const scene = createScene([{ label: "Double n", ms: 3200 }]);
   const prepared = createMemo(() => prepareRefinement(points()));
   const [pacing, setPacing] = createSignal(prepared().pacing(scene.length));
-  scene.seek(pacing().stops[2]);
-  // Capture only at the beginning of normal playback. Geometry edits and seeks
-  // retain this schedule, so they cannot change phase beneath the reader's hand.
+  // Geometry edits and seeks keep this schedule, so phase cannot change beneath the reader's
+  // hand. Each Play refits it to the current shape and resumes from the same phase.
   createComputed(
     on(scene.playing, (playing) => {
-      if (playing && scene.t() === 0) setPacing(prepared().pacing(scene.length));
+      if (!playing) return;
+      const resumeAt = pacing().phaseAt(scene.t());
+      const next = prepared().pacing(scene.length);
+      setPacing(next);
+      if (resumeAt > 0) scene.seek(next.timeAt(resumeAt));
     }),
   );
   const phase = () => pacing().phaseAt(scene.t());
-  const frame = createMemo(() => prepared().frame(phase()));
+  const frame = createMemo(() => prepared().frame(phase(), pacing().fades));
   // Each split sweeps the filled triangle between its chord and new midpoint.
   // Avoid the whole area, not merely the settled outlines or their boundaries.
   const labelObstacles = createMemo(() => {

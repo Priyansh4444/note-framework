@@ -325,3 +325,24 @@ test("only the first moving split launches softly and the final split lands soft
     }
   }
 });
+
+test("the gap marker returns for a readable time, or not at all", () => {
+  for (const p of shapes) {
+    const prepared = prepareRefinement(p);
+    const pacing = prepared.pacing(3200);
+    expect(pacing.timeAt(pacing.phaseAt(1234))).toBeCloseTo(1234, 8);
+    for (let boundary = 1; boundary <= 3; boundary++) {
+      const before = pacing.stops[boundary] - pacing.stops[boundary - 1],
+        after = pacing.stops[boundary + 1] - pacing.stops[boundary];
+      const visible =
+        before * pacing.fades[boundary - 1].end + after * pacing.fades[boundary].start;
+      if (visible > 0) expect(visible).toBeGreaterThanOrEqual(199);
+      expect(pacing.fades[boundary - 1].end > 0).toBe(pacing.fades[boundary].start > 0);
+    }
+    for (const fade of pacing.fades) {
+      expect(fade.start).toBeLessThanOrEqual(0.5);
+      expect(fade.end).toBeLessThanOrEqual(0.5);
+    }
+    expect(prepared.frame(0.5, pacing.fades).markerOpacity).toBe(0);
+  }
+});

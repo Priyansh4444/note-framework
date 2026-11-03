@@ -146,10 +146,6 @@
 }
 
 @media (max-width: 600px) {
-  /* Three options stay on one line, even at 320px. */
-  .nk-choice button {
-    padding: 0 12px;
-  }
   /* One key per line on phones, so no key is stranded after a wrap. */
   .nk-legend {
     flex-direction: column;
@@ -157,6 +153,13 @@
   }
   .nk-toolbar-end {
     margin-left: 0;
+  }
+}
+
+/* Three short options stay on one line, even at 320px. */
+@media (max-width: 360px) {
+  .nk-choice button {
+    padding: 0 12px;
   }
 }
 

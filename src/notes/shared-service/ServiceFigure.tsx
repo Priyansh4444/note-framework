@@ -47,7 +47,7 @@ export function ServiceFigure(props: { trace: ServiceTrace; frame: ServiceFrame 
       >
         <div
           class="ss-clients"
-          {...auditLayout({ count: 4, align: "y-start", gaps: "x", separate: 16 })}
+          {...auditLayout({ count: 4, align: "y-start", gaps: "x", separate: 6 })}
         >
           <For each={CLIENTS}>
             {(client) => {
