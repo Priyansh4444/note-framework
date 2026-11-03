@@ -109,7 +109,7 @@ export function Specimens() {
           <code>createScene</code>
           <h3>Move only when asked.</h3>
         </header>
-        <p>Every frame derives from one seekable clock. Reduced motion opens on the final frame.</p>
+        <p>Every frame derives from one seekable clock. With reduced motion, Play steps instead.</p>
         <div class="fw-spec-live">
           <SceneSpecimen />
         </div>

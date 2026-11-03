@@ -42,3 +42,7 @@ See the official [Vitest browser component guide](https://vitest.dev/guide/brows
 Ubuntu 24 CI sets `VITE_VISUAL_BASELINE=ubuntu-24` and uses separately reviewed references with that suffix. These eight images were captured by the pinned CI browser and reviewed for geometry and readability. The default references retain the local Linux renderer. Pixel allowances remain zero; renderer differences never relax spacing or interaction assertions.
 
 The page suite similarly selects `visual/baselines/ubuntu-24/` with `VISUAL_BASELINE=ubuntu-24`. Three native range renders have reviewed Ubuntu references; the other existing images already passed CI and are shared byte-for-byte. Neither suite raises its pixel allowance for a different platform.
+
+## Other browsers
+
+CI runs `scripts/cross-browser-check.mjs` in Firefox and WebKit against the built site: each route at 320px and 1440px, then playback, presets, keyboard and pointer dragging, reminders and disclosures. It is a smoke test; the deep suites run in Chromium.
