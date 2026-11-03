@@ -78,9 +78,9 @@ The hosted sandbox blocks external network requests, storage, forms, popups and 
 
 ## Make it yours
 
-- `src/post/theme.css`: ink-black surfaces and semantic accent/diagram colors.
+- `src/kit/theme.css`: ink-black surfaces and semantic accent/diagram colors.
 - `src/kit/`: reading layout, glossary, source links, checks and math.
-- `src/post/scene/`: play, pause, restart and seekable animation.
+- `src/kit/scene/`: play, pause, restart and seekable animation.
 - `templates/note/`: the next note you create.
 - `.agents/skills/note-explainers/`: portable authoring and verification guidance.
 - `.agents/skills/explorable-explanations/`: optional mechanism and linked-view design guidance, with Making Software and Maxime Heckel case studies.

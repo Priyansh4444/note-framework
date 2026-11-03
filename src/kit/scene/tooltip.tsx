@@ -1,7 +1,7 @@
 import { type JSX, Show, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
 import { autoUpdate, computePosition, flip, offset, shift, size } from "@floating-ui/dom";
-import "../../kit/reader.css";
+import "../reader.css";
 
 const TOOLTIP_ID = "nk-reader-tooltip";
 const [anchor, setAnchor] = createSignal<Element | null>(null);

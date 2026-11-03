@@ -1,13 +1,13 @@
 import { lazy } from "solid-js";
 import { render } from "solid-js/web";
 import { Route, Router } from "@solidjs/router";
-import { TooltipLayer } from "./post/scene/tooltip";
+import { TooltipLayer } from "./kit/scene/tooltip";
 import "@fontsource-variable/newsreader/opsz.css";
 import "@fontsource-variable/newsreader/opsz-italic.css";
 import "@fontsource/commit-mono/400.css";
-import { installSpringVars } from "./post/scene/springs";
-import "./post/post.css";
-import "./post/theme.css";
+import { installSpringVars } from "./kit/scene/springs";
+import "./kit/base.css";
+import "./kit/theme.css";
 
 installSpringVars();
 

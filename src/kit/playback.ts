@@ -1,4 +1,4 @@
-import type { Scene } from "../post/scene/clock";
+import type { Scene } from "./scene/clock";
 
 export type PlaybackSpec = {
   min: number;

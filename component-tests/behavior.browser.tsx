@@ -3,7 +3,7 @@ import { page, userEvent } from "vitest/browser";
 import { createSignal, onCleanup } from "solid-js";
 import { Parameter } from "../src/kit/Parameter";
 import { CurveTimeline } from "../src/kit/CurveTimeline";
-import { createScene } from "../src/post/scene/clock";
+import { createScene } from "../src/kit/scene/clock";
 import { CurveMorphExample, LayersExample, InkExample } from "../src/kit/patterns/recipes";
 import { mount, painted } from "./mount";
 

@@ -4,7 +4,7 @@ import { createSignal } from "solid-js";
 import { Parameter } from "../src/kit/Parameter";
 import { CurveMorphExample, LayersExample, InkExample } from "../src/kit/patterns/recipes";
 import { CurveTimeline } from "../src/kit/CurveTimeline";
-import { createScene } from "../src/post/scene/clock";
+import { createScene } from "../src/kit/scene/clock";
 import { mount, painted } from "./mount";
 
 const renderer = import.meta.env.VITE_VISUAL_BASELINE;

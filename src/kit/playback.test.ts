@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { createRoot } from "solid-js";
-import { createScene } from "../post/scene/clock";
+import { createScene } from "./scene/clock";
 import { createPlayback, eased, playbackDomain } from "./playback";
 
 test("continuous playback preserves sub-step geometry and reverses exactly", () => {

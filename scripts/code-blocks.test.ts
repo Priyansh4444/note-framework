@@ -283,7 +283,7 @@ test("production probe wraps aligned split rows and preserves manual views and e
   writeFileSync(join(root, "change.diff"), source);
   writeFileSync(
     join(root, "main.tsx"),
-    `import { render } from 'solid-js/web';\nimport { CodeBlock } from ${JSON.stringify(join(ROOT, "src/kit/CodeBlock.tsx"))};\nimport code from './sample.ts?code';\nimport diff from './change.diff?diff';\nimport ${JSON.stringify(join(ROOT, "src/post/theme.css"))};\nimport ${JSON.stringify(join(ROOT, "src/post/post.css"))};\nrender(() => <main style="width:min(680px,calc(100% - 32px));margin:24px auto"><CodeBlock artifact={code}/><CodeBlock artifact={diff}/></main>, document.getElementById('root')!);`,
+    `import { render } from 'solid-js/web';\nimport { CodeBlock } from ${JSON.stringify(join(ROOT, "src/kit/CodeBlock.tsx"))};\nimport code from './sample.ts?code';\nimport diff from './change.diff?diff';\nimport ${JSON.stringify(join(ROOT, "src/kit/theme.css"))};\nimport ${JSON.stringify(join(ROOT, "src/kit/base.css"))};\nrender(() => <main style="width:min(680px,calc(100% - 32px));margin:24px auto"><CodeBlock artifact={code}/><CodeBlock artifact={diff}/></main>, document.getElementById('root')!);`,
   );
   const modules: string[] = [];
   await build({

@@ -1,5 +1,5 @@
 import { type JSX, createSignal, onCleanup, onMount, Show } from "solid-js";
-import type { Scene } from "../post/scene/clock";
+import type { Scene } from "./scene/clock";
 import { CurveTimeline } from "./CurveTimeline";
 import { observeSceneAudio, type CuePlan } from "./scene-audio";
 import "./experiment.css";

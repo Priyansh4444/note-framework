@@ -1,5 +1,5 @@
 import { type JSX, createMemo, createSignal, For, onCleanup, onMount } from "solid-js";
-import type { Scene } from "../post/scene/clock";
+import type { Scene } from "./scene/clock";
 import { animationRail, playheadGrabOffset } from "./timeline-model";
 import { PathPlayhead } from "./PathPlayhead";
 import "./curve-timeline.css";

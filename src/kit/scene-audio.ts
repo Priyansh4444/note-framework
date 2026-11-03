@@ -1,5 +1,5 @@
 import { type Accessor, createEffect, createSignal, onCleanup } from "solid-js";
-import type { Scene } from "../post/scene/clock";
+import type { Scene } from "./scene/clock";
 
 export type CueName = "ready" | "contact" | "send" | "appear" | "complete";
 export type CuePlan = Readonly<{

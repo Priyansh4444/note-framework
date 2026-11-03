@@ -747,7 +747,7 @@ test("Experiment invalid duration or frozen time metadata cannot silently pass",
 }, 30_000);
 
 test("Experiment owns its figure geometry under the real post stylesheet, including phones", async () => {
-  const postCSS = await readFile(new URL("../src/post/post.css", import.meta.url), "utf8");
+  const postCSS = await readFile(new URL("../src/kit/base.css", import.meta.url), "utf8");
   const experimentCSS = await readFile(
     new URL("../src/kit/experiment.css", import.meta.url),
     "utf8",

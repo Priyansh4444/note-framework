@@ -7,8 +7,8 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { Tex } from "../components/ui/Tex";
-import { tip } from "../post/scene/tooltip";
+import { Tex } from "./math/Tex";
+import { tip } from "./scene/tooltip";
 import { DisclosureSummary } from "./disclosure";
 import { Wayfinder, type WayChapter } from "./Wayfinder";
 

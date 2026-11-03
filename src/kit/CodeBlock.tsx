@@ -1,6 +1,6 @@
 import { createEffect, createSignal, Show, onCleanup, onMount } from "solid-js";
 import "./code-block.css";
-import { tip } from "../post/scene/tooltip";
+import { tip } from "./scene/tooltip";
 import { CopyButton, type CopyResult } from "./CopyButton";
 import { mountCodeMorph } from "./code-morph";
 import type { CodeMorphPlan, CodeSide } from "./code-morph-plan";

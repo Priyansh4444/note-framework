@@ -81,8 +81,8 @@ test("CLI creates an independent kit with one home note and a clean sharing boun
 
   const exported = files(directory);
   const paths = exported.map((path) => relative(directory, path));
-  expect(paths).toContain("src/post/scene/clock.test.ts");
-  expect(paths).toContain("src/components/ui/math.css");
+  expect(paths).toContain("src/kit/scene/clock.test.ts");
+  expect(paths).toContain("src/kit/math/math.css");
   for (const file of [
     "src/kit/code-morph.ts",
     "src/kit/code-morph-plan.ts",
@@ -156,7 +156,7 @@ test("CLI creates an independent kit with one home note and a clean sharing boun
   expect(readFileSync(join(directory, "src/index.tsx"), "utf8")).toContain(
     "@fontsource-variable/newsreader",
   );
-  expect(readFileSync(join(directory, "src/components/ui/Tex.tsx"), "utf8")).toContain(
+  expect(readFileSync(join(directory, "src/kit/math/Tex.tsx"), "utf8")).toContain(
     "katex/dist/katex.min.css",
   );
   expect(readFileSync(join(directory, "vite.config.ts"), "utf8")).not.toContain("Resources");

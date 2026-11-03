@@ -1,5 +1,5 @@
 import { animate, type DOMKeyframesDefinition } from "motion";
-import { SPRINGS, type SpringName } from "../post/scene/springs";
+import { SPRINGS, type SpringName } from "./scene/springs";
 
 /**
  * Interface motion. Kit components call this so pages never write transitions.

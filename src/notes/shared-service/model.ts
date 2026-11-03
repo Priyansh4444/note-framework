@@ -1,4 +1,4 @@
-import type { Beat } from "../../post/scene/clock";
+import type { Beat } from "../../kit/scene/clock";
 import type { CueName, CuePlan } from "../../kit/scene-audio";
 
 export const CLIENTS = ["terminal", "web", "desktop", "script"] as const;

@@ -1,5 +1,5 @@
 import { type Component, type JSX, type ParentComponent, For, Show } from "solid-js";
-import { Tex } from "../components/ui/Tex";
+import { Tex } from "./math/Tex";
 import { auditLayout } from "./layout";
 export { DisclosureSummary } from "./disclosure";
 

@@ -28,12 +28,12 @@ export {
   Table,
 } from "./parts";
 export { clamp01, enter, mix, since, type Curve } from "./anim";
-export { SceneFrame } from "../post/scene/Scene";
-export { createScene, lerp, type Beat, type Scene } from "../post/scene/clock";
-export { SPRINGS, springCurve } from "../post/scene/springs";
-export { tip } from "../post/scene/tooltip";
-export { Tex } from "../components/ui/Tex";
-export { MathMorph } from "../components/ui/MathMorph";
+export { SceneFrame } from "./scene/Scene";
+export { createScene, lerp, type Beat, type Scene } from "./scene/clock";
+export { SPRINGS, springCurve } from "./scene/springs";
+export { tip } from "./scene/tooltip";
+export { Tex } from "./math/Tex";
+export { MathMorph } from "./math/MathMorph";
 
 export { DiagramViewer, useDiagram } from "./DiagramViewer";
 export { Handle, type HandleProps, type Point } from "./Handle";

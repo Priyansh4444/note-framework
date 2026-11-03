@@ -1,6 +1,6 @@
 import { type Component, For, createMemo, createSignal, onCleanup, onMount } from "solid-js";
 import { Tex } from "./Tex";
-import { springCurve } from "../../post/scene/springs";
+import { springCurve } from "../scene/springs";
 import { type MorphState, type MorphStep, type MorphToken, checkSteps, stepTex } from "./morph";
 import "./math.css";
 
