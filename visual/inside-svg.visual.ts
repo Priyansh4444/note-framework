@@ -65,7 +65,9 @@ for (const width of [320, 390, 768, 1440]) {
     expect(finalTimeline.height).toBe(initialTimeline.height);
     expect(finalTimeline.top).toBeCloseTo(initialTimeline.top, 1);
     const sizes = await page
-      .locator(".svg-button,.svg-plane-label,.svg-order-strip,.nk-experiment-action")
+      .locator(
+        ".nk-choice button,.nk-action,.svg-plane-label,.svg-order-strip,.nk-experiment-action",
+      )
       .evaluateAll((nodes) =>
         nodes.map((n) => ({
           font: parseFloat(getComputedStyle(n).fontSize),
@@ -95,9 +97,9 @@ for (const width of [320, 390, 768, 1440]) {
     ).toBe(true);
     await peel.screenshot({ path: testInfo.outputPath(`intermediate-${width}.png`) });
     const clip = page.locator("#svg-clip");
-    await clip.getByRole("button", { name: "Left", exact: true }).click();
+    await clip.getByRole("radio", { name: "Left", exact: true }).click();
     await clip.screenshot({ path: testInfo.outputPath(`clip-left-${width}.png`) });
-    await clip.getByRole("button", { name: "Right", exact: true }).click();
+    await clip.getByRole("radio", { name: "Right", exact: true }).click();
     await clip.screenshot({ path: testInfo.outputPath(`clip-right-${width}.png`) });
   });
 }
@@ -115,7 +117,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
     )!;
   });
   expect(await hit(order, 160, 140)).toBe("rear");
-  await order.getByRole("button", { name: "Sun in front" }).click();
+  await order.getByRole("radio", { name: "Sun in front" }).click();
   expect(await hit(order, 160, 140)).toBe("sun");
   expect(
     await page.evaluate(
@@ -124,7 +126,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
         document.querySelector('#svg-order [data-layer="sun"]'),
     ),
   ).toBe(true);
-  await order.getByRole("button", { name: "Sun in front" }).press("Enter");
+  await order.getByRole("radio", { name: "Sun in front" }).press("ArrowLeft");
   expect(await hit(order, 160, 140)).toBe("rear");
   const geometry = () =>
     clip.locator("[data-scenery]").evaluate((node) => {
@@ -143,7 +145,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
   });
   expect(await hit(clip, 20, 50)).toBe(null);
   for (const position of ["Left", "Right", "Center"]) {
-    await clip.getByRole("button", { name: position, exact: true }).click();
+    await clip.getByRole("radio", { name: position, exact: true }).click();
     expect(await geometry()).toEqual(original);
   }
   await clip.getByRole("button", { name: "Show beyond the window" }).click();
@@ -185,7 +187,7 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   await expect(peel).toHaveAttribute("data-nk-scene-active", "false");
   await peel.getByRole("button", { name: "Replay", exact: true }).click();
   await expect(peel).toHaveAttribute("data-nk-scene-time", "0");
-  const forward = page.locator("#svg-order").getByRole("button", { name: "Sun in front" });
+  const forward = page.locator("#svg-order").getByRole("radio", { name: "Sun behind" });
   await forward.focus();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Shift+Tab");
@@ -195,10 +197,10 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   }));
   expect(focus.style).toBe("solid");
   expect(parseFloat(focus.width)).toBeGreaterThanOrEqual(2);
-  await forward.press("Enter");
+  await forward.press("ArrowRight");
   await expect(
-    page.locator("#svg-order").getByRole("button", { name: "Sun in front" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    page.locator("#svg-order").getByRole("radio", { name: "Sun in front" }),
+  ).toHaveAttribute("aria-checked", "true");
   await page.emulateMedia({ forcedColors: "active" });
   await page
     .locator("#svg-order")

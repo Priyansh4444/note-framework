@@ -2,32 +2,12 @@
   --ss-surface: var(--bg, #161616);
   --ss-line: var(--rule, #383838);
   --ss-role: var(--diagram-blue, #26bbd9);
+  --ss-font: var(--mono, monospace);
   position: relative;
-  font: 15px/1.4 var(--mono, monospace);
+  font: 15px/1.4 var(--ss-font);
   color: var(--text, #d6d6d6);
 }
-.note-shared-service .ss-scroll-hint {
-  margin: 0 0 18px;
-  color: var(--muted, #aaa);
-  font: inherit;
-}
-.note-shared-service .ss-scroll-hint span {
-  display: none;
-}
-.note-shared-service .ss-scroll {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 10px 3px 6px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule-strong, #666) transparent;
-}
-.note-shared-service .ss-scroll:focus-visible {
-  outline: 2px solid var(--ss-role);
-  outline-offset: 4px;
-  border-radius: 3px;
-}
 .note-shared-service .ss-diagram {
-  min-width: 560px;
   position: relative;
 }
 .note-shared-service .ss-clients {
@@ -36,20 +16,34 @@
   gap: 16px;
 }
 .note-shared-service .ss-client-slot {
+  position: relative;
   min-width: 0;
   min-height: 120px;
   display: flex;
 }
-.note-shared-service .ss-client {
+.note-shared-service :is(.ss-client, .ss-client-ghost) {
   box-sizing: border-box;
   min-height: 120px;
   width: 100%;
   padding: 10px;
   border: 1px solid var(--ss-line);
   border-radius: 2px;
-  background: var(--ss-surface);
   display: flex;
   flex-direction: column;
+}
+/* A closed window: same footprint and label as the open one, so opening only fills it in. */
+.note-shared-service .ss-client-ghost {
+  position: absolute;
+  inset: 0;
+  border-style: dashed;
+  color: var(--faint);
+}
+.note-shared-service .ss-client-ghost :is(.ss-client-heading, .ss-glyph, .ss-client-status) {
+  color: inherit;
+}
+.note-shared-service .ss-client {
+  position: relative;
+  background: var(--ss-surface);
 }
 .note-shared-service .ss-client-heading {
   display: flex;
@@ -61,18 +55,18 @@
 }
 .note-shared-service .ss-glyph {
   display: inline-block;
-  font: 15px/1 var(--mono, monospace);
+  font: 15px/1 var(--ss-font);
   color: var(--muted, #aaa);
 }
 .note-shared-service .ss-client-task {
   margin: 10px 0 4px;
-  font: 15px/1.4 var(--mono, monospace);
+  font: 15px/1.4 var(--ss-font);
   color: var(--bright, #eee);
 }
 .note-shared-service .ss-client-status {
   margin: auto 0 0;
   color: var(--muted, #aaa);
-  font: 15px/1.4 var(--mono, monospace);
+  font: 15px/1.4 var(--ss-font);
   white-space: nowrap;
 }
 .note-shared-service .ss-client-status[data-complete="true"] {
@@ -104,6 +98,13 @@
 }
 .note-shared-service .ss-port-column {
   position: relative;
+}
+/* The rail a window will connect along; the live wire draws over it. */
+.note-shared-service .ss-port-column::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 50%;
+  border-left: 1px dashed var(--ss-line);
 }
 .note-shared-service .ss-port-dot {
   position: absolute;
@@ -242,12 +243,6 @@
   color: var(--muted, #aaa);
   font-size: 15px;
 }
-@media (max-width: 680px) {
-  .note-shared-service .ss-scroll-hint span {
-    display: block;
-    margin-top: 4px;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
   .note-shared-service .ss-client {
     transform: none !important;
@@ -271,35 +266,6 @@
 .note-shared-service .ss-subscriber-names {
   color: var(--ss-role);
 }
-.note-shared-service-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
-  width: min(1160px, calc(100% - 40px));
-  margin: 0 auto;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--rule);
-  font: 15px/1.4 var(--serif, Georgia, serif);
-}
-.note-shared-service-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--muted);
-  text-decoration: none;
-}
-.note-shared-service-nav a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .note-shared-service-nav a:hover {
-    color: var(--bright);
-  }
-}
-
 /* The Service diagram needs both sound and playback: keep its labelled rail on a full row. */
 .note-shared-service #service-experiment .nk-timeline-transport {
   row-gap: 4px;
@@ -312,35 +278,6 @@
 .note-shared-service #service-experiment .nk-timeline-track {
   flex-basis: 100%;
 }
-.note-shared-service #service-experiment [data-nk-scene-action] {
-  padding: 0 12px;
-  border: 1px solid var(--rule-strong);
-  border-radius: 8px;
-  background: var(--panel);
-  transition:
-    transform 140ms cubic-bezier(0.23, 1, 0.32, 1),
-    border-color 160ms cubic-bezier(0.23, 1, 0.32, 1);
-}
-.note-shared-service #service-experiment [data-nk-scene-action]:active:not(:focus-visible) {
-  transform: scale(0.97);
-}
-.note-shared-service .ss-reason {
-  margin: 1.4rem 0;
-}
-.note-shared-service .ss-reason > div {
-  padding: 8px 0 16px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .note-shared-service #service-experiment [data-nk-scene-action]:hover {
-    border-color: var(--diagram-blue);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .note-shared-service #service-experiment [data-nk-scene-action] {
-    transition: none;
-    transform: none;
-  }
-}
 /* Phase links form a readable chapter row; End owns its own 44px target. */
 .note-shared-service #service-experiment .nk-timeline-labels {
   display: grid;
@@ -351,4 +288,56 @@
   transform: none;
   width: 100%;
   padding-inline: 2px;
+}
+
+/*
+ * Phone: four windows still sit side by side above their one service. Each card drops the task,
+ * which its session row already names, and the serif's narrower set keeps every label whole.
+ */
+@media (max-width: 600px) {
+  .note-shared-service .ss-figure {
+    --ss-font: var(--serif);
+  }
+  .note-shared-service :is(.ss-clients, .ss-port-columns) {
+    gap: 6px;
+  }
+  .note-shared-service .ss-client-slot,
+  .note-shared-service :is(.ss-client, .ss-client-ghost) {
+    min-height: 84px;
+  }
+  .note-shared-service :is(.ss-client, .ss-client-ghost) {
+    padding: 8px 4px;
+    text-align: center;
+  }
+  .note-shared-service .ss-client-heading {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .note-shared-service .ss-client-task {
+    display: none;
+  }
+  .note-shared-service .ss-client-status > [aria-hidden] {
+    display: none;
+  }
+  .note-shared-service .ss-service-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 2px 12px;
+    align-items: baseline;
+  }
+  .note-shared-service .ss-service-header > div {
+    display: contents;
+  }
+  .note-shared-service .ss-pid {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+  .note-shared-service .ss-process-state {
+    grid-area: 1 / 2;
+  }
+  .note-shared-service :is(.ss-session, .ss-session-content) {
+    min-height: 72px;
+  }
+  .note-shared-service .ss-session-content {
+    gap: 12px;
+  }
 }

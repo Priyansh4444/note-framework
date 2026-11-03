@@ -45,43 +45,6 @@
   margin-top: 28px;
 }
 
-.bz-example-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  width: min(980px, calc(100% - 48px));
-  margin: 0 auto;
-  padding: 16px 0;
-  font-size: 16px;
-}
-
-.bz-example-nav a {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  min-height: 44px;
-  color: var(--muted);
-  text-decoration: none;
-}
-
-.bz-example-nav a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .bz-example-nav a:hover {
-    color: var(--bright);
-  }
-}
-@media (max-width: 600px) {
-  .bz-example-nav {
-    width: calc(100% - 40px);
-    gap: 8px;
-    font-size: 14px;
-  }
-}
-
 /* Reserve status and measurement rows through every refinement and shape edit. */
 .note-framework-demo .bz-count {
   color: var(--bright);

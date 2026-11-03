@@ -88,8 +88,7 @@ const FrameworkHome: Component = () => {
             play with.
           </h1>
           <p class="fw-dek">
-            A short explanation. A picture you can change. Move a point below and see how the curve
-            follows.
+            A short explanation. A picture you can change. Drag a point and watch the curve follow.
           </p>
           <div class="fw-actions">
             <a class="fw-button fw-button-primary" href="/docs">
@@ -102,7 +101,7 @@ const FrameworkHome: Component = () => {
 
       <section class="fw-section fw-start" aria-labelledby="start-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">01 · Ask</p>
+          <p class="fw-eyebrow">Start</p>
           <h2 id="start-title">Start with one sentence.</h2>
           <p>
             Paste this into your coding agent and fill in the brackets. The instructions it fetches
@@ -150,7 +149,7 @@ const FrameworkHome: Component = () => {
 
       <section class="fw-section" aria-labelledby="parts-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">02 · Build</p>
+          <p class="fw-eyebrow">Build</p>
           <h2 id="parts-title">Made from a few honest parts.</h2>
           <p>
             These are the real components, running on this page. A note combines them around one
@@ -162,7 +161,7 @@ const FrameworkHome: Component = () => {
 
       <section class="fw-section fw-principles-section" aria-labelledby="shape-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">03 · Read</p>
+          <p class="fw-eyebrow">Read</p>
           <h2 id="shape-title">Short by default. Complete underneath.</h2>
         </div>
         <div class="fw-principles">
@@ -188,18 +187,37 @@ const FrameworkHome: Component = () => {
           </div>
         </div>
         {import.meta.env.VITE_FRAMEWORK_PREVIEW === "1" && (
-          <p class="fw-small">
-            More examples: <a href="/notes/shared-service">one service, many windows</a>, or{" "}
-            <a href="/notes/inside-svg">a picture you can take apart</a>. Try{" "}
-            <a href="/notes/spring-workshop">a spring you can feel</a>, or{" "}
-            <a href="/studies">browse the motion studies</a>.
-          </p>
+          <nav class="fw-examples" aria-label="Example notes">
+            <p class="fw-prompt-label">Examples</p>
+            <ul>
+              <li>
+                <a href={EXAMPLE}>Draw a curve</a>
+                <span>Drag four dots and see why the line bends.</span>
+              </li>
+              <li>
+                <a href="/notes/shared-service">One service, many windows</a>
+                <span>Press Play and watch four clients share one process.</span>
+              </li>
+              <li>
+                <a href="/notes/inside-svg">A picture, made of shapes</a>
+                <span>Pull a drawing apart to find its five layers.</span>
+              </li>
+              <li>
+                <a href="/notes/spring-workshop">A little room to settle</a>
+                <span>Tug a carriage and feel what damping changes.</span>
+              </li>
+              <li>
+                <a href="/studies">Motion studies</a>
+                <span>Short experiments behind the framework's animation.</span>
+              </li>
+            </ul>
+          </nav>
         )}
       </section>
 
       <section id="share" class="fw-section fw-share" aria-labelledby="share-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">04 · Share</p>
+          <p class="fw-eyebrow">Share</p>
           <h2 id="share-title">Send a link that keeps working.</h2>
           <p>
             The hosted service stores each version of a single HTML file. Your link always shows the

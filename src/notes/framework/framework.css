@@ -296,9 +296,6 @@
   color: var(--muted);
   font-size: 16px;
 }
-.fw-spec-live {
-  margin-top: auto;
-}
 .fw-spec-live .nk-experiment {
   margin: 0;
 }
@@ -571,5 +568,37 @@
   .fw-button,
   .fw-masthead nav a {
     transition: none;
+  }
+}
+
+.fw-examples {
+  margin-top: 56px;
+}
+.fw-examples ul {
+  margin: 12px 0 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
+  list-style: none;
+}
+.fw-examples li {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 2px 24px;
+  align-items: baseline;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.fw-examples a {
+  color: var(--bright);
+  font-size: 19px;
+}
+.fw-examples span {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.5;
+}
+@media (max-width: 600px) {
+  .fw-examples li {
+    grid-template-columns: minmax(0, 1fr);
   }
 }

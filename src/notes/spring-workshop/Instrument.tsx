@@ -9,7 +9,7 @@ import {
   untrack,
   type JSX,
 } from "solid-js";
-import { createScene } from "../../kit";
+import { Action, Choice, createScene, Toolbar } from "../../kit";
 import * as g from "./geometry";
 import { clampStroke, response, rest, safeRelease, tuning, type Feel, type Pose } from "./model";
 import order from "./paint-order.json";
@@ -63,6 +63,7 @@ export function SpringInstrument() {
   let root!: HTMLElement, svg!: SVGSVGElement;
   let drag: { id: number; pointer: number; at: number; lastX: number; time: number } | undefined;
   let knob!: HTMLDivElement;
+  const status = () => (held() ? "Held" : scene.playing() ? "Returning" : "At center");
   const say = () =>
     setChoice(
       `${pose().x.toFixed(1)} millimeters from center. Arrow keys move; Space releases; Escape holds.`,
@@ -233,17 +234,15 @@ export function SpringInstrument() {
       data-active={scene.active()}
       data-held={!!held()}
     >
-      <div class="spring-toolbar">
-        <div class="spring-feels" role="group" aria-label="Damping">
-          <For each={Object.entries(tuning)}>
-            {([id, value]) => (
-              <button type="button" aria-pressed={feel() === id} onClick={() => select(id as Feel)}>
-                {value.label}
-              </button>
-            )}
-          </For>
-        </div>
-      </div>
+      <Choice
+        label="Damping"
+        options={Object.entries(tuning).map(([id, value]) => ({
+          id: id as Feel,
+          label: value.label,
+        }))}
+        value={feel()}
+        onChange={select}
+      />
       <div class="iso spring-card" data-theme="dark">
         <div class="spring-card-top">
           <span>Fig. 01</span>
@@ -332,21 +331,19 @@ export function SpringInstrument() {
           </output>
         </div>
       </div>
-      <div class="spring-footer">
-        <button type="button" onClick={() => run({ x: pose().x, v: pose().v + 200 })}>
-          Give it a nudge
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            const p = hold();
-            setHeld({ x: p.x, v: 0 });
-          }}
-        >
-          Hold still
-        </button>
-        <span>{held() ? "Held" : scene.playing() ? "Returning" : "At center"}</span>
-      </div>
+      <Toolbar end={<span class="spring-status">{status()}</span>}>
+        <span class="spring-actions">
+          <Action onClick={() => run({ x: pose().x, v: pose().v + 200 })}>Give it a nudge</Action>
+          <Action
+            onClick={() => {
+              const p = hold();
+              setHeld({ x: p.x, v: 0 });
+            }}
+          >
+            Hold still
+          </Action>
+        </span>
+      </Toolbar>
       <figcaption>
         <p>{tuning[feel()].why}</p>
         <p>Grab it again while it moves. The next release begins where your hand leaves it.</p>

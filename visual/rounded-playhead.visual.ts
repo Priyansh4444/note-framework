@@ -1,7 +1,7 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { expect, test, type Locator } from "./browser-test";
 
-const artifacts = "/tmp/rounded-playhead";
+const artifacts = "artifacts/visual/rounded-playhead";
 test.beforeAll(() => mkdir(artifacts, { recursive: true }));
 
 async function roundedPaint(slider: Locator, coreClass: string, railClass: string) {

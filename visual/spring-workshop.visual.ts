@@ -50,7 +50,7 @@ for (const width of [320, 390, 768, 1440])
     expect(state.solids).toBeGreaterThan(40);
     expect(state.root).toEqual(state.card);
     const edges = await page.evaluate(() => {
-      const n = document.querySelector(".spring-nav")!.getBoundingClientRect(),
+      const n = document.querySelector(".nk-note-nav")!.getBoundingClientRect(),
         h = document.querySelector("h1")!.getBoundingClientRect();
       return [n.x, n.right, h.x, h.right];
     });
@@ -93,9 +93,9 @@ test("grabbing and switching damping preserve the visible pose; rapid nudges do 
       v: Number(root.getAttribute("data-v")),
     });
     const before = read();
-    (document.querySelectorAll(".spring-feels button")[2] as HTMLButtonElement).click();
+    (root.querySelectorAll("[role=radio]")[2] as HTMLButtonElement).click();
     const changed = read();
-    (document.querySelector(".spring-footer button") as HTMLButtonElement).click();
+    (root.querySelector(".nk-toolbar .nk-action") as HTMLButtonElement).click();
     const nudged = read();
     return { before, changed, nudged };
   });
@@ -152,7 +152,7 @@ test("physical pointer drag moves the carriage along the rail and release settle
   await expect(root).toHaveAttribute("data-held", "true");
   await page.mouse.up();
   await expect(root).toHaveAttribute("data-active", "true");
-  await page.getByRole("button", { name: "Just enough", exact: true }).click();
+  await page.getByRole("radio", { name: "Just enough", exact: true }).click();
   await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.05);
   expect(
     await page.evaluate(() => (window as any).parts.every((n: Element) => n.isConnected)),
@@ -181,7 +181,7 @@ test("reduced motion and offscreen pauses remain usable; example return navigati
   for (const route of ["/notes/spring-workshop", "/notes/inside-svg"]) {
     await page.goto(route, { waitUntil: "networkidle" });
     const align = await page.evaluate(() => {
-      const n = document.querySelector("nav[aria-label=Framework]")!.getBoundingClientRect(),
+      const n = document.querySelector(".nk-note-nav")!.getBoundingClientRect(),
         h = document.querySelector("h1")!.getBoundingClientRect();
       return { n: n.x, h: h.x, right: n.right, hright: h.right };
     });
@@ -266,10 +266,10 @@ test("phone footer keeps every status clear of both buttons", async ({ page }) =
     grip = page.getByRole("slider", { name: "Carriage displacement" });
   let initialHeight: number | undefined;
   const checkStatus = async (text: string) => {
-    await expect(root.locator(".spring-footer > span")).toHaveText(text);
-    const measure = await root.locator(".spring-footer").evaluate((footer) => {
+    await expect(root.locator(".spring-status")).toHaveText(text);
+    const measure = await root.locator(".nk-toolbar").evaluate((footer) => {
       const range = document.createRange();
-      range.selectNodeContents(footer.querySelector("span")!);
+      range.selectNodeContents(footer.querySelector(".spring-status")!);
       const words = [...range.getClientRects()];
       const buttons = [...footer.querySelectorAll("button")].map((el) =>
         el.getBoundingClientRect(),

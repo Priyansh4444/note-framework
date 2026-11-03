@@ -16,7 +16,7 @@ test("source reasoning uses the shared keyboard disclosure and measured spacing"
 }) => {
   await page.setViewportSize({ width: 320, height: 1000 });
   await page.goto("/notes/inside-svg", { waitUntil: "networkidle" });
-  const summaries = page.locator(".svg-reason > summary");
+  const summaries = page.locator(".nk-more > summary");
   await expect(summaries).toHaveText([
     "What are the shapes?",
     "What changed in the SVG?",

@@ -86,7 +86,7 @@ test("pointer projection, cancellation, disclosure remeasurement and wide diagra
   await expect(nav.locator("a[aria-current=location]")).toHaveCount(1);
   await page.evaluate(() => document.fonts.dispatchEvent(new Event("loadingdone")));
   await page.waitForTimeout(40);
-  await nav.screenshot({ path: "/tmp/diff-page-motion/implementation-wayfinder.png" });
+  await nav.screenshot({ path: "artifacts/visual/implementation-wayfinder.png" });
 });
 for (const width of [320, 390, 768, 1360])
   test(`small page map keeps semantic Contents at ${width}`, async ({ page }) => {
@@ -146,7 +146,7 @@ test("reading marker is a blue 24px path segment at document endpoints", async (
     expect(shape.stroke).not.toBe("none");
   }
   await expect(nav.locator(".nk-outline-playhead-halo")).toHaveCount(0);
-  await nav.screenshot({ path: "/tmp/service-curves/kit-wayfinder.png" });
+  await nav.screenshot({ path: "artifacts/visual/kit-wayfinder.png" });
 });
 
 test("reading keyboard focus is confined to its line marker", async ({ page }) => {
@@ -216,8 +216,8 @@ for (const width of [1440, 1920])
     expect(geometry.terminalError).toBeLessThan(0.01);
     expect(geometry.radius).toBe(3.5);
     expect(
-      await page.locator(".bz-example-nav").evaluate((el) => el.getBoundingClientRect().width),
-    ).toBe(980);
+      await page.locator(".nk-note-nav").evaluate((el) => el.getBoundingClientRect().width),
+    ).toBe(680);
     await nav.getByRole("slider").press("End");
     await expect(nav.locator(".nk-outline-terminal")).toHaveClass(/is-reached/);
     await nav.getByRole("slider").press("Home");
@@ -231,7 +231,7 @@ for (const width of [1440, 1920])
 test("the compact header keeps both phone navigation targets usable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/notes/framework-demo", { waitUntil: "networkidle" });
-  const nav = page.locator(".bz-example-nav");
+  const nav = page.locator(".nk-note-nav");
   const layout = await nav.evaluate((el) => ({
     width: el.getBoundingClientRect().width,
     links: [...el.querySelectorAll("a")].map((a) => a.getBoundingClientRect().height),

@@ -1,59 +1,5 @@
-.spring-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
-  width: min(calc(100% - 2.5rem), 680px);
-  margin: 28px auto 0;
-  font: 17px/1.5 var(--serif);
-}
-.spring-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding-block: 4px;
-  color: var(--muted);
-  text-decoration: none;
-}
-.spring-nav a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
 .note-spring-workshop .spring-instrument {
   margin: 36px 0;
-}
-.note-spring-workshop .spring-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.note-spring-workshop .spring-feels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.note-spring-workshop .spring-instrument button {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text);
-  font: 16px/1.5 var(--serif);
-  cursor: pointer;
-}
-.note-spring-workshop .spring-instrument button[aria-pressed="true"] {
-  background: var(--code-bg);
-  border-color: var(--rule-strong);
-  color: var(--bright);
-}
-.note-spring-workshop .spring-instrument button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
 }
 .note-spring-workshop .spring-card {
   --anatomy-card: var(--bg);
@@ -119,16 +65,20 @@
 .spring-needle-hub {
   fill: var(--anatomy-lit);
 }
-/* Keep button labels and playback status independently readable. */
-.note-spring-workshop .spring-footer {
-  display: grid;
-  grid-template-columns: max-content max-content 1fr;
-  gap: 12px;
-  align-items: center;
-  margin-top: 20px;
+.note-spring-workshop .spring-instrument > .nk-toolbar {
+  margin-top: 8px;
 }
-.spring-footer > span {
-  justify-self: end;
+.spring-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+}
+/* The longest status holds the width, so the row does not reflow as it changes. */
+.note-spring-workshop .nk-toolbar-end {
+  margin-left: auto;
+}
+.spring-status {
+  min-width: 4.5em;
   color: var(--muted);
   font-size: 16px;
   text-align: right;
@@ -151,13 +101,6 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-.spring-reason {
-  border-block: 1px solid var(--rule);
-  margin-top: 28px;
-}
-.spring-reason > div {
-  padding-bottom: 12px;
 }
 @media (max-width: 440px) {
   .spring-canvas {
@@ -191,17 +134,4 @@
   --anatomy-muted: var(--muted);
   --anatomy-text: var(--text);
   --anatomy-weight: 0.8px;
-}
-
-@media (max-width: 360px) {
-  .note-spring-workshop .spring-footer {
-    grid-template-columns: 1fr 1fr;
-  }
-  .note-spring-workshop .spring-footer > span {
-    grid-column: 1 / -1;
-    justify-self: start;
-    min-height: 24px;
-    line-height: 1.5;
-    text-align: left;
-  }
 }

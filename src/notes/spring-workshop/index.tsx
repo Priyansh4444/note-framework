@@ -1,5 +1,6 @@
-import { defineNote, DisclosureSummary } from "../../kit";
+import { defineNote, More } from "../../kit";
 import { SpringInstrument } from "./Instrument";
+import { ExampleNav } from "../example-nav";
 import meta from "./note.json";
 import "./vendor/iso.css";
 import "./spring.css";
@@ -23,17 +24,10 @@ const { Page, Chapter } = defineNote({
     },
   },
 });
-const origin =
-  import.meta.env.VITE_FRAMEWORK_PREVIEW === "1"
-    ? ""
-    : "https://note-framework-share.pronsh.workers.dev";
 export default function SpringWorkshop() {
   return (
     <>
-      <nav class="spring-nav" aria-label="Framework">
-        <a href={`${origin}/`}>← Note Framework</a>
-        <a href={`${origin}/docs`}>Build a note like this →</a>
-      </nav>
+      <ExampleNav />
       <Page
         meta={meta}
         date="2026-10-25"
@@ -49,30 +43,27 @@ export default function SpringWorkshop() {
             three settings on the same instrument.
           </p>
           <SpringInstrument />
-          <details class="spring-reason">
-            <DisclosureSummary>What is the model behind the motion?</DisclosureSummary>
-            <div>
-              <p>
-                This is an idealized instrument with one moving mass and linear spring and damping
-                forces. It solves the mass–spring–damper equation exactly, rather than stepping a
-                new position once per frame. The mass is 1 kg, spring stiffness is 144 N/m, and the
-                three damping ratios are 0.22, 1 and 1.8. Displacement is shown in millimeters.
-              </p>
-              <p>
-                “Just enough” means critical damping: from a stationary release it reaches the
-                center quickly without crossing it. Grabbing or changing the damping during a return
-                preserves the current position; changing damping also preserves velocity. A release
-                speed limit keeps the carriage within its physical stroke.
-              </p>
-              <p>
-                <a href="https://openstax.org/books/university-physics-volume-1/pages/15-5-damped-oscillations">
-                  Read the physics
-                </a>
-                . The drawing is an original instrument built with the MIT-licensed{" "}
-                <a href="https://github.com/wheresryan22/anatomy">Anatomy geometry kit</a>.
-              </p>
-            </div>
-          </details>
+          <More summary="What is the model behind the motion?">
+            <p>
+              This is an idealized instrument with one moving mass and linear spring and damping
+              forces. It solves the mass–spring–damper equation exactly, rather than stepping a new
+              position once per frame. The mass is 1 kg, spring stiffness is 144 N/m, and the three
+              damping ratios are 0.22, 1 and 1.8. Displacement is shown in millimeters.
+            </p>
+            <p>
+              “Just enough” means critical damping: from a stationary release it reaches the center
+              quickly without crossing it. Grabbing or changing the damping during a return
+              preserves the current position; changing damping also preserves velocity. A release
+              speed limit keeps the carriage within its physical stroke.
+            </p>
+            <p>
+              <a href="https://openstax.org/books/university-physics-volume-1/pages/15-5-damped-oscillations">
+                Read the physics
+              </a>
+              . The drawing is an original instrument built with the MIT-licensed{" "}
+              <a href="https://github.com/wheresryan22/anatomy">Anatomy geometry kit</a>.
+            </p>
+          </More>
         </Chapter>
       </Page>
     </>

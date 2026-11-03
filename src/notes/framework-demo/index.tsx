@@ -10,25 +10,16 @@ import { Mix } from "./figures/Mix";
 import { Construction } from "./figures/Construction";
 import { Weights } from "./figures/Weights";
 import { Flatten, FlattenSummary } from "./figures/Flatten";
+import { ExampleNav, frameworkOrigin } from "../example-nav";
 import meta from "./note.json";
 import "./demo.css";
 
 const { Page, Chapter, Cite } = note;
 
-const frameworkOrigin =
-  import.meta.env.VITE_FRAMEWORK_PREVIEW === "1"
-    ? ""
-    : "https://note-framework-share.pronsh.workers.dev";
-
 export default function Demo() {
   return (
     <>
-      <nav class="bz-example-nav" aria-label="Framework">
-        <a href={`${frameworkOrigin}/`}>← Note Framework</a>
-        <a href={`${frameworkOrigin}/docs`}>
-          <ArrowLabel>Build a note like this</ArrowLabel>
-        </a>
-      </nav>
+      <ExampleNav />
       <Page
         meta={meta}
         date="2026-10-22"

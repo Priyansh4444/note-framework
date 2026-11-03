@@ -2,7 +2,7 @@ export type Pose = Readonly<{ x: number; v: number }>;
 export type Feel = "bounce" | "settle" | "slow";
 export const tuning = Object.freeze({
   bounce: {
-    label: "A little bounce",
+    label: "Bouncy",
     ratio: 0.22,
     why: "The spring pulls it back. A light damper lets it pass the center and come back again.",
   },

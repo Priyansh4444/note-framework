@@ -139,13 +139,15 @@ export function defineNote<const C extends string, const S extends string = neve
           </p>
         </Show>
         <header class="nk-chapter-head">
-          <a
-            class="nk-chapter-n"
-            href={`#${c.id}`}
-            aria-label={`Chapter ${i + 1} of ${chapters.length}: link to this chapter`}
-          >
-            {pad(i + 1)}
-          </a>
+          <Show when={chapters.length > 1}>
+            <a
+              class="nk-chapter-n"
+              href={`#${c.id}`}
+              aria-label={`Chapter ${i + 1} of ${chapters.length}: link to this chapter`}
+            >
+              {pad(i + 1)}
+            </a>
+          </Show>
           <h2>
             <a class="anchor" href={`#${c.id}`} aria-hidden="true">
               #
@@ -155,7 +157,7 @@ export function defineNote<const C extends string, const S extends string = neve
           <p class="nk-question">{c.question}</p>
           <Show when={c.from?.length}>
             <p class="nk-from">
-              <span>Follows</span>
+              <span>Source</span>
               <For each={c.from}>{(k) => <Cite k={k} />}</For>
             </p>
           </Show>
@@ -385,7 +387,9 @@ export function defineNote<const C extends string, const S extends string = neve
             <p class="dek">{props.dek}</p>
           </header>
           {/* The page's one map: after the masthead on phones, in the margin on wide screens. */}
-          <Wayfinder chapters={way} />
+          <Show when={way.length > 1}>
+            <Wayfinder chapters={way} />
+          </Show>
           <Show when={props.howTo !== false}>
             <aside class="note nk-howto">
               {props.howTo ?? (

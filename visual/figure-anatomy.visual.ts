@@ -72,7 +72,7 @@ for (const width of [390, 1440]) {
     await slider.press("End");
     await expect(action).toHaveText("Replay");
     expect(await action.boundingBox()).toEqual(actionBox);
-    await figure.screenshot({ path: `/tmp/service-curves/figure-anatomy-${width}.png` });
+    await figure.screenshot({ path: `artifacts/visual/figure-anatomy-${width}.png` });
   });
 }
 
@@ -147,7 +147,7 @@ test("guide emphasis follows one clock, with exact persistent geometry through s
       expect(sample.opacities).toEqual([1, 1, 1]);
     }
     await expect(figure.locator(".nk-curve")).toHaveAttribute("d", completeCurve!);
-    await figure.screenshot({ path: `/tmp/service-curves/construction-stage-${i}.png` });
+    await figure.screenshot({ path: `artifacts/visual/construction-stage-${i}.png` });
     await action.click();
     await expect(action).toHaveText("Play");
   }

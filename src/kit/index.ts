@@ -23,6 +23,7 @@ export {
   Equation,
   Figure,
   Model,
+  NoteNav,
   Steps,
   Table,
 } from "./parts";

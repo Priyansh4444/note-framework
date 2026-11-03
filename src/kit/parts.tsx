@@ -20,6 +20,25 @@ export const Figure: ParentComponent<{
 );
 
 /** Text and a directional icon share one spacing rule inside any link or button. */
+/** The line above a note: the way home on the left, one onward link on the right. */
+export const NoteNav: Component<{
+  home: { href: string; label: string };
+  action?: { href: string; label: string };
+}> = (props) => (
+  <nav class="nk-note-nav" aria-label="Site">
+    <a href={props.home.href}>
+      <span aria-hidden="true">←</span> {props.home.label}
+    </a>
+    <Show when={props.action}>
+      {(action) => (
+        <a href={action().href}>
+          <ArrowLabel direction="right">{action().label}</ArrowLabel>
+        </a>
+      )}
+    </Show>
+  </nav>
+);
+
 export const ArrowLabel: ParentComponent<{ direction?: "out" | "right" | "down" }> = (props) => (
   <span class="nk-arrow-label">
     <span class="nk-arrow-text">{props.children}</span>

@@ -788,3 +788,48 @@
 .nk-reference-body {
   padding-block: 12px;
 }
+
+/* The line above a note, aligned to the reading column. */
+.nk-note-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
+  width: min(calc(100% - 2.5rem), 680px);
+  margin: 16px auto 0;
+  font: 16px/1.4 var(--serif);
+}
+.nk-note-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--nk-motion-fast) var(--nk-motion-ease);
+}
+.nk-note-nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nk-note-nav a:hover {
+    color: var(--bright);
+  }
+}
+@media (max-width: 360px) {
+  .nk-note-nav {
+    flex-wrap: nowrap;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .nk-note-nav a {
+    white-space: nowrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-note-nav a {
+    transition: none;
+  }
+}

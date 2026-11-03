@@ -1,5 +1,5 @@
 import { createMemo, createSignal, createUniqueId, For, onCleanup, onMount } from "solid-js";
-import { createScene, Experiment } from "../../kit";
+import { Action, Choice, createScene, Experiment, Toolbar } from "../../kit";
 import { Artwork, Shape } from "./Artwork";
 import {
   opening,
@@ -80,14 +80,15 @@ export function PaintOrderExperiment() {
       id="svg-order"
       question="Can the same circle cover the hill?"
       controls={
-        <button
-          class="svg-button"
-          type="button"
-          aria-pressed={front()}
-          onClick={() => setFront((v) => !v)}
-        >
-          Sun in front
-        </button>
+        <Choice
+          label="Sun's place in the painting order"
+          options={[
+            { id: "behind", label: "Sun behind" },
+            { id: "front", label: "Sun in front" },
+          ]}
+          value={front() ? "front" : "behind"}
+          onChange={(id) => setFront(id === "front")}
+        />
       }
       caption={
         <span aria-live="polite">
@@ -118,30 +119,24 @@ export function ClippingExperiment() {
       id="svg-clip"
       question="Move the window. Does the scenery move?"
       controls={
-        <div class="svg-clip-controls">
-          <div class="svg-stops" role="group" aria-label="Window position">
-            <For each={["left", "center", "right"] as const}>
-              {(position) => (
-                <button
-                  type="button"
-                  class="svg-button"
-                  aria-pressed={stop() === position}
-                  onClick={() => setStop(position)}
-                >
-                  {position[0].toUpperCase() + position.slice(1)}
-                </button>
-              )}
-            </For>
-          </div>
-          <button
-            type="button"
-            class="svg-button"
-            aria-pressed={inspection()}
-            onClick={() => setInspection((v) => !v)}
-          >
-            Show beyond the window
-          </button>
-        </div>
+        <Toolbar
+          end={
+            <Action pressed={inspection()} onClick={() => setInspection((v) => !v)}>
+              Show beyond the window
+            </Action>
+          }
+        >
+          <Choice
+            label="Window position"
+            options={[
+              { id: "left", label: "Left" },
+              { id: "center", label: "Center" },
+              { id: "right", label: "Right" },
+            ]}
+            value={stop()}
+            onChange={setStop}
+          />
+        </Toolbar>
       }
       caption={
         <span aria-live="polite">

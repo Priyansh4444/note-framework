@@ -75,9 +75,7 @@ for (const width of [1440, 768, 390, 320])
       expect(button.size).toBeGreaterThanOrEqual(15);
     }
     await slider.press("ArrowLeft");
-    await page
-      .locator("figure")
-      .screenshot({ path: `/tmp/service-curves/kit-timeline-${width}.png` });
+    await page.locator("figure").screenshot({ path: `artifacts/visual/kit-timeline-${width}.png` });
   });
 
 test("offset grab, primary capture, Escape, cancellation and resize never resume playback", async ({
@@ -156,7 +154,7 @@ test("zoom, enlarged text, reduced motion and forced colors preserve the rail", 
   ).not.toBe("none");
   await page
     .locator("figure")
-    .screenshot({ path: "/tmp/service-curves/kit-timeline-zoom-forced-colors.png" });
+    .screenshot({ path: "artifacts/visual/kit-timeline-zoom-forced-colors.png" });
 });
 
 test("keyboard focus follows only the blue marker, including forced colors", async ({ page }) => {
@@ -186,7 +184,7 @@ test("keyboard focus follows only the blue marker, including forced colors", asy
     expect(focus.stroke).not.toBe(focus.coreStroke);
   }
   await page.emulateMedia({ forcedColors: "none" });
-  await page.locator("figure").screenshot({ path: "/tmp/service-curves/kit-timeline-focused.png" });
+  await page.locator("figure").screenshot({ path: "artifacts/visual/kit-timeline-focused.png" });
 });
 
 for (const width of [320, 390, 768, 1440])
@@ -216,7 +214,7 @@ for (const width of [320, 390, 768, 1440])
     }
     await page
       .locator(".bz-first-try .nk-experiment")
-      .screenshot({ path: `/tmp/service-curves/kit-construction-${width}.png` });
+      .screenshot({ path: `artifacts/visual/kit-construction-${width}.png` });
   });
 
 test("the whole shifted endpoint marker is grabbable without a jump", async ({ page }) => {
@@ -255,5 +253,5 @@ test("integrated Service rail keeps localized keyboard focus and bottom actions"
   expect(focus.opacity).toBe("1");
   await page
     .locator("figure.nk-experiment")
-    .screenshot({ path: "/tmp/service-curves/kit-service-focused-1440.png" });
+    .screenshot({ path: "artifacts/visual/kit-service-focused-1440.png" });
 });
