@@ -2,6 +2,7 @@ import {
   type Accessor,
   type ParentComponent,
   createContext,
+  createMemo,
   createSignal,
   onCleanup,
   onMount,
@@ -25,23 +26,20 @@ export const useDiagram = () => useContext(Units) ?? { u: () => 1, box: [0, 0, 0
  * at a real screen size (`--nk-label-px`) whatever the figure's width.
  */
 export const DiagramViewer: ParentComponent<{ label: string; viewBox: Bounds }> = (props) => {
-  const [x, y, width, height] = props.viewBox;
-  if (
-    props.viewBox.length !== 4 ||
-    ![x, y, width, height].every(Number.isFinite) ||
-    width <= 0 ||
-    height <= 0
-  ) {
-    throw new Error("DiagramViewer needs a finite viewBox with positive width and height.");
-  }
+  const bounds = createMemo(() => {
+    const box = props.viewBox;
+    if (box.length !== 4 || !box.every(Number.isFinite) || box[2] <= 0 || box[3] <= 0)
+      throw new Error("DiagramViewer needs a finite viewBox with positive width and height.");
+    return box;
+  });
   let svg!: SVGSVGElement;
   const [u, setU] = createSignal(1);
   onMount(() => {
     const measure = () => {
       const shown = svg.getBoundingClientRect().width;
       if (shown > 0) {
-        svg.style.setProperty("--nk-u", String(width / shown));
-        setU(width / shown);
+        svg.style.setProperty("--nk-u", String(bounds()[2] / shown));
+        setU(bounds()[2] / shown);
       }
     };
     measure();
@@ -53,11 +51,20 @@ export const DiagramViewer: ParentComponent<{ label: string; viewBox: Bounds }> 
     <svg
       ref={svg}
       class="nk-diagram"
-      viewBox={`${x} ${y} ${width} ${height}`}
+      viewBox={bounds().join(" ")}
       role="img"
       aria-label={props.label}
     >
-      <Units.Provider value={{ u, box: props.viewBox }}>{props.children}</Units.Provider>
+      <Units.Provider
+        value={{
+          u,
+          get box() {
+            return bounds();
+          },
+        }}
+      >
+        {props.children}
+      </Units.Provider>
     </svg>
   );
 };

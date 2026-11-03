@@ -14,6 +14,7 @@ Use these rules after the figure and the math are correct. Each rule names a che
 10. **Make focus quiet and visible, and leave mouse behaviour alone.** On keyboard focus, show a 2px accent cue on the marker or text, not a full-row rectangle. Never cancel mousedown to hide a focus ring, because that also blocks text selection.
 11. **Selection inverts.** Selected text is ink on the text colour, both in the page and in code shadow roots.
 12. **Controls are calm until wanted.** Mono at 11–13px in muted colour, at least 44px rows on touch. Hover brightens the colour, press darkens the background, and there is no bounce.
+13. **Give an instrument a tight anatomy.** What to do, the picture, the model, its parameters, the live state: a phrase or a number each. Prefer a plotted curve and a computed value to a sentence claiming them. After [Interaction Lab](https://aiforui.dev/lab).
 
 ## Enforced
 

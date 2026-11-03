@@ -4,17 +4,17 @@ export const tuning = Object.freeze({
   bounce: {
     label: "Bouncy",
     ratio: 0.22,
-    why: "The spring pulls it back. A light damper lets it pass the center and come back again.",
+    why: "A light damper lets it pass the center and swing back.",
   },
   settle: {
     label: "Just enough",
     ratio: 1,
-    why: "Enough damping removes the bounce. Released from rest, it returns quickly without crossing the center.",
+    why: "Released from rest, this is the fastest return that never crosses the center.",
   },
   slow: {
     label: "Too much",
     ratio: 1.8,
-    why: "More damping is not always faster. The carriage now takes longer to return.",
+    why: "More damping is not always faster: it creeps back.",
   },
 });
 export const omega = 12;
@@ -57,4 +57,19 @@ export function safeRelease(p: Pose): Pose {
   const x = clampStroke(p.x);
   const limit = omega * Math.sqrt(Math.max(0, stroke * stroke - x * x));
   return { x, v: Math.max(-limit, Math.min(limit, p.v)) };
+}
+/**
+ * What a release from rest does at this damping, sampled from the exact solution: how far past
+ * center it swings, as a share of the pull, and when it last leaves a band of 2% of the pull.
+ */
+export function returnShape(ratio: number) {
+  const start = { x: 1, v: 0 };
+  let overshoot = 0,
+    settle = 0;
+  for (let ms = 0; ms <= 8000; ms++) {
+    const { x } = response(start, ms / 1000, ratio);
+    overshoot = Math.max(overshoot, -x);
+    if (Math.abs(x) > 0.02) settle = ms / 1000;
+  }
+  return { overshoot, settle };
 }

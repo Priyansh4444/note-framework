@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { response, safeRelease, energy, omega, rest } from "./model";
+import { response, returnShape, safeRelease, energy, omega, rest } from "./model";
 for (const ratio of [0.22, 1, 1.8]) {
   test(`exact response preserves initial state, composes and dissipates energy (${ratio})`, () => {
     const initial = { x: 21, v: -28 };
@@ -40,4 +40,19 @@ test("damping changes keep position and velocity continuous", () => {
   const changed = response(old, 0, 1.8);
   expect(changed.x).toBeCloseTo(old.x, 10);
   expect(changed.v).toBeCloseTo(old.v, 10);
+});
+
+test("return shape matches the closed form and shows critical damping is fastest", () => {
+  const light = returnShape(0.22),
+    critical = returnShape(1),
+    heavy = returnShape(1.8);
+  // Peak overshoot of an underdamped release from rest: exp(−πζ/√(1−ζ²)).
+  const zeta = 0.22;
+  expect(light.overshoot).toBeCloseTo(Math.exp((-Math.PI * zeta) / Math.sqrt(1 - zeta * zeta)), 3);
+  expect(critical.overshoot).toBe(0);
+  expect(heavy.overshoot).toBe(0);
+  // (1 + ωt)e^(−ωt) = 0.02 at ωt ≈ 5.834, which is what the readout rounds.
+  expect(critical.settle).toBeCloseTo(5.834 / omega, 2);
+  expect(critical.settle).toBeLessThan(heavy.settle);
+  expect(heavy.settle).toBeLessThan(light.settle);
 });

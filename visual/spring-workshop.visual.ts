@@ -302,3 +302,65 @@ test("phone footer keeps every status clear of both buttons", async ({ page }) =
   await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.005);
   await checkStatus("At center");
 });
+
+test("the response curve follows the carriage and its numbers follow the damping", async ({
+  page,
+}) => {
+  await open(page, 1280);
+  const root = page.locator("#spring-instrument"),
+    grip = page.getByRole("slider", { name: "Carriage displacement" }),
+    readout = root.locator(".nk-readout"),
+    curve = root.locator("[data-response-curve]");
+  await expect(readout).toContainText("overshoot 49%");
+  await expect(readout).toContainText("settles in 1.41s");
+  await root.getByRole("radio", { name: "Just enough" }).click();
+  await expect(readout).toContainText("overshoot 0%");
+  await expect(readout).toContainText("settles in 0.49s");
+  await root.getByRole("radio", { name: "Too much" }).click();
+  await expect(readout).toContainText("settles in 1.10s");
+  await root.getByRole("radio", { name: "Bouncy" }).click();
+  // A shorter pull redraws the curve from where it really started, and the dot rides it.
+  const fullPull = await curve.getAttribute("d");
+  await grip.press("Home");
+  await grip.press("ArrowRight");
+  await grip.press(" ");
+  await expect(root.locator("[data-response-now]")).toBeVisible();
+  expect(await curve.getAttribute("d")).not.toBe(fullPull);
+  const drawn = await root.locator("[data-response-now]").evaluate((dot) => {
+    const box = dot.getBoundingClientRect();
+    const hit = (dot as unknown as SVGElement).ownerSVGElement!.getBoundingClientRect();
+    return box.left >= hit.left && box.right <= hit.right;
+  });
+  expect(drawn).toBe(true);
+  await expect.poll(async () => Math.abs((await pose(page)).x)).toBeLessThan(0.05);
+  // Once settled, the chart keeps the last real release for inspection.
+  await expect(root.locator("[data-response-now]")).toHaveCount(0);
+  expect(await curve.getAttribute("d")).not.toBe(fullPull);
+});
+
+test("the response chart refits its plot when the width crosses the phone breakpoint", async ({
+  page,
+}) => {
+  await open(page, 1280);
+  const root = page.locator("#spring-instrument");
+  const fits = () =>
+    root.evaluate((el) => {
+      const chart = [...el.querySelectorAll("svg")].at(-1)!;
+      const labels = [...chart.querySelectorAll("text")].map((t) => t.getBoundingClientRect());
+      const readout = el.querySelector(".nk-readout")!.getBoundingClientRect();
+      const box = chart.getBoundingClientRect();
+      return {
+        below: Math.max(...labels.map((l) => l.bottom)) <= readout.top,
+        inside: Math.min(...labels.map((l) => l.left)) >= box.left - 1,
+        viewBox: chart.getAttribute("viewBox"),
+      };
+    });
+  const desktop = await fits();
+  expect(desktop.below && desktop.inside).toBe(true);
+  await page.setViewportSize({ width: 320, height: 844 });
+  await expect.poll(async () => (await fits()).viewBox).not.toBe(desktop.viewBox);
+  const phone = await fits();
+  expect(phone.below && phone.inside).toBe(true);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect.poll(async () => (await fits()).viewBox).toBe(desktop.viewBox);
+});

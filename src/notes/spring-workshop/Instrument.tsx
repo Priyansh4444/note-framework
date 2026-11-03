@@ -9,9 +9,20 @@ import {
   untrack,
   type JSX,
 } from "solid-js";
-import { Action, Choice, createScene, Toolbar } from "../../kit";
+import { Action, Choice, createScene, Readout, Toolbar } from "../../kit";
 import * as g from "./geometry";
-import { clampStroke, response, rest, safeRelease, tuning, type Feel, type Pose } from "./model";
+import {
+  clampStroke,
+  response,
+  rest,
+  returnShape,
+  safeRelease,
+  stroke,
+  tuning,
+  type Feel,
+  type Pose,
+} from "./model";
+import { ResponseChart } from "./ResponseChart";
 import order from "./paint-order.json";
 import * as kit from "./vendor/iso-kit";
 import type { SolidPaths } from "./vendor/iso-kit";
@@ -39,6 +50,9 @@ export function SpringInstrument() {
   const scene = createScene([{ label: "Return to center", ms: 6000 }]);
   const [feel, setFeel] = createSignal<Feel>("bounce");
   const [initial, setInitial] = createSignal<Pose>(rest);
+  // The chart keeps the last real release once the carriage has settled, and starts on a full pull.
+  const [traced, setTraced] = createSignal<Pose>({ x: stroke, v: 0 });
+  const shape = createMemo(() => returnShape(tuning[feel()].ratio));
   const [held, setHeld] = createSignal<Pose | null>(null);
   const [reduced, setReduced] = createSignal(false);
   const [announcement, announce] = createSignal("");
@@ -101,6 +115,7 @@ export function SpringInstrument() {
       scene.pause();
       setHeld(null);
       setInitial(reduced() ? rest : safeRelease(p));
+      if (!reduced()) setTraced(safeRelease(p));
       scene.seek(0);
       if (!reduced()) scene.play();
       announce(reduced() ? "At center. Motion reduced." : "Released. Returning to center.");
@@ -127,6 +142,7 @@ export function SpringInstrument() {
       scene.pause();
       setFeel(next);
       setInitial(p);
+      if (wasPlaying || wasHeld) setTraced(p);
       scene.seek(0);
       if (wasHeld) setHeld(p);
       else if (wasPlaying && !reduced()) scene.play();
@@ -340,6 +356,22 @@ export function SpringInstrument() {
           </Action>
         </span>
       </Toolbar>
+      <ResponseChart
+        release={traced()}
+        ratio={tuning[feel()].ratio}
+        now={scene.playing() ? scene.t() / 1000 : undefined}
+      />
+      <Readout quiet>
+        <span>
+          damping ratio <b>{tuning[feel()].ratio}</b>
+        </span>
+        <span>
+          overshoot <b>{Math.round(shape().overshoot * 100)}%</b>
+        </span>
+        <span>
+          settles in <b>{shape().settle.toFixed(2)}s</b>
+        </span>
+      </Readout>
       <figcaption>
         <p>{tuning[feel()].why}</p>
         <p>Grab it mid-motion: the next release starts where you let go.</p>

@@ -26,8 +26,10 @@
   font-variant-numeric: tabular-nums;
   color: var(--anatomy-text);
 }
+/* Keep the carriage and its curve on screen together. */
 .spring-stage {
-  width: 100%;
+  width: min(100%, 450px);
+  margin-inline: auto;
 }
 .spring-canvas {
   position: relative;
@@ -59,7 +61,10 @@
   fill: var(--anatomy-lit);
 }
 .note-spring-workshop .spring-instrument > .nk-toolbar {
-  margin-top: 8px;
+  margin-top: 4px;
+}
+.note-spring-workshop .spring-instrument > .nk-readout {
+  margin-top: 4px;
 }
 .spring-actions {
   display: flex;
@@ -78,10 +83,10 @@
   white-space: nowrap;
 }
 .note-spring-workshop .spring-instrument figcaption {
-  margin-top: 24px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.45;
 }
 .spring-instrument figcaption p {
   margin: 0 0 8px;
@@ -94,6 +99,17 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+/* Three short stats keep one row on a phone, so no number is stranded alone. */
+@media (max-width: 600px) {
+  .note-spring-workshop .spring-instrument > .nk-readout {
+    display: grid;
+    grid-template-columns: repeat(3, auto);
+    justify-content: space-between;
+  }
+  .note-spring-workshop .spring-instrument > .nk-readout b {
+    display: block;
+  }
 }
 @media (max-width: 440px) {
   .spring-canvas {
