@@ -16,7 +16,8 @@ Before authoring, animating, or typesetting a note, read `.agents/skills/note-ex
 
 ## Rules
 
-- Authored notes belong in `src/notes/<topic>/`, registered by their `note.json`; portable study guides belong in `notes/<topic>/`. New notes are built with the kit in `src/kit`.
+- Authored notes belong in `src/notes/<topic>/`, registered by their `note.json`. New notes are built with the kit in `src/kit`.
+- Controls, disclosures and page chrome come from the kit (`NoteNav`, `More`, `Check`, `Choice`, `Action`, `Toolbar`, `Parameter`). A note writes CSS only for its own diagram; a missing control belongs in the kit, not in a page.
 - Reuse the existing typography, `SceneFrame`, `createScene`, `tip`, and spring variables. Preserve other notes that are still in progress; never edit a note another agent is working on.
 - Render mathematical notation with `src/components/ui/Tex.tsx`. Keep KaTeX fonts local and HTML + MathML output enabled. Invalid authored TeX should fail verification.
 - Keep SVG nodes persistent. Derive numerical geometry and playback state from the scene clock; do not replace SVG markup or run a separate animation timer. Pause before seeking. Discrete decisions must not animate through misleading mathematical states.

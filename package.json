@@ -37,8 +37,7 @@
     "test:visual:update": "bun run test:visual --update",
     "public:build": "bun scripts/public-release.ts",
     "public:dev": "wrangler dev --config wrangler.public.jsonc --port 3160 --var PUBLIC_ORIGIN:http://localhost:3160",
-    "public:deploy": "bun scripts/public-deploy.ts",
-    "framework:export": "bun scripts/public-repository.ts"
+    "public:deploy": "bun scripts/public-deploy.ts"
   },
   "dependencies": {
     "@floating-ui/dom": "^1.8.0",
