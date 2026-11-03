@@ -110,7 +110,7 @@ Sound starts off. The reader enables it with the visible Sound button; unavailab
 
 ## Check alignment and visibility
 
-Annotate only intended relationships; automatic checks already examine visible SVG text:
+Use `<More summary="Why does this happen?">…</More>` for reasoning; it keeps native disclosure behaviour. Annotate only intended relationships; automatic checks already examine visible SVG text:
 
 ```tsx
 <g {...auditLayout({ align: "y-center", gaps: "x", count: 3 })}>

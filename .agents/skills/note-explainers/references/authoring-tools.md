@@ -35,6 +35,10 @@ The starter also exports this runnable component as `src/recipes.tsx`. Import it
 
 For animation, pass `scene={scene}` to `Experiment` **or** use `SceneFrame`; each attaches its scene, so never nest them. Keep one clock and persistent SVG nodes. A parameter change during construction must preserve the visible model before pausing, seeking to the completed construction, and committing the new value. The worked `FillFigure` uses a discrete index, so its handler simply pauses, finishes construction, then changes selection. Static experiments need none of that setup.
 
+Use `createPlayback(scene, { min, max, initial })` to map the scene clock to the value drawn in the picture. Give each animation one position control: prefer `Experiment`'s curved timeline, or use a `Parameter` with `playback.seek` and `playback.pause` when a numeric range is clearer. Do not show both for the same position. Keep `Parameter` for independent model inputs. Grabbing pauses before seeking; Play continues from there. `SweepExperiment` in `src/recipes.tsx` demonstrates one curved scrubber. Use `step` only for discrete model states.
+
+`Page` supplies the reading timeline from its chapter registry; it follows document scrolling. The optional `timeline="Playback position"` on `Experiment` follows the figure's scene clock along a shallow S-shaped rail. Both timelines use blue line segments as playheads; their paths differ. Keep these two meanings of position distinct.
+
 ## Marks and controls, without CSS
 
 A figure needs no stylesheet. Put a role class on a mark to colour it: `nk-orange`, `nk-magenta`, `nk-green`, `nk-blue`, `nk-red` or `nk-faint`. Marks keep a constant on-screen size at any figure width.
@@ -96,14 +100,6 @@ import { CodeBlock } from "../../kit";
 
 The build reads these files as text and renders primary source with the measured GitHub Dark palette. It never executes imported examples. Diff input is a unified patch for one file. The single version toggle retains shared text during the morph. Source tools exposes Before/After, Unified/Split inspection with Pierre’s [Vesper theme](https://github.com/raunofreiberg/vesper), omission notices, and exact original-source Copy. Horizontal scrolling stays inside the listing. Use `.txt?code` for intentional plain text. The reader receives build-highlighted data inside a real shadow root; no highlighter, grammar, worker or external fetch runs in the reader.
 
-## Choose one playback control
-
-Use `createPlayback(scene, { min, max, initial })` to map the scene clock to the value drawn in the picture. Give each animation one visible position control: prefer the curved `Experiment` timeline, or use a `Parameter` with `playback.seek` and `playback.pause` when a numeric range is clearer. Do not bind both controls to the same position. Keep `Parameter` for independent model inputs. A grab pauses before any value changes; releasing stays paused. Play continues from the chosen position, while Replay starts again.
-
-`Page` supplies the reading timeline through its chapter registry; that timeline follows document scrolling. Add `timeline="A short name"` to `Experiment` only when the figure needs its own clock scrubber. Its blue line segment follows the scene clock along a shallow S-shaped rail; labelled checkpoints seek exact beat starts. Use `step` in `createPlayback` only for discrete model states such as whole segment counts. Keep continuous mathematical motion unrounded; display formatting and native input steps remain separate.
-
-`SweepExperiment` in `src/recipes.tsx` is a complete portable example with two linked mixes and a curved path. It needs no custom CSS or second animation loop. The minimal `IndexExperiment` remains a static, controlled example. Honor reduced motion on initial display and keep manual seeking available.
-
 ## Add sound to a scene
 
 Pass `sound={plan}` to the same `Experiment` that owns the scene. A `CuePlan` contains `events` (`id`, `atMs`, `cue`) and `flights` (`startMs`, `endMs`), in scene milliseconds. Cues are `ready`, `contact`, `send`, `appear`, or `complete`. Derive the plan from the same events as the picture; sound observes playback and never advances it. Playback and Sound controls share the transport below the picture.
@@ -114,11 +110,7 @@ Sound starts off. The reader enables it with the visible Sound button; unavailab
 
 ## Check alignment and visibility
 
-Use `<details><DisclosureSummary>Why does this happen?</DisclosureSummary>…</details>` for an ordinary disclosure. Import `DisclosureSummary` from the kit; it keeps native disclosure behavior, a first-line marker, consistent padding and localized keyboard focus. `Check` remains the specialized question/answer component.
-
-The audit automatically checks kit disclosure padding/parts/first-line alignment, parameter headers/bounds/straight rails/exact fill endpoints/attached contours, and the example navigation's icon spacing. These checks measure boxes and paths; they cannot infer native thumb paint or font ink from computed pseudo-element styles.
-
-Annotate other intended relationships; automatic checks also examine visible SVG text:
+Use `<More summary="Why does this happen?">…</More>` for reasoning; it keeps native disclosure behaviour. Annotate only intended relationships; automatic checks already examine visible SVG text:
 
 ```tsx
 <g {...auditLayout({ align: "y-center", gaps: "x", count: 3 })}>
