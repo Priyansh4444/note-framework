@@ -358,7 +358,7 @@ export function serviceAt(trace: ServiceTrace, ms: number): ServiceFrame {
     })),
     caption: current
       ? caption(current)
-      : "Press Play. Terminal will open first and start a single service; the other windows will join it.",
+      : "Terminal opens first and starts one service; the others join it.",
   };
 }
 

@@ -74,6 +74,18 @@
   position: relative;
   height: 44px;
 }
+/* One beat has no labels to hang, so End sits beside the rail. */
+.nk-timeline-track[data-single-beat] {
+  display: flex;
+  align-items: center;
+}
+.nk-timeline-track[data-single-beat] .nk-timeline-slider {
+  flex: 1;
+  min-width: 0;
+}
+.nk-timeline-track[data-single-beat] .nk-timeline-labels {
+  flex: 0 0 44px;
+}
 .nk-timeline-label {
   position: absolute;
   top: 0;

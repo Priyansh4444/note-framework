@@ -438,6 +438,19 @@ export function measureTaste(): TasteFinding[] {
       report("wall-of-text", [p], "Split into one idea per paragraph, or cut.", { words });
   }
 
+  // "Token dense": a figure heading must add what its chapter has not already said.
+  const words = (el: Element | null) =>
+    (el?.textContent ?? "")
+      .toLowerCase()
+      .replace(/[^\p{L}\p{N}]+/gu, " ")
+      .trim();
+  for (const chapter of all(main, ".nk-chapter")) {
+    const said = [chapter.querySelector("h2"), chapter.querySelector(".nk-question")].map(words);
+    for (const heading of all(chapter, ".nk-experiment-question"))
+      if (said.includes(words(heading)))
+        report("repeated-heading", [heading], "Delete the figure heading; the chapter said it.");
+  }
+
   // "Bland and linear": eased or spring motion only (0s visibility flips and infinite loops excepted).
   for (const el of all(document.body, "*")) {
     const s = getComputedStyle(el);

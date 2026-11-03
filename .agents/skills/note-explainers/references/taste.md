@@ -32,6 +32,7 @@ Use these rules after the figure and the math are correct. Each rule names a che
 | `uneven-scale` | "0 1 2 not correctly spaced" |
 | `long-inline-math`, `broken-inline-math` | "math equations go on each line"; "n+" and "1" split across lines |
 | `wall-of-text`, `filler-prose` | "bloatware with dead sentences" |
+| `repeated-heading` | "token dense with meaning in words" |
 | `linear-motion`, `hover-zoom`, `anchor-jump` | "bland and linear", "zoom", "JUMP" |
 | `tall-figure` | "Play scrolls the curve away" |
 | `clipped-math` | "centring hides the left-hand expressions"; a formula scrolling silently inside its box |

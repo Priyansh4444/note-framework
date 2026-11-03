@@ -214,3 +214,17 @@ for (const route of routes.filter((r) => r.startsWith("/notes/")))
       }
     expect(escaped).toEqual([]);
   });
+
+test("a figure heading that repeats its chapter fails the taste rules", async ({ page }) => {
+  await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
+  const rules = () =>
+    page.evaluate(measureTaste).then((found) => found.map((finding) => finding.rule));
+  expect(await rules()).not.toContain("repeated-heading");
+  await page.evaluate(() => {
+    const heading = document.createElement("p");
+    heading.className = "nk-experiment-question";
+    heading.textContent = document.querySelector(".nk-question")!.textContent;
+    document.querySelector(".nk-experiment")!.prepend(heading);
+  });
+  expect(await rules()).toContain("repeated-heading");
+});

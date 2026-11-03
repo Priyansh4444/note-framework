@@ -1,5 +1,5 @@
 import selectionCode from "./examples/selection.ts?code";
-import { DisclosureSummary, Check, CodeBlock } from "../../kit";
+import { Check, CodeBlock, More } from "../../kit";
 import { note } from "./chapters";
 import { FillFigure } from "./figures/FillFigure";
 import { T } from "./glossary";
@@ -41,14 +41,13 @@ export default function Note() {
         <Check q="Which item is in slot 6, and why isn't it F?">
           <p>G. A is in slot 0, so F is in slot 5 and G is in slot 6.</p>
         </Check>
-        <details class="starter-reasoning">
-          <DisclosureSummary>How the picture stays consistent</DisclosureSummary>
+        <More summary="How the picture stays consistent">
           <p>
             All sixteen slots exist throughout the animation. One scene clock controls their fill
             and the selection outline. Playing, pausing, or choosing a step changes their
             attributes; it never replaces the diagram.
           </p>
-        </details>
+        </More>
       </Chapter>
     </Page>
   );

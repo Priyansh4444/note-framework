@@ -10,16 +10,9 @@
   border-radius: 10px;
 }
 
-.spring-card-top,
 .spring-card-bottom {
   color: var(--anatomy-muted);
   font: 15px/1.5 var(--mono);
-}
-.spring-card-top {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px 20px;
 }
 .spring-card-bottom {
   display: grid;
@@ -71,14 +64,14 @@
 .spring-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 20px;
+  gap: 4px 16px;
 }
 /* The longest status holds the width, so the row does not reflow as it changes. */
 .note-spring-workshop .nk-toolbar-end {
   margin-left: auto;
 }
 .spring-status {
-  min-width: 4.5em;
+  min-width: 4.2em;
   color: var(--muted);
   font-size: 16px;
   text-align: right;
@@ -110,12 +103,8 @@
   .note-spring-workshop .spring-card {
     padding: 16px 10px;
   }
-  .spring-card-top,
   .spring-card-bottom {
     font-size: 15px;
-  }
-  .spring-card-bottom > span {
-    max-width: 20ch;
   }
 }
 @media (forced-colors: active) {

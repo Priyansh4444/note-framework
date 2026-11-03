@@ -138,7 +138,7 @@ export function CurveTimeline(props: {
     <div class="nk-timeline" data-nk-timeline aria-label={props.label}>
       <div class="nk-timeline-transport">
         {props.actions}
-        <div class="nk-timeline-track">
+        <div class="nk-timeline-track" data-single-beat={named ? undefined : ""}>
           <div
             class="nk-timeline-slider"
             ref={root}

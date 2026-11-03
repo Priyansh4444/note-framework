@@ -244,10 +244,6 @@ export function SpringInstrument() {
         onChange={select}
       />
       <div class="iso spring-card" data-theme="dark">
-        <div class="spring-card-top">
-          <span>Fig. 01</span>
-          <span>Spring & damper</span>
-        </div>
         <div class="spring-stage">
           <div class="spring-canvas">
             <svg
@@ -325,7 +321,7 @@ export function SpringInstrument() {
           </div>
         </div>
         <div class="spring-card-bottom">
-          <span id="spring-hint">Drag the round grip. Release.</span>
+          <span id="spring-hint">Drag the grip.</span>
           <output aria-label="Displacement">
             {(Math.abs(pose().x) < 0.05 ? 0 : pose().x).toFixed(1)} mm
           </output>

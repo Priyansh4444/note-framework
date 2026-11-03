@@ -163,9 +163,8 @@ export const Docs: Component = () => {
                   <a href="/starter.zip" download="note-framework-starter.zip">
                     starter ZIP
                   </a>
-                  , unzip it into a new folder, and install <a href="https://bun.sh">Bun</a>. The
-                  starter includes a working note and an authoring guide for your agent. Create your
-                  own note and open the local preview:
+                  into a new folder and install <a href="https://bun.sh">Bun</a>. Then create a note
+                  and open the preview:
                 </p>
                 <details class="fw-guide-details">
                   <DisclosureSummary>Show setup commands</DisclosureSummary>
@@ -175,8 +174,7 @@ export const Docs: Component = () => {
                 </details>
                 <p class="fw-guide-aside">
                   Edit <code>src/notes/my-topic/index.tsx</code> and visit{" "}
-                  <code>/notes/my-topic</code>. Keep the source files; the starter is an independent
-                  project.
+                  <code>/notes/my-topic</code>.
                 </p>
               </section>
 

@@ -1,6 +1,7 @@
 # Reader contract
 
 - Let readers recover at any section: context → useful picture → reason → key fact. Compress words without dropping source coverage, assumptions, proofs or exceptions. Put longer reasoning behind a clear disclosure.
+- Say each thing once. A figure heading, caption or recap must add what the chapter's title, question and prose have not; delete sentences that only announce the next one.
 - Explain a term visibly when understanding the current step requires it. A hover tooltip alone is not an introduction.
 - Use a quiet serif reading column, ink-black surfaces, ragged-right text and restrained semantic accents. Keep repeated metadata out of the main argument. Preserve any user-requested control type.
 - Start with a question someone unfamiliar with the topic would ask. Distinguish definitions, assumptions, invariants and conclusions. State what a bound counts and whether it is a guarantee or optimum.
