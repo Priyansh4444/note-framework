@@ -3,40 +3,12 @@
   margin-inline: auto;
   padding: 56px 0 72px;
 }
-.fw-guide .fw-guide-toc {
-  margin: 0 0 44px;
-  padding: 20px 0;
-  border-block: 1px solid var(--rule);
-}
 .fw-guide .fw-guide-label {
   margin: 0 0 16px;
   color: var(--faint);
   font: 11px/1.6 var(--mono);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-}
-.fw-guide .fw-guide-toc ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.fw-guide .fw-guide-toc li {
-  margin: 0;
-  padding: 0;
-}
-.fw-guide .fw-guide-toc a {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  min-height: 44px;
-  padding: 8px 0;
-  color: var(--muted);
-  font-size: 17px;
-  text-decoration: none;
-}
-.fw-guide .fw-guide-toc a span {
-  color: var(--faint);
-  font: 11px/1.5 var(--mono);
 }
 .fw-guide .fw-guide-body {
   min-width: 0;
@@ -68,7 +40,7 @@
   border-top: 1px solid var(--rule);
   scroll-margin-top: 32px;
 }
-.fw-guide .fw-guide-toc + .fw-guide-section {
+.fw-guide .fw-guide-header + .fw-guide-section {
   border-top: 0;
   padding-top: 0;
 }
@@ -230,32 +202,13 @@
   font-size: 33px;
 }
 @media (hover: hover) and (pointer: fine) {
-  .fw-guide .fw-guide-toc a:hover,
   .fw-guide .fw-guide-details > summary:hover {
     color: var(--bright);
-  }
-  .fw-guide .fw-guide-toc a:hover span {
-    color: var(--accent);
   }
 }
 @media (max-width: 760px) {
   .fw-guide .fw-guide-layout {
     padding: 32px 0 56px;
-  }
-  .fw-guide .fw-guide-toc {
-    margin-bottom: 32px;
-    padding-block: 16px;
-  }
-  .fw-guide .fw-guide-toc .fw-guide-label {
-    margin-bottom: 8px;
-  }
-  .fw-guide .fw-guide-toc ol {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 20px;
-  }
-  .fw-guide .fw-guide-toc a {
-    gap: 9px;
   }
   .fw-guide .fw-guide-header {
     padding-bottom: 24px;

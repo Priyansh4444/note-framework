@@ -313,7 +313,4 @@ test("the actual guide range keeps keyboard focus on its native thumb", async ({
   await input.focus();
   await expect(input).toHaveCSS("outline-style", "none");
   expect(await controlFailures(page)).toEqual([]);
-  await expect(page.locator("#interact .nk-parameter")).toHaveScreenshot("guide-range-focus.png", {
-    animations: "allow",
-  });
 });

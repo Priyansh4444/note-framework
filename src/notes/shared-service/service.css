@@ -266,18 +266,6 @@
 .note-shared-service .ss-subscriber-names {
   color: var(--ss-role);
 }
-/* The Service diagram needs both sound and playback: keep its labelled rail on a full row. */
-.note-shared-service #service-experiment .nk-timeline-transport {
-  row-gap: 4px;
-}
-.note-shared-service #service-experiment .nk-timeline-transport > .nk-experiment-actions {
-  flex-basis: 100%;
-  min-height: 44px;
-  padding-top: 0;
-}
-.note-shared-service #service-experiment .nk-timeline-track {
-  flex-basis: 100%;
-}
 /* Phase links form a readable chapter row; End owns its own 44px target. */
 .note-shared-service #service-experiment .nk-timeline-labels {
   display: grid;

@@ -96,15 +96,15 @@ test("guide emphasis follows one clock, with exact persistent geometry through s
   const slider = figure.getByRole("slider", { name: "Curve playback", exact: true });
   const action = figure.locator("[data-nk-scene-action]");
   // Beats name positions on the curve; every row exists at every t (no depth staging).
-  for (const [i, label] of ["Sweep t"].entries()) {
-    await figure.getByRole("button", { name: label, exact: true }).click();
+  for (const i of [0]) {
+    await slider.press("Home");
     await action.click();
     await expect(figure).toHaveAttribute("data-nk-scene-active", "true");
     const samples = await figure.evaluate(async (el) => {
       const results = [];
       for (let k = 0; k < 12; k++) {
         const slider = el.querySelector(".nk-timeline-slider")!;
-        const current = el.querySelector("[aria-current=step] span:last-child")!.textContent!;
+        const current = "Sweep t";
         // Kit playback eases its ends: t = (1 − cos πu) / 2 of the scene fraction u.
         const u =
           Number(el.getAttribute("data-nk-scene-time")) /

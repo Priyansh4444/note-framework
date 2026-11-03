@@ -299,9 +299,6 @@
 .fw-spec-live .nk-experiment {
   margin: 0;
 }
-.fw-spec-live .nk-experiment-question:empty {
-  display: none;
-}
 .fw-spec-live .nk-experiment > figcaption {
   font-size: 14px;
 }

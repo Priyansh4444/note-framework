@@ -142,3 +142,16 @@ figure.nk-experiment {
   margin-top: 0;
   margin-bottom: 12px;
 }
+
+/* Sound and playback need the full width: keep the labelled rail on its own row. */
+.nk-timeline-transport:has(.nk-experiment-sound) {
+  row-gap: 4px;
+}
+.nk-timeline-transport:has(.nk-experiment-sound) > .nk-experiment-actions {
+  flex-basis: 100%;
+  min-height: 44px;
+  padding-top: 0;
+}
+.nk-timeline-transport:has(.nk-experiment-sound) .nk-timeline-track {
+  flex-basis: 100%;
+}

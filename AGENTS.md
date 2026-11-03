@@ -1,33 +1,37 @@
 # Note framework conventions
 
-Explainer notes in the style of anoma.ly and kitlangton.com: a book-serif blog post whose figures move only when asked, plus a glossary, sources, and a map so no reader gets lost.
-
-## Quick start
+Explainer notes: a book-serif post whose figures move only when asked, with a glossary and sources.
 
 ```sh
-bun run note:new <slug> "Title"   # scaffold src/notes/<slug>/ (route /notes/<slug>)
-bun run dev                       # framework home at http://localhost:3000
-bun run note:publish <slug>       # build that note alone, check it, deploy to Cloudflare, wait until live
-bun run framework:new ../my-note --slug my-note --title "My note"  # export an independent starter
-bun run note:share <slug>         # single-file export + versioned hosted upload (invited profile)
+bun run note:new <slug> "Title"   # scaffold src/notes/<slug>/, route /notes/<slug>
+bun run dev                       # framework home, port 3000
+bun run dev:framework             # the same, with every example note
+bun run note:audit <slug>         # measure a finished note; run bun run visual:install once
+bun run note:publish <slug>       # static deploy of that note alone
+bun run note:share <slug>         # single-file export and versioned hosted upload
+bun run framework:new ../my-note --slug my-note --title "My note"  # independent starter
 ```
 
-Before authoring, animating, or typesetting a note, read `.agents/skills/note-explainers/SKILL.md`. Then list the skills your harness offers and use the ones that fit (`dataviz` for charts, `arena` for competing visual ideas, `deep-research` for sourcing, `run` or a browser to verify). Record reusable lessons in that local skill and its linked reader contract, never in global skills. For mechanism-focused interactive explanations, use `.agents/skills/explorable-explanations/SKILL.md`; source case studies are optional. For UI polish, read the installed `emil-design-eng` skill (currently `<local-skill-root>/emil-design-eng/SKILL.md`). Verify actual menu and page-transition motion separately from the figures; animated diagrams alone do not establish animated UI.
+Before authoring, animating or typesetting, read `.agents/skills/note-explainers/SKILL.md`. Use `.agents/skills/explorable-explanations/SKILL.md` for mechanism-focused explanations and `.agents/skills/emil-design-eng/SKILL.md` for UI polish. Record reusable lessons in those local skills, never global ones.
 
-## Rules
+## Notes
 
-- Authored notes belong in `src/notes/<topic>/`, registered by their `note.json`. New notes are built with the kit in `src/kit`.
-- Controls, disclosures and page chrome come from the kit (`NoteNav`, `More`, `Check`, `Choice`, `Action`, `Toolbar`, `Parameter`). A note writes CSS only for its own diagram; a missing control belongs in the kit, not in a page.
-- Reuse the existing typography, `SceneFrame`, `createScene`, `tip`, and spring variables. Preserve other notes that are still in progress; never edit a note another agent is working on.
-- Render mathematical notation with `src/kit/math/Tex.tsx`. Keep KaTeX fonts local and HTML + MathML output enabled. Invalid authored TeX should fail verification.
-- Keep SVG nodes persistent. Derive numerical geometry and playback state from the scene clock; do not replace SVG markup or run a separate animation timer. Pause before seeking. Discrete decisions must not animate through misleading mathematical states.
-- Scope note-specific CSS to its page class. Check inherited rules (especially wide figures and `pre`) at desktop and phone widths.
-- Publish independent notes with `bun run note:publish <slug>` or the explicitly configured hosted client `bun run note:share <slug>`; never deploy the default `dist`. The hosted sharing service has its own API and database: use `bun run share:deploy`, never static `note:publish framework`.
+- A note lives in `src/notes/<topic>/`, registered by `note.json`, and imports from `src/kit`. Never edit a note another agent is working on.
+- The kit owns controls, disclosures, page chrome and their motion: `NoteNav`, `More`, `Check`, `Choice`, `Action`, `Toolbar`, `Parameter`. A note writes CSS only for its own diagram, scoped to its page class. A missing control belongs in the kit.
+- Words earn their place. Say each thing once: a figure heading, recap or caption must add what the chapter's title, question and prose have not.
+- Render math with `src/kit/math/Tex.tsx`. Keep KaTeX fonts local and HTML + MathML output on. Invalid TeX should fail verification.
 
-- Primary code follows the measured GitHub Dark palette; patch inspection uses Pierre’s Vesper theme with inverse selection.
-- Use the shared terminal/Fastfetch palette in `src/kit/theme.css`. Diagram roles use `--diagram-*` tokens. Validate actual scaled label sizes and staged construction/invariant motion, as described in the reader contract.
-- The reusable distribution is an explicit allowlisted export in `scripts/starter.ts`, with portable guidance in `templates/starter/`. New dependencies or kit files need a fresh independent export/install/build check. Do not ship existing notes, course archives, user paths or credentials in the starter ZIP.
-- Minimize agent context through progressive disclosure: public `/llms.txt` ≤300 words, starter AGENTS ≤220 words, figure/math skill ≤380 words. Link deeper references instead of requiring a full documentation read. Keep course history and service internals out of the authoring path; context-budget checks enforce these entry sizes.
-- Hosted publication accepts one self-contained HTML file; keep the router-free `src/single.tsx` entry and opaque sandbox. Never add `allow-same-origin`, relax network isolation or embed uploaded HTML in trusted DOM to repair portability. Record limitations honestly. Preserve private origin-scoped credentials, stable publication IDs, immutable versions and pending-operation retries. Review `sharing/DESIGN.md` before changing that contract.
+## Figures
 
-- Before sharing a new or changed visual note, run `bun run note:audit <slug>` (install Chromium with `bun run visual:install`). Fix measured failures and inspect unsupported states; keep screenshots and mathematical checks. The checker samples gates, beat boundaries/midpoints, paused states, open disclosures, outline and expanded Fit when present. It is not a proof of universal visibility.
+- Keep SVG nodes persistent. Derive geometry and playback from the scene clock; no second timer. Pause before seeking.
+- Discrete decisions must not animate through misleading mathematical states.
+- Colours come from `src/kit/theme.css`; diagram roles use `--diagram-*`. Primary code uses the GitHub Dark palette, patch inspection Pierre's Vesper with inverse selection.
+- Check inherited rules, especially wide figures and `pre`, at desktop and phone widths. Validate labels at their scaled size, and verify UI motion separately from figures.
+- Before sharing a changed note, run `note:audit`, fix measured failures and inspect unsupported states. It samples gates, beat boundaries and midpoints, paused states and open disclosures, so it does not prove universal visibility.
+
+## Distribution
+
+- Deploy a note only with `note:publish` or `note:share`, never the default `dist`. The public service deploys with `bun run public:deploy`, the invitation service with `bun run share:deploy`.
+- The starter is an explicit allowlist in `scripts/starter.ts`, with guidance in `templates/starter/`. New dependencies or kit files need a fresh export, install and build. Never ship existing notes, course archives, user paths or credentials in it.
+- Entry points have enforced word budgets: `/llms.txt` 300, starter AGENTS 220, figure skill 380. Link deeper references rather than growing them.
+- Hosted publication accepts one self-contained HTML file, so keep the router-free `src/single.tsx` entry and the opaque sandbox. Never add `allow-same-origin`, relax network isolation or embed uploads in trusted DOM. Preserve private credentials, stable publication IDs, immutable versions and pending-operation retries. Read `sharing/DESIGN.md` before changing that contract.

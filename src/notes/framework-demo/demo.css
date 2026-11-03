@@ -1,40 +1,6 @@
 /* The Bézier example. Marks, controls and motion come from the kit; this file holds only
    this page's chrome: the framework nav, the opening spacing and the authoring footer. */
 
-.note-framework-demo .bz-authoring {
-  margin-top: 96px;
-}
-
-.note-framework-demo .bz-authoring-k {
-  color: var(--accent);
-  font: 11px/1.5 var(--mono);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.note-framework-demo .bz-authoring h2 {
-  margin-block: 14px;
-  font-size: 34px;
-  font-weight: 420;
-}
-
-.note-framework-demo .bz-authoring > p:not(.bz-authoring-k) {
-  font-size: 19px;
-  color: var(--muted);
-}
-
-.note-framework-demo .bz-authoring > a {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-height: 44px;
-  font-size: 18px;
-}
-
-.note-framework-demo #construction .nk-experiment-stage > .nk-diagram {
-  max-width: 560px;
-  margin-inline: auto;
-}
 .note-framework-demo .bz-first-try {
   margin-top: 28px;
 }

@@ -30,11 +30,10 @@ export function Mix() {
     <Experiment
       timeline="Mix playback"
       scene={scene}
-      question="Slide the dot from one end to the other."
       caption={
         <>
-          Each piece takes the colour of the end across from it: its length is that end’s weight, so
-          the nearer end pulls harder.
+          Each piece takes the opposite end’s colour: its length is that end’s weight, so the nearer
+          end pulls harder.
         </>
       }
       details={

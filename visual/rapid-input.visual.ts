@@ -96,7 +96,6 @@ test("small refinement drags move the polygon continuously inside a split", asyn
     slider = root.getByRole("slider", { name: "Subdivision playback", exact: true });
   await slider.scrollIntoViewIfNeeded();
   // A small drag must update the same continuous split, without a queued tween.
-  await root.getByRole("button", { name: "Double n", exact: true }).click();
   const grab = await railPoint(slider, 0.5);
   await page.mouse.move(grab.x, grab.y);
   await page.mouse.down();

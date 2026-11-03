@@ -307,13 +307,6 @@ button.icon svg {
   height: 14px;
 }
 
-.step-count {
-  min-width: 4.5em;
-  color: var(--faint);
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
-
 button:focus-visible,
 input:focus-visible,
 summary:focus-visible {
@@ -359,14 +352,6 @@ input[type="range"] {
   color: var(--bright);
 }
 
-.scroll-x {
-  overflow-x: auto;
-}
-
-.good {
-  color: var(--good);
-}
-
 .bad {
   color: var(--bad);
 }
@@ -381,14 +366,6 @@ input[type="range"] {
 
 .bright {
   color: var(--bright);
-}
-
-.prose-note {
-  margin: 1rem 0 0;
-  color: var(--muted);
-  font-family: var(--serif);
-  font-size: 15px;
-  line-height: 1.5;
 }
 
 /* Things that change state may ease into place. Nothing moves on its own. */
@@ -703,14 +680,6 @@ input[type="range"] {
   color: var(--muted);
 }
 
-.tip .tip-hex {
-  display: block;
-  margin-top: 0.35rem;
-  color: var(--muted);
-  font-size: 11px;
-  white-space: pre;
-}
-
 /* Inline glossary terms in prose. */
 .term {
   border-bottom: 1px dotted var(--rule-strong);
@@ -723,16 +692,6 @@ input[type="range"] {
     transform, opacity, background-color, color, border-color, width, height, left, top, filter;
   transition-duration: var(--spring-settle-dur);
   transition-timing-function: var(--spring-settle);
-}
-
-.sp-fill {
-  transition-duration: var(--spring-fill-dur);
-  transition-timing-function: var(--spring-fill);
-}
-
-.sp-land {
-  transition-duration: var(--spring-land-dur);
-  transition-timing-function: var(--spring-land);
 }
 
 @media (prefers-reduced-motion: reduce) {

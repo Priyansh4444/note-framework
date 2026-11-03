@@ -65,8 +65,8 @@ export const Docs: Component = () => {
             <p class="fw-eyebrow">A small guide</p>
             <h1>Make your first note.</h1>
             <p class="fw-dek">
-              Start with one small question. Your agent can help turn it into a page someone can
-              read, try, and understand.
+              Start with one small question. Your agent turns it into a page someone can read and
+              try.
             </p>
             <p class="fw-guide-links">
               <a href={EXAMPLE}>
@@ -77,22 +77,6 @@ export const Docs: Component = () => {
               </a>
             </p>
           </header>
-
-          <nav class="fw-guide-toc" aria-label="On this page">
-            <p class="fw-guide-label">The guide</p>
-            <ol>
-              <For each={sections}>
-                {(section, index) => (
-                  <li>
-                    <a href={`#${section.id}`}>
-                      <span>{String(index() + 1).padStart(2, "0")}</span>
-                      {section.title}
-                    </a>
-                  </li>
-                )}
-              </For>
-            </ol>
-          </nav>
 
           <For each={sections}>
             {(section) => (
@@ -105,22 +89,12 @@ export const Docs: Component = () => {
                 <Switch>
                   <Match when={section.id === "start"}>
                     <p>
-                      Choose something you could explain to a friend in a few minutes. For example:{" "}
-                      <em>How can straight lines make a curve?</em> One picture and something your
-                      reader can move are enough to begin.
+                      Choose something you could explain to a friend in minutes, like{" "}
+                      <em>How can straight lines make a curve?</em> One picture the reader can move
+                      is enough to begin.
                     </p>
                     <p>
-                      Take a look at <a href={EXAMPLE}>the example note</a> to see what a small,
-                      finished page can feel like.
-                      {import.meta.env.VITE_FRAMEWORK_PREVIEW === "1" && (
-                        <>
-                          {" "}
-                          You can also <a href="/notes/inside-svg">take a picture apart</a> or watch{" "}
-                          <a href="/notes/shared-service">four windows share one service</a>, or try{" "}
-                          <a href="/notes/spring-workshop">a spring you can feel</a>. The{" "}
-                          <a href="/studies">motion studies</a> explore five directions.
-                        </>
-                      )}
+                      <a href={EXAMPLE}>The example note</a> shows a small, finished page.
                     </p>
                   </Match>
                   <Match when={section.id === "write"}>
@@ -128,9 +102,8 @@ export const Docs: Component = () => {
                       <a href="/starter.zip" download="note-framework-starter.zip">
                         Download the starting files
                       </a>{" "}
-                      and unzip them into a new folder. They include a working note. Open that
-                      folder with your coding agent, then give it the prompt below. Change the
-                      question to one you care about.
+                      into a new folder, which already holds a working note. Open it with your
+                      coding agent, then give it this prompt with your own question.
                     </p>
                     <div class="fw-guide-prompt">
                       <label for="first-note-prompt">Your prompt</label>
@@ -151,16 +124,9 @@ export const Docs: Component = () => {
                         />
                       </div>
                     </div>
-                    <p class="fw-guide-aside">
-                      The prompt points to <a href="/llms.txt">the instructions for your agent</a>.
-                      Paste it into your agent, then ask to see the page in a local preview.
-                    </p>
                   </Match>
                   <Match when={section.id === "publish"}>
-                    <p>
-                      Read the preview as if the topic were new to you. Before sharing, check three
-                      things:
-                    </p>
+                    <p>Read the preview as if the topic were new to you:</p>
                     <ul class="fw-guide-checklist">
                       <li>Does it answer your question, with unfamiliar words explained?</li>
                       <li>Does the picture help, and does changing it do what you expect?</li>
@@ -169,11 +135,7 @@ export const Docs: Component = () => {
                         phone?
                       </li>
                     </ul>
-                    <p>
-                      Ask your agent to help publish from your own account. Check the finished link
-                      before sending it to a friend. The publishing steps are in “Edit the files
-                      yourself” below.
-                    </p>
+                    <p>Then ask your agent to publish it, and open the link before you send it.</p>
                   </Match>
                 </Switch>
               </section>
@@ -346,8 +308,8 @@ export const Docs: Component = () => {
               <section id="check" class="fw-guide-section" aria-labelledby="guide-check-title">
                 <h2 id="guide-check-title">Check.</h2>
                 <p>
-                  Check the claim as carefully as the page. Verify sources and numerical examples,
-                  then run the typecheck, tests, build and visual audit:
+                  Verify sources and numerical examples, then run the typecheck, tests, build and
+                  visual audit:
                 </p>
                 <details class="fw-guide-details">
                   <DisclosureSummary>Show check commands</DisclosureSummary>
@@ -356,9 +318,9 @@ export const Docs: Component = () => {
                   </div>
                 </details>
                 <p>
-                  Review the audit’s screenshots at desktop and phone widths. Read first-use
-                  definitions, open the reasoning, and pause animations between steps. The audit
-                  measures layout and visibility; you still check whether the explanation is true.
+                  The audit measures layout and visibility. Whether the explanation is true is still
+                  yours to check: read first-use definitions, open the reasoning, and pause
+                  animations between steps.
                 </p>
               </section>
 
@@ -371,10 +333,7 @@ export const Docs: Component = () => {
                 <details id="publication-setup" class="fw-guide-details">
                   <DisclosureSummary>Publish from your own account</DisclosureSummary>
                   <div>
-                    <p>
-                      Use your own Cloudflare account, with no invitation required. Log in once,
-                      then build, check and publish your note:
-                    </p>
+                    <p>Log in to Cloudflare once, then build, check and publish:</p>
                     <CodeBlock artifact={publishCommands} />
                   </div>
                 </details>
@@ -391,15 +350,14 @@ export const Docs: Component = () => {
                     </p>
                     <CodeBlock artifact={shareCommands} />
                     <p>
-                      The share command builds one self-contained HTML file, publishes it, verifies
-                      the downloaded bytes, and prints the link. Repeat it to update the same link.
-                      Each version also has a permanent link. Reading needs only a link.
+                      The command builds one self-contained HTML file, publishes it, verifies the
+                      downloaded bytes and prints the link. Repeat it to update that link; each
+                      version also keeps its own.
                     </p>
                     <p>
-                      After a network interruption, repeat the same command. Its private retry
-                      journal preserves the original operation and bytes; keep that journal. A
-                      version conflict needs review: the client never silently replaces someone
-                      else’s newer work.
+                      After a network interruption, repeat the command: its private retry journal
+                      keeps the original bytes. A version conflict needs review, because the client
+                      never overwrites newer work.
                     </p>
                     <p>
                       Each publisher starts with a{" "}
@@ -417,13 +375,12 @@ export const Docs: Component = () => {
                       and images into that file. Relative attachments need another hosting route.
                     </p>
                     <p>
-                      Hosted notes run in an isolated frame. Network requests, storage, forms,
-                      popups and access to the surrounding page are blocked.
+                      Notes run in an isolated frame that blocks network, storage, forms, popups and
+                      the surrounding page.
                     </p>
                     <p>
-                      Anyone with the link can read the note and download its original HTML. This
-                      service retains all versions and has no deletion command. Keep private
-                      material and credentials out of your notes.
+                      Anyone with the link can read the note and download its HTML. All versions are
+                      kept, and there is no delete command, so keep private material out.
                     </p>
                   </div>
                 </details>
@@ -454,9 +411,8 @@ export const Docs: Component = () => {
                     <p>
                       To run your own upload service, use the framework repository’s{" "}
                       <code>sharing/</code> Worker, D1 migration and{" "}
-                      <code>wrangler.sharing.jsonc</code>. Its README covers database setup,
-                      owner-key bootstrap, invitations and verification. The portable starter
-                      contains the authoring kit and client.
+                      <code>wrangler.sharing.jsonc</code>. See <code>docs/sharing.md</code> for
+                      setup.
                     </p>
                   </div>
                 </details>

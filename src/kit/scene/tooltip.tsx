@@ -1,6 +1,14 @@
 import { type JSX, Show, createEffect, createSignal, onCleanup, onMount } from "solid-js";
 import { Portal } from "solid-js/web";
-import { autoUpdate, computePosition, flip, offset, shift, size } from "@floating-ui/dom";
+import {
+  autoUpdate,
+  computePosition,
+  flip,
+  hide as anchorVisibility,
+  offset,
+  shift,
+  size,
+} from "@floating-ui/dom";
 import "../reader.css";
 
 const TOOLTIP_ID = "nk-reader-tooltip";
@@ -99,9 +107,12 @@ export function TooltipLayer() {
               elements.floating.style.maxHeight = `${Math.max(0, availableHeight)}px`;
             },
           }),
+          anchorVisibility(),
         ],
       });
       if (!alive || anchor() !== a) return;
+      // Scrolled away from its anchor, a reminder explains nothing and can cover a control.
+      if (result.middlewareData.hide?.referenceHidden) return dismiss();
       el.style.left = `${result.x}px`;
       el.style.top = `${result.y}px`;
       setPositioned(true);

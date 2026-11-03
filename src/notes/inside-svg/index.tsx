@@ -19,8 +19,7 @@ export default function InsideSvg() {
       >
         <Chapter id="layers">
           <p>
-            <strong>SVG</strong> describes a picture with shapes. Pull this landscape apart to find
-            its five pieces.
+            <strong>SVG</strong> describes a picture with shapes. Press Play to pull this one apart.
           </p>
           <DissectionExperiment />
           <p>Five shapes, one picture. The window crops the scenery; the frame surrounds it.</p>
@@ -34,7 +33,7 @@ export default function InsideSvg() {
           </More>
         </Chapter>
         <Chapter id="order">
-          <p>SVG paints in order, like laying paper on a table. Which shape should be on top?</p>
+          <p>SVG paints in order, like laying paper on a table.</p>
           <PaintOrderExperiment />
           <More summary="What changed in the SVG?">
             <p>
@@ -56,8 +55,8 @@ export default function InsideSvg() {
           </p>
           <ClippingExperiment />
           <p>
-            Move the window back to Center, then show beyond it. The picture was already there. The
-            window was hiding its paint.
+            Now show beyond the window. The picture was already there; the window was hiding its
+            paint.
           </p>
           <More summary="Why are the shapes still there?">
             <p>

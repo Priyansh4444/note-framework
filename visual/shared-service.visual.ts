@@ -270,3 +270,20 @@ test("reduced motion steps the same trace and enlarged phone text stays locally 
     .locator("#service-experiment")
     .screenshot({ path: "artifacts/visual/note-enlarged-320.png" });
 });
+
+test("a citation's reminder closes when scrolled away, so it cannot cover Play", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
+  const tip = page.locator("#nk-reader-tooltip");
+  await page.locator(".nk-cite").first().hover();
+  await expect(tip).toBeVisible();
+  await page.evaluate(() => {
+    const pad = document.createElement("div");
+    pad.style.height = "1400px";
+    document.body.append(pad);
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+  });
+  await expect(tip).toBeHidden();
+});

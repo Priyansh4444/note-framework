@@ -1,6 +1,6 @@
 import casteljauCode from "./examples/de-casteljau.ts?code";
 import lerpDiff from "./examples/lerp.diff?diff";
-import { ArrowLabel, Check, CodeBlock, Equation, More, Steps, Tex } from "../../kit";
+import { Check, CodeBlock, Equation, More, Steps, Tex } from "../../kit";
 import { note } from "./chapters";
 import { T } from "./glossary";
 import { CurveMorphExample, InkExample } from "../../kit/patterns/recipes";
@@ -10,7 +10,7 @@ import { Mix } from "./figures/Mix";
 import { Construction } from "./figures/Construction";
 import { Weights } from "./figures/Weights";
 import { Flatten, FlattenSummary } from "./figures/Flatten";
-import { ExampleNav, frameworkOrigin } from "../example-nav";
+import { ExampleNav } from "../example-nav";
 import meta from "./note.json";
 import "./demo.css";
 
@@ -26,42 +26,34 @@ export default function Demo() {
         kicker="An example note"
         howTo={false}
         references="compact"
-        dek={<>Drag a dot. Bend the line. You already know enough to begin.</>}
+        dek={<>Four dots and one repeated move.</>}
       >
         <section class="bz-first-try" aria-label="Try drawing a curve">
           <Construction />
           <p class="bz-first-fact">The end dots hold the curve. The middle dots bend it.</p>
           <More summary="How is the white point made?">
             <p>
-              A mix places a point partway between two neighbours. The same fraction, called t,
-              turns four points into three, then two, then the white point. The next section starts
-              with just one of those mixes.
+              A mix places a point partway between two neighbours. One shared fraction, t, turns
+              four points into three, then two, then the white point.
             </p>
           </More>
           <Check q="Can you make the curve straight?">
-            <p>
-              Choose Straight, or arrange the four dots along one line. The line follows the shape
-              you give it.
-            </p>
+            <p>Choose Straight, or line up all four dots.</p>
           </Check>
         </section>
         <Chapter id="mix">
-          <p>
-            It starts with one small move: choose a spot between two ends. Drag the white dot and
-            watch the two pieces change.
-          </p>
+          <p>Everything starts with one move: pick a spot between two ends. Drag the white dot.</p>
           <Mix />
           <p>
-            Call the ends <Tex tex="A" /> and <Tex tex="B" />, and the spot’s fraction of the way
-            along <Tex tex="t" />, from 0 to 1. This move is <T k="lerp">linear interpolation</T>:
+            With ends <Tex tex="A" /> and <Tex tex="B" /> and a fraction <Tex tex="t" /> from 0 to
+            1, this move is <T k="lerp">linear interpolation</T>:
           </p>
           <Equation tex="p(t)=(1-t)\,A+t\,B" label="Linear interpolation">
             At t = 0 the point is A; at t = 1 it is B.
           </Equation>
           <p>
-            The two weights, <Tex tex="1-t" /> and <Tex tex="t" />, are never negative and always
-            add up to one, so <Tex tex="p" /> can never leave the segment. Everything below is this
-            one operation, repeated.
+            The weights <Tex tex="1-t" /> and <Tex tex="t" /> are never negative and sum to one, so{" "}
+            <Tex tex="p" /> stays on the segment. Everything below repeats this one move.
           </p>
           <More summary="Why weights like these keep the point inside">
             <p>
@@ -72,30 +64,27 @@ export default function Demo() {
             </p>
           </More>
           <Check q="At t = 0.25, which end is p closer to, and what are the weights?">
-            <p>
-              A. Its weight is 0.75 and B’s is 0.25, so p sits a quarter of the way from A to B.
-            </p>
+            <p>A. Its weight is 0.75 and B’s is 0.25.</p>
           </Check>
         </Chapter>
 
         <Chapter id="nest">
           <p>
-            Give the same move four <T k="control">control points</T>, <Tex tex="P_0" /> to{" "}
-            <Tex tex="P_3" />. Mix each neighbouring pair with one shared <Tex tex="t" />: four dots
-            make three, then two, then one point, <Tex tex="B(t)" />. As <Tex tex="t" /> runs from 0
-            to 1, that last point traces the curve. This repeated mixing is{" "}
-            <T k="casteljau">de Casteljau’s algorithm</T> <Cite k="pomax" />.
+            Take four <T k="control">control points</T>, <Tex tex="P_0" /> to <Tex tex="P_3" />, and
+            mix each neighbouring pair at one shared <Tex tex="t" />: four dots make three, then
+            two, then one, <Tex tex="B(t)" />. As <Tex tex="t" /> runs from 0 to 1, that point
+            traces the curve. This is <T k="casteljau">de Casteljau’s algorithm</T>{" "}
+            <Cite k="pomax" />.
           </p>
           <p>
-            Press Play in <a href="#construction">the first picture</a> to watch every row slide
-            together as <Tex tex="t" /> runs.
+            Press Play in <a href="#construction">the first picture</a> to watch the rows slide
+            together.
           </p>
           <p>
-            At <Tex tex="t=0" /> each mix returns its left neighbour, so the final point is{" "}
-            <Tex tex="P_0" />; at <Tex tex="t=1" /> each returns its right neighbour, so it is{" "}
-            <Tex tex="P_3" />. The curve starts and ends there. The middle points only steer: the
-            curve leaves <Tex tex="P_0" /> heading toward <Tex tex="P_1" /> and arrives at{" "}
-            <Tex tex="P_3" /> from the direction of <Tex tex="P_2" />.
+            At <Tex tex="t=0" /> every mix returns its left neighbour, so the curve starts at{" "}
+            <Tex tex="P_0" />; at <Tex tex="t=1" />, its right, so it ends at <Tex tex="P_3" />. The
+            middle points only steer: the curve leaves <Tex tex="P_0" /> toward <Tex tex="P_1" />{" "}
+            and reaches <Tex tex="P_3" /> from the direction of <Tex tex="P_2" />.
           </p>
           <More summary="Why the curve leaves P₀ toward P₁">
             <p>
@@ -120,22 +109,21 @@ export default function Demo() {
           </More>
           <Check q="Drag P₁ onto P₀ and P₂ onto P₃. What does the curve become?">
             <p>
-              The straight segment from P₀ to P₃. Every weight now lands on one of those two points,
-              and the weights still add up to one. The speed is uneven, though: B(½) is the
-              midpoint, but B(¼) is only 0.15625 of the way along, not 0.25.
+              The straight segment from P₀ to P₃, at uneven speed: B(½) is the midpoint, but B(¼) is
+              only 0.15625 of the way along.
             </p>
           </Check>
         </Chapter>
 
         <Chapter id="weights">
           <p>
-            Each dot has a share of the pull. Move the grip below the chart to see that share change
-            along the curve.
+            Each dot has a share of the pull. Drag the grey grip under the chart to change{" "}
+            <Tex tex="t" />.
           </p>
           <Weights />
           <p>
-            Near the start, P₀ matters most. Near the end, P₃ does. Drag a control point: the curve
-            changes, but these shares do not.
+            Near the start, P₀ matters most; near the end, P₃. Drag a control point: the curve
+            changes, these shares do not.
           </p>
           <More summary="The four weights, written out">
             <p>
@@ -151,12 +139,9 @@ export default function Demo() {
             </Equation>
 
             <p>
-              Near the start <Tex tex="P_0" /> pulls hardest; near the end, <Tex tex="P_3" />. No
-              weight is ever negative, and together they expand{" "}
+              No weight is ever negative, and together they expand{" "}
               <Tex tex="\bigl((1-t)+t\bigr)^3=1" />. So <Tex tex="B(t)" /> is a convex combination
-              of the control points, and the curve always lies in their <T k="hull" />. The weights
-              depend only on <Tex tex="t" />: drag a control point and the picture changes, but the
-              chart does not.
+              of the control points, and the curve always lies in their <T k="hull" />.
             </p>
             <p>
               <strong>Can P₁ ever carry half the weight?</strong> No. Its weight 3t(1 − t)² is
@@ -182,10 +167,7 @@ export default function Demo() {
         </Chapter>
 
         <Chapter id="code">
-          <p>
-            Keep mixing neighbours until only one point remains. The same recipe works for every
-            row.
-          </p>
+          <p>Mix neighbours until one point remains. Every row follows the same recipe.</p>
           <More summary="Read the working code">
             <p>
               The construction and straight-piece figures evaluate their curve with this file. Each
@@ -222,8 +204,8 @@ export default function Demo() {
 
         <Chapter id="flatten">
           <p>
-            <T k="flatten">Flattening</T> means drawing a curve with straight pieces. Press Play to
-            split each piece and bring it closer to the curve.
+            <T k="flatten">Flattening</T> draws a curve with straight pieces. Press Play to split
+            each piece.
           </p>
           <Flatten />
           <FlattenSummary />
@@ -231,8 +213,7 @@ export default function Demo() {
             <p>
               Screens, plotters and cutters draw straight lines, so renderers{" "}
               <T k="flatten">flatten</T> curves first. The simplest way picks <Tex tex="n+1" />{" "}
-              evenly spaced values of <Tex tex="t" /> from 0 to 1 and joins their curve points with
-              straight pieces. Play to split pieces and move new midpoints onto the curve.
+              evenly spaced values of <Tex tex="t" /> from 0 to 1 and joins their curve points.
             </p>
             <p>
               On each piece of parameter length <Tex tex="h=1/n" />, the <T k="chord">chord</T> is
@@ -268,13 +249,13 @@ export default function Demo() {
         </Chapter>
         <Chapter id="forms">
           <p>
-            Curve follows the Bézier path; Handles follows its control polygon; Straight joins the
-            endpoints. Follow the blue strip as you switch between them.
+            Curve follows the Bézier path, Handles its control polygon, Straight its endpoints.
+            Follow the blue strip as you switch.
           </p>
           <CurveMorphExample points={points()} />
           <p>
-            Your earlier edits carry through. The in-between shapes are visual transitions, not new
-            Bézier calculations.
+            Your edits carry through. In-between shapes are visual transitions, not Bézier
+            calculations.
           </p>
           <More summary="What if the path were painted?">
             <p>
@@ -283,25 +264,7 @@ export default function Demo() {
             </p>
             <InkExample points={sampleCurve(points())} />
           </More>
-          <More summary="What do the in-between shapes mean?">
-            <p>
-              The morph pairs 24 ribbon strips across three views. Curve follows the cubic; Handles
-              follows its three-edge control polygon; Straight joins its endpoints. In-flight shapes
-              are visual interpolations, not new Bézier calculations.
-            </p>
-          </More>
         </Chapter>
-        <aside class="bz-authoring">
-          <p class="bz-authoring-k">Behind this note</p>
-          <h2>Make an idea feel this simple.</h2>
-          <p>
-            Start with something your reader can try. Give it a picture, then a short reason. Keep
-            the deeper explanation within reach.
-          </p>
-          <a href={`${frameworkOrigin}/docs#write`}>
-            <ArrowLabel direction="right">Make your first note</ArrowLabel>
-          </a>
-        </aside>
       </Page>
     </>
   );

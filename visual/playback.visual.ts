@@ -306,12 +306,13 @@ test("curved refinement names splits honestly and keeps endpoints and keyboard",
     await check(fraction);
   }
   for (const [beat, keys, fraction] of [
-    ["Double n", [], 0],
-    ["Double n", ["ArrowRight", "ArrowRight", "ArrowRight"], 0.03],
+    ["Home", [], 0],
+    ["Home", ["ArrowRight", "ArrowRight", "ArrowRight"], 0.03],
     ["End", ["ArrowLeft"], 0.99],
     ["End", [], 1],
   ] as const) {
-    await root.getByRole("button", { name: beat, exact: true }).click();
+    if (beat === "Home") await slider.press("Home");
+    else await root.getByRole("button", { name: beat, exact: true }).click();
     for (const key of keys) await slider.press(key);
     await check(fraction);
   }

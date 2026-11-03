@@ -36,8 +36,8 @@ export interface ChapterSpec<C extends string = string, S extends string = strin
   title: string;
   /** The question the chapter answers, in the reader's words, before any jargon. */
   question: string;
-  /** One sentence the reader can say after the chapter. The next chapter opens with it. */
-  takeaway: string;
+  /** A recap the next chapter opens with. Use it when chapters are long enough to lose the thread. */
+  takeaway?: string;
   /** Sources the chapter follows; shown beside its heading. */
   from?: readonly S[];
 }
@@ -130,7 +130,7 @@ export function defineNote<const C extends string, const S extends string = neve
     return (
       <section id={c.id} class="nk-chapter" data-chapter={c.id}>
         {/* Close the last chapter before opening this one: a reader who jumps here still has the context. */}
-        <Show when={prev}>
+        <Show when={prev?.takeaway}>
           <p class="nk-sofar">
             <a href={`#${prev!.id}`} class="nk-sofar-k">
               So far

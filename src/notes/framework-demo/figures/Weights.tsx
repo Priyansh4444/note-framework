@@ -96,12 +96,10 @@ export function Weights() {
   return (
     <Experiment
       id="weight-experiment"
-      question="Each control point pulls on B(t). How hard?"
       caption={
         <>
-          Drag the grey grip under the chart to change <var>t</var>. The chart gives each point’s
-          weight; small coloured ticks mark equal weights. All four weights are nonnegative and add
-          to one, keeping B(t) in the shaded hull.
+          The chart gives each point’s weight; small coloured ticks mark ties. The weights are
+          nonnegative and sum to one, keeping B(t) in the shaded hull.
         </>
       }
     >

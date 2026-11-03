@@ -24,22 +24,9 @@ for (const width of [320, 390, 1440]) {
     );
   });
 
-  test(`guide introduction precedes its index and all navigation stays reachable at ${width}px`, async ({
-    page,
-  }) => {
+  test(`guide navigation stays reachable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     await page.goto("/docs", { waitUntil: "networkidle" });
-    const intro = page.locator(".fw-guide-header");
-    const index = page.getByRole("navigation", { name: "On this page", exact: true });
-    expect(
-      await intro.evaluate((el) =>
-        Boolean(
-          el.compareDocumentPosition(document.querySelector(".fw-guide-toc")!) &
-          Node.DOCUMENT_POSITION_FOLLOWING,
-        ),
-      ),
-    ).toBe(true);
-    expect((await intro.boundingBox())!.y).toBeLessThan((await index.boundingBox())!.y);
     await expect(page.locator("#write h2")).toHaveText("Write it.");
     const nav = page.getByRole("navigation", { name: "Framework", exact: true });
     await expect(nav.getByRole("link", { name: "Example", exact: true })).toBeVisible();
@@ -55,8 +42,6 @@ for (const width of [320, 390, 1440]) {
       expect(bounds!.x).toBeGreaterThanOrEqual(0);
       expect(bounds!.x + bounds!.width).toBeLessThanOrEqual(width);
     }
-    await index.getByRole("link", { name: /Write it/ }).click();
-    await expect(page).toHaveURL(/#write$/);
     await expect(page.locator("#first-note-prompt")).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
       width,

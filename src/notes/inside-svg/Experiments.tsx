@@ -31,7 +31,6 @@ export function DissectionExperiment() {
       id="svg-peel"
       scene={scene}
       timeline="Separation"
-      question="Press Play to find the five shapes."
       caption={
         fraction() >= 0.9
           ? "Nothing new was drawn. These five pieces were here all along."
@@ -82,7 +81,6 @@ export function PaintOrderExperiment() {
   return (
     <Experiment
       id="svg-order"
-      question="Can the same circle cover the hill?"
       controls={
         <Choice
           label="Sun's place in the painting order"
@@ -121,7 +119,6 @@ export function ClippingExperiment() {
   return (
     <Experiment
       id="svg-clip"
-      question="Move the window. Does the scenery move?"
       controls={
         <Toolbar
           end={

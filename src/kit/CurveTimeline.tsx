@@ -13,8 +13,10 @@ export function CurveTimeline(props: {
   idle?: boolean;
 }) {
   const scene = props.scene;
+  // One beat is the whole rail, so naming it would only repeat the figure.
+  const named = scene.beats.length > 1;
   const stops = [
-    ...scene.beats.map((beat, i) => ({ label: beat.label, time: scene.start(i) })),
+    ...(named ? scene.beats.map((beat, i) => ({ label: beat.label, time: scene.start(i) })) : []),
     { label: "End", time: scene.length },
   ];
   const [width, setWidth] = createSignal(320);
@@ -127,7 +129,8 @@ export function CurveTimeline(props: {
     });
   });
   const here = (i: number) =>
-    !props.idle && (scene.ended() ? i === stops.length - 1 : i === Math.max(0, scene.beat()));
+    !props.idle &&
+    (scene.ended() ? i === stops.length - 1 : named && i === Math.max(0, scene.beat()));
   const x = (time: number) => rail().pointAt((time / scene.length) * rail().length).x;
   const center = (i: number) => (x(stops[i].time) + x(stops[i + 1].time)) / 2;
   const current = () => (scene.ended() ? "End" : scene.beats[Math.max(0, scene.beat())]?.label);

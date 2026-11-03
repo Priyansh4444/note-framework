@@ -97,20 +97,6 @@
 .nk-note .nk-reader-outline a:hover {
   color: var(--accent);
 }
-.nk-note .nk-reader-outline .nk-outline-next {
-  display: grid;
-  gap: 4px;
-  margin-top: 16px;
-  padding: 8px 4px 8px 12px;
-  overflow-wrap: anywhere;
-}
-.nk-note .nk-reader-outline .nk-outline-direction {
-  color: var(--muted);
-  font-size: 11px;
-}
-.nk-note .nk-reader-outline .nk-outline-direction > span {
-  color: var(--accent);
-}
 /* The hit area is a page instrument. Only this gutter captures touch; wheel,
    chapter links and the rest of the document retain native scrolling. */
 .nk-note .nk-reader-outline .nk-outline-slider {
@@ -298,17 +284,6 @@
 }
 .nk-diagram :focus:not(:focus-visible) {
   outline: none;
-}
-.nk-reader-sr {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-  border: 0;
 }
 
 /* The existing tooltip's one live element moves under its modal anchor when needed. */

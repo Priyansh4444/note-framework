@@ -37,8 +37,8 @@ for (const width of [390, 1440])
         return count;
       });
     expect(await accentPixels()).toBeGreaterThan(10);
-    await expect(forms).toContainText("Straight joins the endpoints");
-    await expect(forms).toContainText("visual transitions, not new Bézier calculations");
+    await expect(forms).toContainText("Straight its endpoints");
+    await expect(forms).toContainText("visual transitions, not Bézier calculations");
     const originalNode = await canvas.elementHandle();
     const handle = page
       .locator(".bz-first-try")

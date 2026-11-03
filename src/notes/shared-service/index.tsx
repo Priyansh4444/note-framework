@@ -20,7 +20,6 @@ export function ServiceExperiment(props: { scene?: Scene } = {}) {
       timeline="Service position"
       transportPosition="above"
       sound={cues}
-      question="Which windows end up on the same row?"
       caption={
         <>
           <span class="ss-caption-event" data-service-caption>

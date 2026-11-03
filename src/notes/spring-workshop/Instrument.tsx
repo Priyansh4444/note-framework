@@ -346,7 +346,7 @@ export function SpringInstrument() {
       </Toolbar>
       <figcaption>
         <p>{tuning[feel()].why}</p>
-        <p>Grab it again while it moves. The next release begins where your hand leaves it.</p>
+        <p>Grab it mid-motion: the next release starts where you let go.</p>
       </figcaption>
       <span class="spring-sr" role="status">
         {announcement()}

@@ -7,37 +7,31 @@ export const note = defineNote({
       id: "mix",
       title: "Start with a straight line",
       question: "Can you put the dot halfway?",
-      takeaway: "A mix picks a spot between two ends and never goes past either one.",
     },
     {
       id: "nest",
       title: "Repeat that small move",
       question: "How do straight lines make a curve?",
-      takeaway: "Mix four dots into three, then two, then one. That last dot draws the curve.",
     },
     {
       id: "weights",
       title: "See which dot matters",
       question: "Which part of the line does each dot change?",
-      takeaway: "The dots have different amounts of influence along the curve.",
     },
     {
       id: "code",
       title: "Follow a simple recipe",
       question: "What does the computer repeat?",
-      takeaway: "The same little mix is repeated until one dot remains.",
     },
     {
       id: "flatten",
       title: "Make it look smooth",
       question: "How close can straight pieces get?",
-      takeaway: "Adding more straight pieces makes a closer fit to the curve.",
     },
     {
       id: "forms",
       title: "Change the view",
       question: "Can you follow one strip as it moves?",
-      takeaway: "The same ordered strips can reveal the curve, its handles, or its endpoint chord.",
     },
   ],
   sources: {

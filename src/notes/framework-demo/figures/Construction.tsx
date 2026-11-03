@@ -67,9 +67,7 @@ export function Construction() {
           />
         </Toolbar>
       }
-      caption={
-        <>Drag a coloured dot, or focus it and use the arrow keys. Shift makes larger moves.</>
-      }
+      caption={<>Drag a coloured dot, or focus it and use arrow keys; Shift moves further.</>}
     >
       <CurveScene
         points={points()}

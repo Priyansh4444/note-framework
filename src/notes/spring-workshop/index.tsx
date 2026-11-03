@@ -11,7 +11,6 @@ const { Page, Chapter } = defineNote({
       id: "feel",
       title: "Give it a little pull",
       question: "Why does some motion feel springy?",
-      takeaway: "The spring returns the carriage; damping changes how it gets there.",
     },
   ],
   sources: {
@@ -38,9 +37,8 @@ export default function SpringWorkshop() {
       >
         <Chapter id="feel">
           <p>
-            Pull the carriage by its round grip, then let go. The spring pulls toward the center.
-            The <strong>damper</strong> resists motion, taking energy out of each return. Try the
-            three settings on the same instrument.
+            Pull the round grip and let go. The spring returns the carriage to center; the{" "}
+            <strong>damper</strong> takes energy out of each return. Try all three settings.
           </p>
           <SpringInstrument />
           <More summary="What is the model behind the motion?">

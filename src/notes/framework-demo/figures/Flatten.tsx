@@ -178,7 +178,6 @@ export function Flatten() {
       id="flatten-experiment"
       scene={scene}
       stepTimes={pacing().stops}
-      question="How many little pieces make the line look smooth?"
       caption={
         <>
           <span class="bz-refinement-status">

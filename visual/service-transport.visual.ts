@@ -7,14 +7,13 @@ for (const width of [320, 390, 1440])
     await page.evaluate(() => document.fonts.ready);
     const root = page.locator("#service-experiment");
     await root
-      .locator(".nk-experiment-question")
+      .locator("[data-nk-timeline]")
       .evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
     const play = root.getByRole("button", { name: "Play", exact: true });
     await expect(play).toHaveCount(1);
     const geometry = await root.evaluate((el) => {
       const box = (selector: string) => el.querySelector(selector)!.getBoundingClientRect();
       const action = box("[data-nk-scene-action]");
-      const question = box(".nk-experiment-question");
       const timeline = box("[data-nk-timeline]");
       const stage = box(".nk-experiment-stage");
       const labels = [...el.querySelectorAll(".nk-timeline-label")].map((n) =>
@@ -30,7 +29,6 @@ for (const width of [320, 390, 1440])
             parseFloat(getComputedStyle(n).fontSize),
           ),
         ),
-        questionToAction: action.top - question.bottom,
         transportBottom: timeline.bottom,
         stageTop: stage.top,
         labelGaps: labels.slice(1).map((b, i) => b.left - labels[i].right),
@@ -38,7 +36,6 @@ for (const width of [320, 390, 1440])
         scrollY,
       };
     });
-    expect(geometry.questionToAction).toBeLessThanOrEqual(24);
     expect(geometry.transportBottom).toBeLessThanOrEqual(geometry.stageTop - 12);
     expect(geometry.actionBottom).toBeLessThan(900);
     expect(Math.min(...geometry.labelGaps)).toBeGreaterThanOrEqual(0);
@@ -93,7 +90,7 @@ test("Service keeps reduced-motion stepping and offscreen pause on its single sc
   await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
   const root = page.locator("#service-experiment");
   await root
-    .locator(".nk-experiment-question")
+    .locator("[data-nk-timeline]")
     .evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
   await root.getByRole("button", { name: "Play", exact: true }).click();
   await expect
@@ -110,7 +107,7 @@ test("Service keeps reduced-motion stepping and offscreen pause on its single sc
   await page.waitForTimeout(200);
   expect(Number(await root.getAttribute("data-nk-scene-time"))).toBe(offscreen);
   await root
-    .locator(".nk-experiment-question")
+    .locator("[data-nk-timeline]")
     .evaluate((el) => el.scrollIntoView({ block: "start", behavior: "instant" }));
   await expect
     .poll(async () => Number(await root.getAttribute("data-nk-scene-time")))

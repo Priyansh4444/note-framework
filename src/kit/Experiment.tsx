@@ -7,8 +7,8 @@ import "./experiment.css";
 export type ExperimentProps = {
   /** Semantic discrete positions for reduced-motion stepping, in scene milliseconds. */
   stepTimes?: readonly number[];
-  /** What to do or look for. Do not repeat the chapter title: the heading already names the topic. */
-  question: string;
+  /** Only what the chapter's heading and question have not already said. */
+  question?: string;
   children: JSX.Element;
   id?: string;
   controls?: JSX.Element;
@@ -140,7 +140,9 @@ export function Experiment(props: ExperimentProps) {
       data-nk-scene-active={scene?.active()}
       data-nk-scene-revision={scene?.revision()}
     >
-      <p class="nk-experiment-question">{props.question}</p>
+      <Show when={props.question}>
+        <p class="nk-experiment-question">{props.question}</p>
+      </Show>
       <div
         class="nk-experiment-body"
         classList={{ "nk-experiment-with-timeline": !!props.timeline && !!scene }}
