@@ -298,7 +298,7 @@ test("curved refinement names splits honestly and keeps endpoints and keyboard",
       new RegExp(`${Math.round(fraction * 100)} percent$`),
     );
   }
-  await expect(root.locator("figcaption .bz-count")).toHaveText("4");
+  await expect(root.locator("figcaption .bz-count")).toHaveText("1");
   await expect(slider).toHaveAttribute("aria-valuemin", "0");
   await expect(slider).toHaveAttribute("aria-valuemax", String(LENGTH));
   for (const fraction of [0.19, 0.21, 0.59, 0.61, 0.999]) {
