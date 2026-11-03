@@ -32,7 +32,11 @@ export function DissectionExperiment() {
       scene={scene}
       timeline="Separation"
       question="Press Play to find the five shapes."
-      caption="Nothing new was drawn. These five pieces were here all along."
+      caption={
+        fraction() >= 0.9
+          ? "Nothing new was drawn. These five pieces were here all along."
+          : "It looks like one drawing."
+      }
     >
       <div
         ref={stage}
