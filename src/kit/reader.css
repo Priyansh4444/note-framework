@@ -293,27 +293,84 @@
   margin: 0;
   width: max-content;
   height: auto;
-  max-width: min(340px, calc(100vw - 24px));
-  max-height: calc(100dvh - 24px);
-  overflow: auto;
-  padding: 12px 14px;
+  max-width: min(360px, calc(100vw - 24px));
+  overflow: visible;
+  padding: 0;
   border: 1px solid var(--rule-strong);
-  border-radius: 6px;
+  border-radius: 8px;
   background: var(--panel);
   color: var(--text);
-  box-shadow: 0 8px 28px var(--shadow);
-  font: 12px/1.5 var(--mono);
+  box-shadow: 0 10px 30px var(--shadow);
+  font: 15px/1.45 var(--serif);
   pointer-events: auto;
   overflow-wrap: anywhere;
   backdrop-filter: none;
+  /* A short fade from the anchor's direction. Position itself never animates. */
+  opacity: 0;
+  transform: translateY(calc(var(--nk-tip-from, 1) * 4px));
+}
+.nk-reader-tip.tip[data-side="bottom"] {
+  --nk-tip-from: -1;
+}
+.nk-reader-tip.tip[data-ready="true"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 120ms var(--nk-motion-ease),
+    transform 120ms var(--nk-motion-ease);
+}
+.nk-reader-tip .nk-tip-body {
+  max-height: calc(100dvh - 24px);
+  overflow: auto;
+  padding: 10px 14px;
+  border-radius: inherit;
+}
+.nk-reader-tip .nk-tip-pointer {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border: solid var(--rule-strong);
+  border-width: 0 1px 1px 0;
+  background: var(--panel);
+  transform: rotate(45deg);
+}
+.nk-reader-tip[data-side="top"] .nk-tip-pointer {
+  bottom: -5.5px;
+}
+.nk-reader-tip[data-side="bottom"] .nk-tip-pointer {
+  top: -5.5px;
+  transform: rotate(225deg);
+}
+.nk-reader-tip.tip b {
+  color: var(--bright);
+  font-weight: 500;
+}
+.nk-reader-tip.tip .tip-term {
+  max-width: none;
 }
 .nk-reader-tip.tip .tip-def {
-  font-size: 16px;
+  margin-top: 2px;
+  font-size: 15px;
+}
+.nk-reader-tip.tip .tip-line {
+  margin-top: 2px;
+  font-size: 15px;
+}
+.nk-reader-tip.tip .nk-tip-home {
+  margin-top: 6px;
+  font: 12px/1.5 var(--mono);
+}
+@media (forced-colors: active) {
+  .nk-reader-tip .nk-tip-pointer {
+    display: none;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .nk-reader-outline,
   .nk-reader-outline *,
-  .nk-reader-tip {
+  .nk-reader-tip,
+  .nk-reader-tip.tip {
+    transform: none;
     transition: none !important;
     animation: none !important;
   }
