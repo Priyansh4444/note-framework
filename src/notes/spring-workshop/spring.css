@@ -15,10 +15,8 @@
   font: 15px/1.5 var(--mono);
 }
 .spring-card-bottom {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
-  align-items: end;
-  gap: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
 }
 .spring-card-bottom output {
   min-width: 8ch;
@@ -60,11 +58,11 @@
 .spring-needle-hub {
   fill: var(--anatomy-lit);
 }
-.note-spring-workshop .spring-instrument > .nk-toolbar {
+.note-spring-workshop .spring-instrument .nk-toolbar {
   margin-top: 4px;
 }
-.note-spring-workshop .spring-instrument > .nk-readout {
-  margin-top: 4px;
+.note-spring-workshop .spring-instrument .nk-choice {
+  margin-bottom: 12px;
 }
 .spring-actions {
   display: flex;
@@ -99,17 +97,6 @@
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
-}
-/* Three short stats keep one row on a phone, so no number is stranded alone. */
-@media (max-width: 600px) {
-  .note-spring-workshop .spring-instrument > .nk-readout {
-    display: grid;
-    grid-template-columns: repeat(3, auto);
-    justify-content: space-between;
-  }
-  .note-spring-workshop .spring-instrument > .nk-readout b {
-    display: block;
-  }
 }
 @media (max-width: 440px) {
   .spring-canvas {

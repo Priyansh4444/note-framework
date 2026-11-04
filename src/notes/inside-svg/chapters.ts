@@ -19,8 +19,28 @@ export const note = defineNote({
       question: "Hidden, or gone?",
       from: ["clip"],
     },
+    {
+      id: "path",
+      title: "Read the path",
+      question: "What does an outline actually say?",
+      from: ["pathData", "lab"],
+    },
   ],
   sources: {
+    pathData: {
+      title: "d attribute",
+      who: "MDN",
+      short: "path data",
+      url: "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/d",
+      why: "What each path command draws, and how it continues from the current point.",
+    },
+    lab: {
+      title: "Interaction Lab",
+      who: "AI for UI",
+      short: "AI for UI",
+      url: "https://aiforui.dev/lab",
+      why: "The idea of reading a bell's path through a draggable slit. This bell and code are original.",
+    },
     svg: {
       title: "SVG 2 — Rendering Model",
       who: "W3C",

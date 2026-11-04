@@ -87,14 +87,14 @@ for (const width of [320, 390, 768, 1440]) {
     // The whole diagram fits the column, at every width.
     expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth);
     expect(geometry.minFont).toBeGreaterThanOrEqual(15);
-    const cardHeight = width <= 600 ? 84 : 120;
+    const cardHeight = width <= 600 ? 84 : 96;
     expect(geometry.cardHeights).toEqual([cardHeight, cardHeight, cardHeight, cardHeight]);
     for (const height of geometry.rowHeights) {
-      const rowHeight = width <= 600 ? 72 : 56;
+      const rowHeight = width <= 600 ? 36 : 34;
       expect(height).toBeGreaterThanOrEqual(rowHeight);
       expect(height).toBeLessThanOrEqual(rowHeight + 1);
     }
-    expect(geometry.wireHeight).toBe(64);
+    expect(geometry.wireHeight).toBe(56);
     expect(geometry.labelsInsideCards).toBe(true);
     expect(geometry.stageGap).toBeGreaterThanOrEqual(24);
     expect(geometry.checkpointCount).toBe(5); // Four phases plus the explicit endpoint.
@@ -163,11 +163,12 @@ test("arrival, subscriber membership, backward seeking and return geometry prese
         const b = wire
           .getPointAtLength(wire.getTotalLength())
           .matrixTransform(wire.getScreenCTM()!);
-        const center = packet
-          .getPointAtLength(packet.getTotalLength() / 2)
+        // A comet's head leads its tail, and halfway through its time it is halfway along the wire.
+        const head = packet
+          .getPointAtLength(packet.getTotalLength())
           .matrixTransform(packet.getScreenCTM()!);
         return {
-          error: Math.hypot(center.x - a.x, center.y - (a.y + b.y) / 2),
+          error: Math.hypot(head.x - a.x, head.y - (a.y + b.y) / 2),
           kind: packet.getAttribute("data-kind"),
         };
       }),

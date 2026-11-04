@@ -309,7 +309,7 @@ test("the response curve follows the carriage and its numbers follow the damping
   await open(page, 1280);
   const root = page.locator("#spring-instrument"),
     grip = page.getByRole("slider", { name: "Carriage displacement" }),
-    readout = root.locator(".nk-readout"),
+    readout = root.locator("[data-instrument-live]"),
     curve = root.locator("[data-response-curve]");
   await expect(readout).toContainText("overshoot 49%");
   await expect(readout).toContainText("settles in 1.41s");
@@ -347,7 +347,7 @@ test("the response chart refits its plot when the width crosses the phone breakp
     root.evaluate((el) => {
       const chart = [...el.querySelectorAll("svg")].at(-1)!;
       const labels = [...chart.querySelectorAll("text")].map((t) => t.getBoundingClientRect());
-      const readout = el.querySelector(".nk-readout")!.getBoundingClientRect();
+      const readout = el.querySelector(".nk-instrument-foot")!.getBoundingClientRect();
       const box = chart.getBoundingClientRect();
       return {
         below: Math.max(...labels.map((l) => l.bottom)) <= readout.top,

@@ -1,5 +1,6 @@
 import { More } from "../../kit";
 import { DissectionExperiment, PaintOrderExperiment, ClippingExperiment } from "./Experiments";
+import { PathWriter } from "./PathWriter";
 import { note } from "./chapters";
 import { ExampleNav } from "../example-nav";
 import meta from "./note.json";
@@ -69,6 +70,25 @@ export default function InsideSvg() {
               <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/clipPath">
                 MDN: clipping and unchanged geometry
               </a>
+            </p>
+          </More>
+        </Chapter>
+        <Chapter id="path">
+          <p>
+            A path is a list of pen moves: <code>M</code> lifts the pen to a point, <code>L</code>,{" "}
+            <code>H</code> and <code>V</code> draw lines, <code>C</code> draws a curve toward two
+            handles, and <code>Z</code> closes the shape.
+          </p>
+          <PathWriter />
+          <More summary="Why does the line only thicken at the end?">
+            <p>
+              The commands say where the pen goes; <code>stroke-width</code> and{" "}
+              <code>stroke-linejoin</code> say how it paints. Here the slit reaches them last, so
+              you can watch each one change the same geometry. A browser applies them all at once.
+            </p>
+            <p>
+              Each <code>C</code> is a cubic Bézier that starts at the pen. A partly drawn curve
+              here is the exact shorter cubic, cut at <em>u</em> with de Casteljau’s construction.
             </p>
           </More>
         </Chapter>

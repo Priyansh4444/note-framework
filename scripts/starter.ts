@@ -89,6 +89,8 @@ const FRAMEWORK_FILES = [
   "src/kit/parameter.css",
   "src/kit/controls.ts",
   "src/kit/Experiment.tsx",
+  "src/kit/Instrument.tsx",
+  "src/kit/instrument.css",
   "src/kit/playback.ts",
   "src/kit/playback.test.ts",
   "src/kit/timeline-model.ts",

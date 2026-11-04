@@ -9,10 +9,11 @@ import {
   untrack,
   type JSX,
 } from "solid-js";
-import { Action, Choice, createScene, Readout, Toolbar } from "../../kit";
+import { Action, Choice, createScene, Instrument, Toolbar } from "../../kit";
 import * as g from "./geometry";
 import {
   clampStroke,
+  omega,
   response,
   rest,
   returnShape,
@@ -250,131 +251,130 @@ export function SpringInstrument() {
       data-active={scene.active()}
       data-held={!!held()}
     >
-      <Choice
-        label="Damping"
-        options={Object.entries(tuning).map(([id, value]) => ({
-          id: id as Feel,
-          label: value.label,
-        }))}
-        value={feel()}
-        onChange={select}
-      />
-      <div class="iso spring-card" data-theme="dark">
-        <div class="spring-stage">
-          <div class="spring-canvas">
-            <svg
-              ref={svg}
-              class="iso-svg iso-figure"
-              viewBox={`0 0 ${g.width} ${g.height}`}
-              role="img"
-              aria-label="A spring-loaded metal carriage on two rails, joined to a damper and a dial measuring its displacement."
-            >
-              <path class="iso-halo" d={g.shadow} />
-              <For each={ordered()}>
-                {(entry) => (
-                  <g
-                    data-part={entry.id === "spring" || entry.id === "rod" ? entry.id : undefined}
-                    data-solid={entry.part?.id}
-                    transform={entry.motion === "carriage" ? g.translate(pose().x) : undefined}
-                  >
-                    {entry.part ? (
-                      <g innerHTML={entry.part.html} />
-                    ) : entry.id === "rod" ? (
-                      <Rod paths={rod()} />
-                    ) : (
-                      <>
-                        <path class="iso-line" data-tone="lo" d={coil().back} />
-                        <path class="iso-line" data-tone="hi" d={coil().front} />
-                        <g class="iso-dots" data-tone="mid">
-                          <circle
-                            cx={g.at([-83, 3.6, 26])[0]}
-                            cy={g.at([-83, 3.6, 26])[1]}
-                            r=".8"
-                          />
-                          <circle
-                            cx={g.at([pose().x - 26, 3.6, 26])[0]}
-                            cy={g.at([pose().x - 26, 3.6, 26])[1]}
-                            r=".8"
-                          />
-                        </g>
-                      </>
-                    )}
-                  </g>
-                )}
-              </For>
-              <path class="iso-line" data-tone="lit" data-free="" d={g.needle(pose().x)} />
-              <circle
-                class="spring-needle-hub"
-                cx={g.at([50, 47, 23.2])[0]}
-                cy={g.at([50, 47, 23.2])[1]}
-                r="1.6"
+      <Instrument
+        name="SPRING"
+        hint="drag the grip · grab it mid-motion"
+        model="x″ + 2ζωx′ + ω²x = 0"
+        params={`ω ${omega} rad/s · ζ ${tuning[feel()].ratio}`}
+        live={
+          <>
+            overshoot {Math.round(shape().overshoot * 100)}% · settles in{" "}
+            {shape().settle.toFixed(2)}s
+          </>
+        }
+      >
+        <Choice
+          label="Damping"
+          options={Object.entries(tuning).map(([id, value]) => ({
+            id: id as Feel,
+            label: value.label,
+          }))}
+          value={feel()}
+          onChange={select}
+        />
+        <div class="iso spring-card" data-theme="dark">
+          <div class="spring-stage">
+            <div class="spring-canvas">
+              <svg
+                ref={svg}
+                class="iso-svg iso-figure"
+                viewBox={`0 0 ${g.width} ${g.height}`}
+                role="img"
+                aria-label="A spring-loaded metal carriage on two rails, joined to a damper and a dial measuring its displacement."
+              >
+                <path class="iso-halo" d={g.shadow} />
+                <For each={ordered()}>
+                  {(entry) => (
+                    <g
+                      data-part={entry.id === "spring" || entry.id === "rod" ? entry.id : undefined}
+                      data-solid={entry.part?.id}
+                      transform={entry.motion === "carriage" ? g.translate(pose().x) : undefined}
+                    >
+                      {entry.part ? (
+                        <g innerHTML={entry.part.html} />
+                      ) : entry.id === "rod" ? (
+                        <Rod paths={rod()} />
+                      ) : (
+                        <>
+                          <path class="iso-line" data-tone="lo" d={coil().back} />
+                          <path class="iso-line" data-tone="hi" d={coil().front} />
+                          <g class="iso-dots" data-tone="mid">
+                            <circle
+                              cx={g.at([-83, 3.6, 26])[0]}
+                              cy={g.at([-83, 3.6, 26])[1]}
+                              r=".8"
+                            />
+                            <circle
+                              cx={g.at([pose().x - 26, 3.6, 26])[0]}
+                              cy={g.at([pose().x - 26, 3.6, 26])[1]}
+                              r=".8"
+                            />
+                          </g>
+                        </>
+                      )}
+                    </g>
+                  )}
+                </For>
+                <path class="iso-line" data-tone="lit" data-free="" d={g.needle(pose().x)} />
+                <circle
+                  class="spring-needle-hub"
+                  cx={g.at([50, 47, 23.2])[0]}
+                  cy={g.at([50, 47, 23.2])[1]}
+                  r="1.6"
+                />
+                <path class="iso-line" data-tone="hi" d={g.zero} />
+              </svg>
+              <div
+                ref={knob}
+                class="spring-grip"
+                role="slider"
+                tabindex="0"
+                aria-label="Carriage displacement"
+                aria-valuemin={-30}
+                aria-valuemax={30}
+                aria-valuenow={Number(pose().x.toFixed(1))}
+                aria-valuetext={choice()}
+                style={{
+                  left: `${(point().x / g.width) * 100}%`,
+                  top: `${(point().y / g.height) * 100}%`,
+                }}
+                onPointerDown={down}
+                onPointerMove={move}
+                onPointerUp={up}
+                onPointerCancel={cancel}
+                onLostPointerCapture={cancel}
+                onKeyDown={key}
+                onFocus={say}
               />
-              <path class="iso-line" data-tone="hi" d={g.zero} />
-            </svg>
-            <div
-              ref={knob}
-              class="spring-grip"
-              role="slider"
-              tabindex="0"
-              aria-label="Carriage displacement"
-              aria-valuemin={-30}
-              aria-valuemax={30}
-              aria-valuenow={Number(pose().x.toFixed(1))}
-              aria-valuetext={choice()}
-              aria-describedby="spring-hint"
-              style={{
-                left: `${(point().x / g.width) * 100}%`,
-                top: `${(point().y / g.height) * 100}%`,
-              }}
-              onPointerDown={down}
-              onPointerMove={move}
-              onPointerUp={up}
-              onPointerCancel={cancel}
-              onLostPointerCapture={cancel}
-              onKeyDown={key}
-              onFocus={say}
-            />
+            </div>
+          </div>
+          <div class="spring-card-bottom">
+            <output aria-label="Displacement">
+              {(Math.abs(pose().x) < 0.05 ? 0 : pose().x).toFixed(1)} mm
+            </output>
           </div>
         </div>
-        <div class="spring-card-bottom">
-          <span id="spring-hint">Drag the grip.</span>
-          <output aria-label="Displacement">
-            {(Math.abs(pose().x) < 0.05 ? 0 : pose().x).toFixed(1)} mm
-          </output>
-        </div>
-      </div>
-      <Toolbar end={<span class="spring-status">{status()}</span>}>
-        <span class="spring-actions">
-          <Action onClick={() => run({ x: pose().x, v: pose().v + 200 })}>Give it a nudge</Action>
-          <Action
-            onClick={() => {
-              const p = hold();
-              setHeld({ x: p.x, v: 0 });
-            }}
-          >
-            Hold still
-          </Action>
-        </span>
-      </Toolbar>
-      <ResponseChart
-        release={traced()}
-        ratio={tuning[feel()].ratio}
-        now={scene.playing() ? scene.t() / 1000 : undefined}
-      />
-      <Readout quiet>
-        <span>
-          damping ratio <b>{tuning[feel()].ratio}</b>
-        </span>
-        <span>
-          overshoot <b>{Math.round(shape().overshoot * 100)}%</b>
-        </span>
-        <span>
-          settles in <b>{shape().settle.toFixed(2)}s</b>
-        </span>
-      </Readout>
+        <Toolbar end={<span class="spring-status">{status()}</span>}>
+          <span class="spring-actions">
+            <Action onClick={() => run({ x: pose().x, v: pose().v + 200 })}>Give it a nudge</Action>
+            <Action
+              onClick={() => {
+                const p = hold();
+                setHeld({ x: p.x, v: 0 });
+              }}
+            >
+              Hold still
+            </Action>
+          </span>
+        </Toolbar>
+        <ResponseChart
+          release={traced()}
+          ratio={tuning[feel()].ratio}
+          now={scene.playing() ? scene.t() / 1000 : undefined}
+        />
+      </Instrument>
       <figcaption>
         <p>{tuning[feel()].why}</p>
-        <p>Grab it mid-motion: the next release starts where you let go.</p>
       </figcaption>
       <span class="spring-sr" role="status">
         {announcement()}

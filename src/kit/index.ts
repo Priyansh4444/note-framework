@@ -52,6 +52,7 @@ export {
 export { blend, glide, jump, resize, still } from "./motion";
 export { Parameter, type ParameterProps } from "./Parameter";
 export { Experiment, type ExperimentProps } from "./Experiment";
+export { Instrument } from "./Instrument";
 export { CodeBlock, type CodeArtifact } from "./CodeBlock";
 export { auditLayout, type AuditLayout } from "./layout";
 

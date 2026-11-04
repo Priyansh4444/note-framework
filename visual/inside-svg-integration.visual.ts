@@ -21,6 +21,7 @@ test("source reasoning uses the shared keyboard disclosure and measured spacing"
     "What are the shapes?",
     "What changed in the SVG?",
     "Why are the shapes still there?",
+    "Why does the line only thicken at the end?",
   ]);
   for (const summary of await summaries.all()) {
     await summary.focus();

@@ -18,7 +18,6 @@ export function ServiceExperiment(props: { scene?: Scene } = {}) {
       id="service-experiment"
       scene={scene}
       timeline="Service position"
-      transportPosition="above"
       sound={cues}
       caption={
         <>

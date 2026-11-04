@@ -17,7 +17,7 @@ Before authoring, animating or typesetting, read `.agents/skills/note-explainers
 ## Notes
 
 - A note lives in `src/notes/<topic>/`, registered by `note.json`, and imports from `src/kit`. Never edit a note another agent is working on.
-- The kit owns controls, disclosures, page chrome and their motion: `NoteNav`, `More`, `Check`, `Choice`, `Action`, `Toolbar`, `Parameter`. A note writes CSS only for its own diagram, scoped to its page class. A missing control belongs in the kit.
+- The kit owns controls, disclosures, page chrome and their motion: `NoteNav`, `More`, `Check`, `Choice`, `Action`, `Toolbar`, `Parameter`, `Instrument`. A note writes CSS only for its own diagram, scoped to its page class. A missing control belongs in the kit.
 - Words earn their place. Say each thing once: a figure heading, recap or caption must add what the chapter's title, question and prose have not.
 - Render math with `src/kit/math/Tex.tsx`. Keep KaTeX fonts local and HTML + MathML output on. Invalid TeX should fail verification.
 

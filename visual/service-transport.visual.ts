@@ -1,7 +1,9 @@
 import { expect, test } from "./browser-test";
 
 for (const width of [320, 390, 1440])
-  test(`Service exposes one playback owner before its picture at ${width}px`, async ({ page }) => {
+  test(`Service keeps one playback owner, right under its picture, at ${width}px`, async ({
+    page,
+  }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
     await page.evaluate(() => document.fonts.ready);
@@ -29,14 +31,15 @@ for (const width of [320, 390, 1440])
             parseFloat(getComputedStyle(n).fontSize),
           ),
         ),
-        transportBottom: timeline.bottom,
-        stageTop: stage.top,
+        transportTop: timeline.top,
+        stageBottom: stage.bottom,
         labelGaps: labels.slice(1).map((b, i) => b.left - labels[i].right),
         actionBottom: action.bottom,
         scrollY,
       };
     });
-    expect(geometry.transportBottom).toBeLessThanOrEqual(geometry.stageTop - 12);
+    expect(geometry.transportTop).toBeGreaterThanOrEqual(geometry.stageBottom + 12);
+    expect(geometry.transportTop - geometry.stageBottom).toBeLessThanOrEqual(48);
     expect(geometry.actionBottom).toBeLessThan(900);
     expect(Math.min(...geometry.labelGaps)).toBeGreaterThanOrEqual(0);
     expect(Math.min(...geometry.textGaps)).toBeGreaterThanOrEqual(8);
