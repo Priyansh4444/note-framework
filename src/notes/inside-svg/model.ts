@@ -53,14 +53,17 @@ export function peelLayout(width: number, fraction: number) {
   const p = Math.max(0, Math.min(1, fraction));
   const eased = p * p * (3 - 2 * p);
   const gridWidth = columns * size + (columns - 1) * gap;
+  const stage = Math.max(height, (assembled * 260) / 300 + 28);
+  // Assembled, the picture sits in the middle of the footprint its parts will need.
+  const rest = (stage - ((assembled * 260) / 300 + 28)) / 2;
   return {
-    height: Math.max(height, (assembled * 260) / 300 + 28),
+    height: stage,
     planes: shapes.map((shape, i) => ({
       id: shape.id,
       x:
         ((width - assembled) / 2) * (1 - eased) +
         ((width - gridWidth) / 2 + (i % columns) * (size + gap)) * eased,
-      y: Math.floor(i / columns) * row * eased,
+      y: rest * (1 - eased) + Math.floor(i / columns) * row * eased,
       width: assembled + (size - assembled) * eased,
       // Annotations wait until their moving planes no longer overlap.
       labelOpacity: p >= 0.9 ? 1 : 0,

@@ -4,13 +4,13 @@
   transform: none;
   width: 100%;
   box-sizing: border-box;
-  --ink-paper: #101214;
+  --ink-paper: var(--bg);
   --ink-pigment: #ece9df;
   box-sizing: border-box;
   margin: 1.75rem 0;
-  color: #ece7da;
+  color: var(--text);
   background: var(--ink-paper);
-  border: 0;
+  border: 1px solid var(--rule);
   color-scheme: dark;
   overflow: hidden;
 }
@@ -20,7 +20,7 @@
   height: auto;
   aspect-ratio: 8/5;
   max-height: 36rem;
-  background: radial-gradient(ellipse at 25% 40%, #ffffff03, transparent 65%);
+  background: none;
 }
 .nk-ink .nk-ink-mark {
   stroke: var(--ink-pigment);
@@ -37,56 +37,18 @@
   justify-content: space-between;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid #343634;
+  border-top: 1px solid var(--rule-strong);
   font: inherit;
   font-size: 16px;
   line-height: 1.5;
-  color: #c7c6bd;
+  color: var(--muted);
 }
 .nk-ink .nk-ink-label {
   font-size: 15px;
-}
-.nk-ink .nk-ink-scenes {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.nk-ink .nk-ink-scenes button {
-  box-sizing: border-box;
-  appearance: none;
-  min-width: 44px;
-  min-height: 44px;
-  border: 1px solid #4d504a;
-  border-radius: 3px;
-  padding: 8px 13px;
-  background: transparent;
-  color: #d2d0c5;
-  font: inherit;
-  font-size: 16px;
-  line-height: 1.4;
-  cursor: pointer;
-  touch-action: manipulation;
-}
-.nk-ink .nk-ink-scenes button[aria-pressed="true"] {
-  background: #ece7da;
-  color: #141614;
-  border-color: #ece7da;
-}
-.nk-ink .nk-ink-scenes button:focus-visible {
-  outline: 2px solid #ece7da;
-  outline-offset: 3px;
-}
-@media (hover: hover) {
-  .nk-ink .nk-ink-scenes button:hover {
-    border-color: #ece7da;
-  }
 }
 @media (max-width: 480px) {
   .nk-ink figcaption {
     padding: 12px;
     gap: 8px;
-  }
-  .nk-ink .nk-ink-scenes {
-    width: 100%;
   }
 }

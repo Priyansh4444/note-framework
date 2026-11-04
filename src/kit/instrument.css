@@ -1,0 +1,40 @@
+.nk-instrument-head,
+.nk-instrument-foot {
+  color: var(--muted);
+  font: 13px/1.5 var(--mono);
+}
+.nk-instrument-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 16px;
+  margin-bottom: 16px;
+}
+.nk-instrument-name {
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+.nk-instrument-name::before {
+  content: "[ ";
+}
+.nk-instrument-name::after {
+  content: " ]";
+}
+.nk-instrument-foot {
+  margin-top: 16px;
+  padding-top: 10px;
+  border-top: 1px dotted var(--rule-strong);
+}
+.nk-instrument .nk-instrument-foot p {
+  margin: 0;
+}
+.nk-instrument-model {
+  color: var(--text);
+}
+.nk-instrument-state {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 16px;
+  font-variant-numeric: tabular-nums;
+}

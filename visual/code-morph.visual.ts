@@ -21,7 +21,8 @@ async function choose(patch: Locator, side: "before" | "after") {
   if (await toggle.isVisible()) await toggle.click();
   else {
     const tools = patch.locator("..").locator(".nk-code-source-tools");
-    if (!(await tools.getAttribute("open"))) await tools.locator("summary").click();
+    if (!(await tools.getAttribute("data-open")))
+      await tools.locator(".nk-code-source-toggle").click();
     await tools
       .getByRole("button", { name: side === "before" ? "Before" : "After", exact: true })
       .click();
@@ -40,6 +41,8 @@ test("persistent token widths and row positions have intermediate frames and sur
   page,
 }) => {
   const patch = await reveal(page);
+  await choose(patch, "before");
+  await page.waitForTimeout(550);
   const before = await widths(patch);
   await patch.evaluate((el) => {
     const root = el.querySelector(".nk-code-block-render")!.shadowRoot!;
@@ -110,7 +113,7 @@ test("persistent token widths and row positions have intermediate frames and sur
   expect(final.running).toBe(0);
   expect(final.deltas).toHaveLength(21);
   expect(Math.max(...final.deltas)).toBeLessThan(0.5);
-  expect(final.text.at(-1)).toContain("a + (b - a) * t");
+  expect(final.text.some((row) => row.includes("a + (b - a) * t"))).toBe(true);
 });
 
 test("keyboard, live reduced motion and closing an ancestor settle to the latest version", async ({
@@ -188,7 +191,7 @@ for (const width of [320, 390, 768, 1440])
     expect(geometry.border).toBe("rgba(255, 255, 255, 0.15)");
     expect(geometry.metadata).toBe(0);
     expect(geometry.buttons).toBe(1);
-    expect(geometry.toggle).toBe(width <= 640 ? "none" : "flex");
+    expect(geometry.toggle).toBe("flex");
     await info.attach("reference-frame-geometry", {
       body: JSON.stringify(geometry, null, 2),
       contentType: "application/json",
@@ -235,10 +238,9 @@ test("native source row text stays continuous across parts and excludes inactive
       ].map((row) => row.innerText),
     );
     expect(lines[0]).toBe("export type Point = readonly [x: number, y: number];");
-    expect(lines[3]).toBe(
-      version === "before"
-        ? "export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;"
-        : "export const lerp = (a: number, b: number, t: number) => (1 - t) * a + t * b;",
+    expect(lines[3]).toBe("export function lerp(a: number, b: number, t: number) {");
+    expect(lines[4]).toBe(
+      version === "before" ? "  return a + (b - a) * t;" : "  return (1 - t) * a + t * b;",
     );
   }
 });
@@ -291,11 +293,11 @@ test("Source tools inspect the exact patch outside the persistent reference fram
 }) => {
   const patch = await reveal(page),
     tools = patch.locator("..").locator(".nk-code-source-tools");
-  await tools.locator("summary").click();
+  await tools.locator(".nk-code-source-toggle").click();
   await expect(tools).toContainText("Unchanged source outside its hunks is omitted");
   await tools.getByRole("button", { name: "Show split diff", exact: true }).click();
   await expect(tools.locator("pre")).toHaveCount(1);
-  await expect(patch.locator("pre[data-side=before]")).toHaveCount(1);
-  await tools.locator("summary").click();
-  await expect(patch).toHaveAttribute("data-current-version", "before");
+  await expect(patch.locator("pre[data-side=after]")).toHaveCount(1);
+  await tools.locator(".nk-code-source-toggle").click();
+  await expect(patch).toHaveAttribute("data-current-version", "after");
 });

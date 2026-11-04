@@ -117,7 +117,6 @@ export const Wayfinder: Component<{ chapters: WayChapter[] }> = (props) => {
     current() < 0
       ? `Introduction; ${props.chapters.length} chapters`
       : `Reading chapter ${current() + 1} of ${props.chapters.length}`;
-  const next = () => props.chapters[current() + 1];
   const close = () => {
     if (!open()) return;
     setOpen(false);
@@ -427,18 +426,6 @@ export const Wayfinder: Component<{ chapters: WayChapter[] }> = (props) => {
             </For>
           </ol>
         </div>
-        <Show when={next()}>
-          {(chapter) => (
-            <a class="nk-outline-next" href={`#${chapter().id}`} onClick={close}>
-              <span class="nk-outline-direction">
-                {current() < 0 ? "Start reading" : "Next chapter"} <span aria-hidden="true">→</span>
-              </span>
-              <span class="nk-outline-title">
-                {chapter().n} · {chapter().title}
-              </span>
-            </a>
-          )}
-        </Show>
       </div>
       <Show when={trail().length}>
         <button type="button" class="nk-outline-back" onClick={back}>

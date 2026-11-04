@@ -4,7 +4,7 @@ import { createSignal } from "solid-js";
 import { Parameter } from "../src/kit/Parameter";
 import { CurveMorphExample, LayersExample, InkExample } from "../src/kit/patterns/recipes";
 import { CurveTimeline } from "../src/kit/CurveTimeline";
-import { createScene } from "../src/post/scene/clock";
+import { createScene } from "../src/kit/scene/clock";
 import { mount, painted } from "./mount";
 
 const renderer = import.meta.env.VITE_VISUAL_BASELINE;
@@ -24,10 +24,10 @@ for (const width of [1280, 390]) {
       await page.viewport(width, 900);
       const Component = pattern.component;
       const { container } = mount(() => <Component />);
-      await page.getByRole("button", { name: pattern.choice, exact: true }).click();
+      await page.getByRole("radio", { name: pattern.choice, exact: true }).click();
       await expect
-        .element(page.getByRole("button", { name: pattern.choice, exact: true }))
-        .toHaveAttribute("aria-pressed", "true");
+        .element(page.getByRole("radio", { name: pattern.choice, exact: true }))
+        .toHaveAttribute("aria-checked", "true");
       await painted();
       expect(container.scrollWidth).toBeLessThanOrEqual(container.clientWidth);
       await expect(page.elementLocator(container)).toMatchScreenshot(

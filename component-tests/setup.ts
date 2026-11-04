@@ -3,12 +3,12 @@ import { page } from "vitest/browser";
 import "@fontsource-variable/newsreader/opsz.css";
 import "@fontsource-variable/newsreader/opsz-italic.css";
 import "@fontsource/commit-mono/400.css";
-import "../src/post/post.css";
-import "../src/post/theme.css";
+import "../src/kit/base.css";
+import "../src/kit/theme.css";
 import "../src/kit/kit.css";
 import "../src/kit/motion.css";
 import "./surface.css";
-import { installSpringVars } from "../src/post/scene/springs";
+import { installSpringVars } from "../src/kit/scene/springs";
 import { cleanup } from "./mount";
 
 installSpringVars();

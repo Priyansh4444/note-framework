@@ -1,7 +1,7 @@
 import { type Component, For } from "solid-js";
 import { A, Route, Router } from "@solidjs/router";
 import { notes, only } from "virtual:notes";
-import { TooltipLayer } from "./post/scene/tooltip";
+import { TooltipLayer } from "./kit/scene/tooltip";
 import "./notes/navigation.css";
 
 /**

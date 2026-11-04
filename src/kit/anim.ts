@@ -1,5 +1,5 @@
-import type { Scene } from "../post/scene/clock";
-import { springCurve } from "../post/scene/springs";
+import type { Scene } from "./scene/clock";
+import { springCurve } from "./scene/springs";
 
 const curves = {
   settle: springCurve("settle"),

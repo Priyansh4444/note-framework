@@ -43,7 +43,6 @@ export function SweepExperiment() {
     <Experiment
       scene={scene}
       timeline="Position along the curved path"
-      actionsPlacement="bottom"
       sound={{
         events: [
           { id: "start", atMs: 40, cue: "ready" },

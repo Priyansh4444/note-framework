@@ -120,7 +120,7 @@ test("sound is opt-in, seeks are silent, gates stop voices and resume never catc
   expect((await probe(page)).starts).toBe(muted.starts);
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.getByRole("button", { name: "Sound off", exact: true }).click();
-  await page.locator("figure").screenshot({ path: "/tmp/service-curves/kit-sound-on.png" });
+  await page.locator("figure").screenshot({ path: "artifacts/visual/kit-sound-on.png" });
   await page.evaluate(async () => {
     (await import("/visual/scene-audio.fixture.tsx")).disposeAudioFixture();
   });
@@ -149,7 +149,8 @@ test("hidden gate, replay and reduced-motion checkpoint steps remain silent", as
   await page.getByRole("button", { name: "Pause", exact: true }).click();
   await page.emulateMedia({ reducedMotion: "reduce" });
   const before = await probe(page);
-  await page.getByRole("button", { name: "Replay", exact: true }).click();
+  // Restart is a seek to the first step, which stays silent.
+  await page.getByRole("slider", { name: "Request time", exact: true }).press("Home");
   await page.getByRole("button", { name: "Next step", exact: true }).click();
   expect((await probe(page)).starts).toBe(before.starts);
   await expect(page.locator("figure")).toHaveAttribute("data-nk-scene-active", "false");
@@ -162,9 +163,7 @@ test("unsupported audio has an honest disabled fallback", async ({ page }) => {
   );
   await page.getByRole("button", { name: "Sound off", exact: true }).click();
   await expect(page.getByRole("button", { name: "Sound unavailable", exact: true })).toBeDisabled();
-  await page
-    .locator("figure")
-    .screenshot({ path: "/tmp/service-curves/kit-sound-unavailable.png" });
+  await page.locator("figure").screenshot({ path: "artifacts/visual/kit-sound-unavailable.png" });
 });
 
 test("simultaneous cue synthesis is capped at four voices and silence discards queued sources", async ({
@@ -208,7 +207,7 @@ test("real Service consumer exposes the sound button name in every enabled state
   await expect(on).toHaveAttribute("aria-pressed", "true");
   await page
     .locator("figure.nk-experiment")
-    .screenshot({ path: "/tmp/service-curves/kit-service-sound-on-1440.png" });
+    .screenshot({ path: "artifacts/visual/kit-service-sound-on-1440.png" });
   await on.click();
   await expect(page.getByRole("button", { name: "Sound off", exact: true })).toHaveAttribute(
     "aria-pressed",

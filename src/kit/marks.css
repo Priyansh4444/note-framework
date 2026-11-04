@@ -1,0 +1,164 @@
+/* SVG marks. Colour comes from --role (set by .nk-orange … .nk-faint or inline);
+   sizes stay constant on screen at any figure width (--nk-u = SVG units per CSS px). */
+.nk-orange {
+  --role: var(--diagram-orange);
+}
+.nk-magenta {
+  --role: var(--diagram-magenta);
+}
+.nk-green {
+  --role: var(--diagram-green);
+}
+.nk-blue {
+  --role: var(--diagram-blue);
+}
+.nk-red {
+  --role: var(--diagram-red);
+}
+.nk-faint {
+  --role: var(--diagram-faint);
+}
+.nk-muted {
+  --role: var(--muted);
+}
+.nk-text {
+  --role: var(--text);
+}
+.nk-bright {
+  --role: var(--bright);
+}
+/* Marks are decoration: only a Handle takes the pointer, even where a mark lies on top. */
+.nk-diagram
+  :is(
+    .nk-curve,
+    .nk-stroke,
+    .nk-guide,
+    .nk-ghost,
+    .nk-axis,
+    .nk-area,
+    .nk-dot,
+    .nk-point,
+    .nk-halo,
+    .nk-cursor
+  ) {
+  pointer-events: none;
+}
+.nk-diagram :is(.nk-curve, .nk-stroke, .nk-guide, .nk-ghost, .nk-axis) {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.nk-diagram .nk-curve {
+  stroke: var(--role, var(--bright));
+  stroke-width: 3;
+}
+.nk-diagram .nk-stroke {
+  stroke: var(--role, var(--muted));
+  stroke-width: 2;
+}
+.nk-diagram .nk-guide {
+  stroke: var(--role, var(--diagram-faint));
+  stroke-width: 1.25;
+  stroke-dasharray: 3 5;
+}
+.nk-diagram .nk-ghost {
+  stroke: var(--rule-strong);
+  stroke-width: 1.5;
+}
+.nk-diagram .nk-axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+.nk-diagram .nk-area {
+  fill: var(--role, var(--diagram-blue));
+  fill-opacity: 0.08;
+  stroke: var(--role, var(--rule-strong));
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.nk-diagram .nk-dot {
+  fill: var(--role, var(--muted));
+  r: calc(4px * var(--nk-u, 1));
+}
+.nk-diagram .nk-point {
+  fill: var(--role, var(--bright));
+  stroke: var(--bg);
+  stroke-width: 2;
+  vector-effect: non-scaling-stroke;
+  r: calc(7px * var(--nk-u, 1));
+}
+.nk-diagram .nk-halo {
+  fill: var(--role, var(--bright));
+  fill-opacity: 0.12;
+  r: calc(15px * var(--nk-u, 1));
+}
+.nk-diagram .nk-cursor {
+  stroke: var(--role, var(--muted));
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+.nk-diagram .nk-label {
+  fill: var(--role, var(--muted));
+  font-family: var(--serif);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  user-select: none;
+}
+.nk-diagram .nk-label-strong {
+  fill: var(--bright);
+}
+
+/* Handle: a 44px target, a dot that grows on hover and settles on press. */
+.nk-handle {
+  cursor: grab;
+  outline: none;
+  touch-action: none;
+}
+.nk-handle[data-dragging] {
+  cursor: grabbing;
+}
+.nk-handle-hit {
+  fill: transparent;
+  r: calc(22px * var(--nk-u, 1));
+}
+.nk-handle-dot {
+  fill: var(--role, var(--bright));
+  stroke: var(--bg);
+  stroke-width: 2.5;
+  vector-effect: non-scaling-stroke;
+  r: calc(7.5px * var(--nk-u, 1));
+  transition: r 180ms var(--nk-motion-ease);
+}
+.nk-handle[data-dragging] .nk-handle-dot {
+  r: calc(9px * var(--nk-u, 1));
+}
+.nk-handle-halo {
+  fill: var(--role, var(--bright));
+  opacity: 0;
+  r: calc(16px * var(--nk-u, 1));
+  transition: opacity 180ms var(--nk-motion-ease);
+}
+.nk-handle[data-dragging] .nk-handle-halo {
+  opacity: 0.16;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nk-handle:hover .nk-handle-dot {
+    r: calc(9px * var(--nk-u, 1));
+  }
+  .nk-handle:hover .nk-handle-halo {
+    opacity: 0.1;
+  }
+}
+.nk-handle:focus-visible .nk-handle-hit {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-handle-dot,
+  .nk-handle-halo {
+    transition: none;
+  }
+}

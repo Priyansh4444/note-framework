@@ -16,9 +16,9 @@
   hyphens: none;
 }
 /* Masthead: one quiet line of facts, a title, a plain-voiced dek, then a rule where reading begins. */
+/* Rules separate chapters only; everything else is separated by space. */
 .nk-note .nk-head {
   padding-bottom: 2.2rem;
-  border-bottom: 1px solid var(--rule);
   margin-bottom: 0.5rem;
 }
 .nk-note .meta {
@@ -79,7 +79,6 @@
 .nk-note .nk-contents {
   margin: 2.6rem 0 0;
   padding-bottom: 1.8rem;
-  border-bottom: 1px solid var(--rule);
 }
 .nk-note .nk-contents ol {
   display: grid;
@@ -122,10 +121,9 @@
 .nk-note .nk-chapter {
   margin-top: 4rem;
 }
+/* Chapters are separated by space; the "So far" recap marks the boundary. */
 .nk-note .nk-chapter + .nk-chapter {
-  margin-top: 4.5rem;
-  padding-top: 1.1rem;
-  border-top: 1px solid var(--rule);
+  margin-top: 6rem;
 }
 /* The previous chapter's takeaway closes the boundary, quietly, before the new title. */
 .nk-note .nk-sofar {
@@ -225,9 +223,7 @@
   }
 }
 .nk-note .nk-end {
-  margin-top: 3rem;
-  padding-top: 1.75rem;
-  border-top: 1px solid var(--rule);
+  margin-top: 4.5rem;
 }
 
 /* ─── Glossary and sources ──────────────────────────────────────── */
@@ -243,13 +239,11 @@
   display: grid;
   grid-template-columns: 12rem 1fr;
   margin: 0.6rem 0 0;
-  border-top: 1px solid var(--rule);
 }
 .nk-note .nk-glossary dt,
 .nk-note .nk-glossary dd {
   margin: 0;
-  padding: 0.7rem 0;
-  border-bottom: 1px solid var(--rule);
+  padding: 0.55rem 0;
   font-size: 0.92em;
   line-height: 1.55;
 }
@@ -469,19 +463,24 @@
 .nk-note .nk-eq-narrow {
   display: none;
 }
+/* Stacked at every width: the left side, then "= right side" indented, then why.
+   Long right sides scroll inside their row instead of widening the column. */
 .nk-note .nk-steps-grid {
   display: grid;
-  grid-template-columns: max-content max-content 1fr;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.55rem 0.4rem;
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: start;
+  row-gap: 0.15rem;
   margin: 0.9rem 0 0.4rem;
 }
-.nk-note .nk-steps-lhs {
-  text-align: right;
+.nk-note .nk-steps-lhs:empty {
+  display: none;
+}
+.nk-note .nk-steps-rhs {
+  padding-left: 1.1rem;
+  overflow-x: auto;
 }
 .nk-note .nk-steps-why {
-  padding-left: 1.4rem;
+  padding: 0 0 0.6rem 1.1rem;
   color: var(--muted);
   font-size: 0.86em;
   line-height: 1.4;
@@ -546,171 +545,6 @@
   color: inherit;
   text-decoration: none;
 }
-.nk-note .nk-way-n {
-  color: var(--faint);
-}
-.nk-note .nk-way-back {
-  display: flex;
-  gap: 0.4rem;
-  max-width: 100%;
-  margin-top: 0.8rem;
-  padding: 0.3rem 0.6rem;
-  border: 1px solid var(--rule-strong);
-  border-radius: 999px;
-  background: var(--bg);
-  color: var(--accent);
-  font: inherit;
-  text-align: left;
-}
-.nk-note .nk-way-back span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Wide screens: a rail in the left margin, beside wide figures, never over them. */
-.nk-note .nk-way-rail {
-  display: none;
-}
-@media (min-width: 1360px) {
-  .nk-note .nk-way-rail {
-    position: fixed;
-    top: 18vh;
-    left: 24px;
-    display: block;
-    width: min(230px, calc((100vw - var(--wide)) / 2 - 56px));
-    color: var(--muted);
-  }
-}
-.nk-note .nk-way-top {
-  display: block;
-  margin-bottom: 0.7rem;
-  color: var(--faint);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.nk-note .nk-way-railbody {
-  position: relative;
-  padding-left: 12px;
-  border-left: 1px solid var(--rule);
-}
-.nk-note .nk-way-marker {
-  position: absolute;
-  left: -1px;
-  width: 1px;
-  background: var(--accent);
-  opacity: 0;
-}
-.nk-note .nk-way-rail li a {
-  display: flex;
-  gap: 0.55rem;
-  padding: 0.18rem 0;
-}
-.nk-note .nk-way-rail .nk-way-t {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.nk-note .nk-way li.done .nk-way-t {
-  color: var(--text);
-}
-.nk-note .nk-way li.now .nk-way-t {
-  color: var(--bright);
-}
-.nk-note .nk-way li.now .nk-way-n {
-  color: var(--accent);
-}
-.nk-note .nk-way a:hover .nk-way-t {
-  color: var(--accent);
-}
-.nk-note .nk-way-q {
-  display: block;
-  margin: 0.1rem 0 0.5rem 1.75rem;
-  color: var(--muted);
-  font: italic 13px/1.4 var(--serif);
-}
-
-/* Narrow screens: a pill in the corner that opens the route. */
-.nk-note .nk-way-pill {
-  position: fixed;
-  bottom: 14px;
-  left: 14px;
-  z-index: 20;
-  display: flex;
-  flex-direction: column-reverse;
-  align-items: flex-start;
-  gap: 0.4rem;
-  max-width: calc(100vw - 28px);
-}
-.nk-note .nk-way-pill .nk-way-back {
-  margin: 0;
-}
-.nk-note .nk-way:not([data-active]) .nk-way-here {
-  display: none;
-}
-.nk-note .nk-way-here {
-  position: relative;
-  display: flex;
-  gap: 0.5rem;
-  max-width: 100%;
-  overflow: hidden;
-  padding: 0.35rem 0.8rem 0.45rem;
-  border: 1px solid var(--rule-strong);
-  border-radius: 999px;
-  background: rgb(14 14 13 / 92%);
-  backdrop-filter: blur(6px);
-  color: var(--text);
-  font: inherit;
-}
-.nk-note .nk-way-here .nk-way-t {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.nk-note .nk-way-bar {
-  position: absolute;
-  right: 0.8rem;
-  bottom: 0.2rem;
-  left: 0.8rem;
-  height: 1px;
-  background: var(--rule);
-}
-.nk-note .nk-way-bar span {
-  display: block;
-  height: 100%;
-  background: var(--accent);
-  transform-origin: left;
-}
-.nk-note .nk-way-sheet {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  width: min(380px, calc(100vw - 28px));
-  max-height: 62vh;
-  overflow-y: auto;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--rule-strong);
-  border-radius: 10px;
-  background: var(--panel);
-  box-shadow: 0 12px 40px rgb(0 0 0 / 50%);
-}
-.nk-note .nk-way-sheet[hidden] {
-  display: none;
-}
-.nk-note .nk-way-sheet li a {
-  display: flex;
-  gap: 0.6rem;
-  padding: 0.35rem 0;
-}
-.nk-note .nk-way-sheet .nk-way-q {
-  margin-left: 1.9rem;
-}
-
-@media (min-width: 1360px) {
-  .nk-note .nk-way-pill {
-    display: none;
-  }
-}
 
 @media (max-width: 1359px) {
   /* Room to scroll the last lines above the corner pill. */
@@ -741,22 +575,7 @@
   .nk-note .nk-equation {
     padding: 0.2rem 0;
   }
-  .nk-note .nk-steps-grid {
-    grid-template-columns: 1fr;
-    justify-content: start;
-    row-gap: 0.15rem;
-  }
-  .nk-note .nk-steps-lhs {
-    text-align: left;
-  }
-  .nk-note .nk-steps-lhs:empty {
-    display: none;
-  }
-  .nk-note .nk-steps-rhs {
-    padding-left: 1.1rem;
-  }
   .nk-note .nk-steps-why {
-    padding: 0 0 0.6rem 1.1rem;
     font-size: 0.82em;
   }
   .nk-note .nk-model dl {
@@ -795,4 +614,57 @@
   flex: none;
   width: 1em;
   height: 1em;
+}
+
+/* Reference detail stays available without dominating a short note. */
+.nk-reference-details > .nk-disclosure-summary {
+  min-height: 44px;
+}
+.nk-reference-body {
+  padding-block: 12px;
+}
+
+/* The line above a note, aligned to the reading column. */
+.nk-note-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 24px;
+  width: min(calc(100% - 2.5rem), 680px);
+  margin: 16px auto 0;
+  font: 16px/1.4 var(--serif);
+}
+.nk-note-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color var(--nk-motion-fast) var(--nk-motion-ease);
+}
+.nk-note-nav a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nk-note-nav a:hover {
+    color: var(--bright);
+  }
+}
+@media (max-width: 360px) {
+  .nk-note-nav {
+    flex-wrap: nowrap;
+    gap: 12px;
+    font-size: 15px;
+  }
+  .nk-note-nav a {
+    white-space: nowrap;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .nk-note-nav a {
+    transition: none;
+  }
 }

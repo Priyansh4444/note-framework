@@ -143,14 +143,14 @@ for (const width of [320, 390, 768, 1440]) {
     expect(sourceFrame.wrap).toBe("pre");
     report.source = sourceFrame;
     await evidence(code, "source", info);
-    await codeTools.locator("summary").click();
+    await codeTools.locator(".nk-code-source-toggle").click();
     await codeTools.getByRole("button", { name: "Copy source", exact: true }).click();
-    await codeTools.locator("summary").click();
+    await codeTools.locator(".nk-code-source-toggle").click();
     expect(
       await page.evaluate(() => (window as unknown as { copiedSource: string }).copiedSource),
     ).toBe(source);
 
-    await patchTools.locator("summary").click();
+    await patchTools.locator(".nk-code-source-toggle").click();
     // Both endpoints must retain the same structural source origin after a morph.
     for (const side of ["Before", "After"]) {
       await patchTools.getByRole("button", { name: side, exact: true }).focus();

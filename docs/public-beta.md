@@ -40,7 +40,7 @@ These tests use a Chromium virtual authenticator against the built app, Worker r
 
 ## Deploy a separate installation
 
-The checked-in D1 ID is a placeholder; this repository does not configure access to the hosted beta. For your own installation, create a D1 database and replace its name/ID, Worker name, and canonical HTTPS origin in `wrangler.public.jsonc`. Adjust the explicit target check in `scripts/public-deploy.ts` to match your installation. Never reuse another installation's database ID.
+The checked-in D1 ID is a placeholder; deploying looks up the real one by name in your logged-in account. For your own installation, create a D1 database, then change its name, the Worker name and the canonical HTTPS origin in `wrangler.public.jsonc`, and the target check and database name in `scripts/public-deploy.ts`.
 
 `bun run public:deploy` runs quality gates, browser component tests and the public build, applies migrations to the new database, enables the platform quota, and deploys that Worker. Run the real account browser tests locally before deployment and against HTTPS afterward. Cloudflare credentials are operator credentials; authors do not need them to publish notes.
 

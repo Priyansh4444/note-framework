@@ -1,6 +1,6 @@
 import { afterEach, expect, test } from "bun:test";
 import { batch, createRoot, createSignal } from "solid-js";
-import type { Scene } from "../post/scene/clock";
+import type { Scene } from "./scene/clock";
 import { crossedCues, observeSceneAudio, type AudioSample, type CuePlan } from "./scene-audio";
 
 const plan: CuePlan = {

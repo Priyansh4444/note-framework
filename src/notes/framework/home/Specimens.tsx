@@ -7,7 +7,6 @@ import {
   Equation,
   Experiment,
   Parameter,
-  Tex,
   defineNote,
 } from "../../../kit";
 import { mix } from "../../framework-demo/examples/de-casteljau";
@@ -73,11 +72,7 @@ function SceneSpecimen() {
       .map((v, k) => `${k ? "L" : "M"}${v[0].toFixed(1)} ${v[1].toFixed(1)}`)
       .join("");
   return (
-    <Experiment
-      scene={scene}
-      question=""
-      caption="Nothing moves until asked. Seek, pause and replay share one clock."
-    >
+    <Experiment scene={scene}>
       <DiagramViewer
         viewBox={[20, 0, 300, 110]}
         label="A quadratic curve traced by its moving point."
@@ -114,10 +109,7 @@ export function Specimens() {
           <code>createScene</code>
           <h3>Move only when asked.</h3>
         </header>
-        <p>
-          Every frame is a function of one seekable clock, and reduced motion opens on the final
-          frame.
-        </p>
+        <p>Every frame derives from one seekable clock. With reduced motion, Play steps instead.</p>
         <div class="fw-spec-live">
           <SceneSpecimen />
         </div>
@@ -127,10 +119,7 @@ export function Specimens() {
           <code>&lt;T&gt;</code>
           <h3>Keep the words close.</h3>
         </header>
-        <p>
-          Define a term once. Readers hover, focus or tap for a reminder, and the glossary collects
-          it.
-        </p>
+        <p>Define a term once. Readers hover, focus or tap; the glossary collects it.</p>
         <div class="fw-spec-live fw-spec-prose">
           <p>
             The curve keeps one <T k="invariant" /> while you drag: it never leaves the shape around
@@ -143,9 +132,7 @@ export function Specimens() {
           <code>&lt;Equation&gt;</code>
           <h3>Typeset the math properly.</h3>
         </header>
-        <p>
-          Strict KaTeX with local fonts and MathML, plus a phone layout that never scrolls sideways.
-        </p>
+        <p>Strict KaTeX, local fonts and MathML. Phone layouts never scroll sideways.</p>
         <div class="fw-spec-live">
           <Equation tex="B(t)=\sum_{i=0}^{3}\binom{3}{i}t^i(1-t)^{3-i}P_i" />
         </div>
@@ -155,16 +142,12 @@ export function Specimens() {
           <code>&lt;Check&gt;</code>
           <h3>Ask before you tell.</h3>
         </header>
-        <p>
-          A question with its reasoning folded underneath. Selecting the question’s text doesn’t
-          open it.
-        </p>
+        <p>A question with its reasoning folded underneath.</p>
         <div class="fw-spec-live">
           <Check q={<>Can a Bézier curve leave the hull of its control points?</>}>
             <p>
-              No. Each point is a weighted average with nonnegative weights summing to one, so it
-              stays inside. The <a href={EXAMPLE}>example note</a> proves it and tests it at 201
-              values of <Tex tex="t" />.
+              No. Each point is a weighted average with nonnegative weights summing to one. The{" "}
+              <a href={EXAMPLE}>example note</a> proves it.
             </p>
           </Check>
         </div>

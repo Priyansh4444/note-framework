@@ -2,32 +2,12 @@
   --ss-surface: var(--bg, #161616);
   --ss-line: var(--rule, #383838);
   --ss-role: var(--diagram-blue, #26bbd9);
+  --ss-font: var(--mono, monospace);
   position: relative;
-  font: 15px/1.4 var(--mono, monospace);
+  font: 15px/1.4 var(--ss-font);
   color: var(--text, #d6d6d6);
 }
-.note-shared-service .ss-scroll-hint {
-  margin: 0 0 18px;
-  color: var(--muted, #aaa);
-  font: inherit;
-}
-.note-shared-service .ss-scroll-hint span {
-  display: none;
-}
-.note-shared-service .ss-scroll {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  padding: 10px 3px 6px;
-  scrollbar-width: thin;
-  scrollbar-color: var(--rule-strong, #666) transparent;
-}
-.note-shared-service .ss-scroll:focus-visible {
-  outline: 2px solid var(--ss-role);
-  outline-offset: 4px;
-  border-radius: 3px;
-}
 .note-shared-service .ss-diagram {
-  min-width: 560px;
   position: relative;
 }
 .note-shared-service .ss-clients {
@@ -36,20 +16,38 @@
   gap: 16px;
 }
 .note-shared-service .ss-client-slot {
+  position: relative;
   min-width: 0;
-  min-height: 120px;
+  min-height: 96px;
   display: flex;
 }
-.note-shared-service .ss-client {
+/* A closed window: only its name, so nothing looks ready before it opens. */
+.note-shared-service .ss-client-ghost {
+  position: absolute;
+  inset: 0;
   box-sizing: border-box;
-  min-height: 120px;
+  padding: 11px;
+}
+.note-shared-service .ss-client-ghost .ss-client-heading,
+.note-shared-service .ss-client-ghost .ss-glyph {
+  color: var(--faint);
+}
+.note-shared-service .ss-client {
+  position: relative;
+  box-sizing: border-box;
+  min-height: 96px;
   width: 100%;
   padding: 10px;
   border: 1px solid var(--ss-line);
-  border-radius: 2px;
+  border-radius: 6px;
   background: var(--ss-surface);
   display: flex;
   flex-direction: column;
+  /* The border lights on landing, and blooms when a reply arrives. */
+  box-shadow:
+    0 0 0 calc(var(--ss-pulse, 0) * 3px) color-mix(in srgb, var(--ss-role) 45%, transparent),
+    inset 0 0 calc(var(--ss-bloom, 0) * 26px) color-mix(in srgb, var(--ss-role) 40%, transparent);
+  border-color: color-mix(in srgb, var(--ss-role) calc(var(--ss-pulse, 0) * 100%), var(--ss-line));
 }
 .note-shared-service .ss-client-heading {
   display: flex;
@@ -61,43 +59,66 @@
 }
 .note-shared-service .ss-glyph {
   display: inline-block;
-  font: 15px/1 var(--mono, monospace);
-  color: var(--muted, #aaa);
+  font: 15px/1 var(--ss-font);
 }
 .note-shared-service .ss-client-task {
-  margin: 10px 0 4px;
-  font: 15px/1.4 var(--mono, monospace);
+  margin: 8px 0 0;
+  font: 15px/1.4 var(--ss-font);
   color: var(--bright, #eee);
 }
 .note-shared-service .ss-client-status {
-  margin: auto 0 0;
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  margin: 0;
   color: var(--muted, #aaa);
-  font: 15px/1.4 var(--mono, monospace);
+  font: 15px/1.4 var(--ss-font);
+}
+/* Status words stay for screen readers and tests; the picture says it with an arc and a check. */
+.note-shared-service .ss-word {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
   white-space: nowrap;
 }
-.note-shared-service .ss-client-status[data-complete="true"] {
-  color: var(--text, #d6d6d6);
+.note-shared-service .ss-progress {
+  display: block;
+  width: 16px;
+  height: 16px;
+  overflow: visible;
+}
+.note-shared-service .ss-arc,
+.note-shared-service .ss-check {
+  fill: none;
+  stroke: var(--bright);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 .note-shared-service .ss-wires {
   display: block;
   width: 100%;
-  height: 64px;
+  height: 56px;
   overflow: visible;
 }
 .note-shared-service .ss-wire {
   fill: none;
-  stroke: var(--muted, #999);
+  stroke: var(--rule-strong, #666);
   stroke-width: 1;
   vector-effect: non-scaling-stroke;
 }
 .note-shared-service .ss-packet {
   fill: none;
-  stroke: #fff;
+  stroke: var(--bright);
+  stroke-width: 3;
   vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 4px var(--ss-role));
 }
 .note-shared-service .ss-port-columns {
   pointer-events: none;
-  height: 64px;
+  height: 56px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
@@ -111,7 +132,7 @@
   width: 6px;
   height: 6px;
   box-sizing: border-box;
-  border: 1px solid var(--muted, #999);
+  border: 1px solid var(--rule-strong, #666);
   border-radius: 50%;
   background: var(--ss-surface);
   z-index: 1;
@@ -122,28 +143,34 @@
 .note-shared-service .ss-port-service {
   bottom: -2px;
 }
+.note-shared-service .ss-port-client[data-connected="false"] {
+  opacity: 0;
+}
 .note-shared-service .ss-port-dot[data-connected="true"] {
   background: var(--ss-role);
   border-color: var(--ss-role);
 }
 .note-shared-service .ss-arrival {
   position: absolute;
-  left: calc(50% - 11px);
-  width: 22px;
-  height: 22px;
+  left: calc(50% - 26px);
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
-  background: var(--ss-role);
-  filter: blur(5px);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--ss-role) 55%, transparent),
+    transparent 68%
+  );
 }
 .note-shared-service .ss-arrival-client {
-  top: -10px;
+  top: -26px;
 }
 .note-shared-service .ss-arrival-service {
-  bottom: -10px;
+  bottom: -26px;
 }
 .note-shared-service .ss-service {
   border: 1px solid var(--ss-line);
-  border-radius: 2px;
+  border-radius: 6px;
   background: var(--ss-surface);
 }
 .note-shared-service .ss-service-header {
@@ -154,6 +181,12 @@
   padding: 10px 14px;
   border-bottom: 1px solid var(--ss-line);
 }
+.note-shared-service .ss-service-header > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 3px 12px;
+}
 .note-shared-service .ss-service-name {
   display: block;
   color: var(--bright, #eee);
@@ -161,7 +194,7 @@
 }
 .note-shared-service .ss-pid {
   display: block;
-  margin-top: 3px;
+  margin: 0;
   color: var(--muted, #aaa);
   font-size: 15px;
   font-variant-numeric: tabular-nums;
@@ -183,57 +216,53 @@
 }
 .note-shared-service .ss-sessions {
   position: relative;
-  padding: 4px 14px;
+  padding: 6px 14px 8px;
 }
 .note-shared-service .ss-empty {
   position: absolute;
-  top: 25px;
+  top: 14px;
   left: 14px;
   margin: 0;
   font: inherit;
   color: var(--muted, #aaa);
 }
-.note-shared-service .ss-session {
-  min-height: 56px;
+.note-shared-service .ss-session,
+.note-shared-service .ss-session-content {
+  min-height: 34px;
   box-sizing: border-box;
-  border-bottom: 1px solid var(--ss-line);
-}
-.note-shared-service .ss-session:last-child {
-  border-bottom: 0;
 }
 .note-shared-service .ss-session-content {
-  min-height: 56px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 20px;
+  gap: 14px;
 }
 .note-shared-service .ss-session-title {
-  display: block;
+  flex: 1;
+  min-width: 0;
   color: var(--bright, #eee);
 }
 .note-shared-service .ss-subscribers {
   display: block;
   color: var(--muted, #aaa);
-  margin-top: 3px;
+}
+.note-shared-service .ss-subscriber-names {
+  display: flex;
+  gap: 8px;
+  color: var(--ss-role);
+}
+.note-shared-service .ss-subscriber {
+  display: inline-block;
+  font: 15px/1 var(--mono);
+}
+.note-shared-service .ss-subscriber[hidden] {
+  display: none;
 }
 .note-shared-service .ss-session-status {
-  color: var(--muted, #aaa);
-}
-.note-shared-service [data-state="complete"] .ss-session-status {
-  color: var(--text, #d6d6d6);
+  flex: 0 0 16px;
 }
 .note-shared-service .ss-caption-event {
   display: block;
   min-height: 3em;
-  color: var(--text, #d6d6d6);
-}
-.note-shared-service .ss-caption-definition {
-  display: block;
-  margin-top: 8px;
-}
-.note-shared-service .ss-caption-definition strong {
-  font-weight: 500;
   color: var(--text, #d6d6d6);
 }
 .note-shared-service .ss-result {
@@ -244,16 +273,10 @@
   color: var(--muted, #aaa);
   font-size: 15px;
 }
-@media (max-width: 680px) {
-  .note-shared-service .ss-scroll-hint span {
-    display: block;
-    margin-top: 4px;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .note-shared-service .ss-client {
+  .note-shared-service .ss-client,
+  .note-shared-service .ss-session-content {
     transform: none !important;
-    opacity: 1 !important;
   }
   .note-shared-service .ss-arrival {
     opacity: 0 !important;
@@ -269,35 +292,69 @@
     border-color: CanvasText;
   }
 }
+/* Phase links form a readable chapter row; End owns its own 44px target. */
+.note-shared-service #service-experiment .nk-timeline-labels {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(44px, 1fr)) 44px;
+}
+.note-shared-service #service-experiment .nk-timeline-label {
+  position: static;
+  transform: none;
+  width: 100%;
+  padding-inline: 2px;
+}
 
-.note-shared-service .ss-subscriber-names {
-  color: var(--ss-role);
-}
-.note-shared-service-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px 24px;
-  width: min(1160px, calc(100% - 40px));
-  margin: 0 auto;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--rule);
-  font: 15px/1.4 var(--serif, Georgia, serif);
-}
-.note-shared-service-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--muted);
-  text-decoration: none;
-}
-.note-shared-service-nav a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-@media (hover: hover) and (pointer: fine) {
-  .note-shared-service-nav a:hover {
-    color: var(--bright);
+/*
+ * Phone: four windows still sit side by side above their one service. Each card drops the task,
+ * which its session row already names, and the serif's narrower set keeps every label whole.
+ */
+@media (max-width: 600px) {
+  .note-shared-service .ss-figure {
+    --ss-font: var(--serif);
+  }
+  .note-shared-service :is(.ss-clients, .ss-port-columns) {
+    gap: 6px;
+  }
+  .note-shared-service .ss-client-slot,
+  .note-shared-service .ss-client {
+    min-height: 84px;
+  }
+  .note-shared-service .ss-client {
+    padding: 8px 4px;
+    text-align: center;
+    align-items: center;
+  }
+  .note-shared-service .ss-client-ghost {
+    padding: 9px 5px;
+    text-align: center;
+  }
+  .note-shared-service .ss-client-heading {
+    flex-direction: column;
+    gap: 4px;
+  }
+  .note-shared-service .ss-client-task {
+    display: none;
+  }
+  .note-shared-service .ss-client-status {
+    position: static;
+    margin-top: auto;
+  }
+  .note-shared-service .ss-service-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) max-content;
+    gap: 2px 12px;
+    align-items: baseline;
+  }
+  .note-shared-service .ss-service-header > div {
+    display: contents;
+  }
+  .note-shared-service .ss-pid {
+    grid-area: 2 / 1 / 3 / 3;
+  }
+  .note-shared-service .ss-process-state {
+    grid-area: 1 / 2;
+  }
+  .note-shared-service :is(.ss-session, .ss-session-content) {
+    min-height: 36px;
   }
 }

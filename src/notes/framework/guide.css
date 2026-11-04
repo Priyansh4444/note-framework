@@ -1,13 +1,7 @@
 .fw-guide .fw-guide-layout {
-  display: grid;
-  grid-template-columns: 180px minmax(0, 1fr);
-  gap: 56px;
-  align-items: start;
-  padding: 80px 0 88px;
-}
-.fw-guide .fw-guide-toc {
-  position: sticky;
-  top: 32px;
+  width: min(100%, 680px);
+  margin-inline: auto;
+  padding: 56px 0 72px;
 }
 .fw-guide .fw-guide-label {
   margin: 0 0 16px;
@@ -16,37 +10,14 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.fw-guide .fw-guide-toc ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-.fw-guide .fw-guide-toc li {
-  margin: 0;
-  padding: 0;
-}
-.fw-guide .fw-guide-toc a {
-  display: flex;
-  align-items: baseline;
-  gap: 14px;
-  min-height: 44px;
-  padding: 8px 0;
-  color: var(--muted);
-  font-size: 17px;
-  text-decoration: none;
-}
-.fw-guide .fw-guide-toc a span {
-  color: var(--faint);
-  font: 11px/1.5 var(--mono);
-}
 .fw-guide .fw-guide-body {
   min-width: 0;
 }
 .fw-guide .fw-guide-header {
-  padding-bottom: 56px;
+  padding-bottom: 32px;
 }
 .fw-guide .fw-guide-header h1 {
-  font-size: 68px;
+  font-size: 64px;
 }
 .fw-guide .fw-guide-header .fw-dek {
   max-width: 25em;
@@ -65,9 +36,13 @@
   min-height: 44px;
 }
 .fw-guide .fw-guide-section {
-  padding: 56px 0 64px;
+  padding: 40px 0 44px;
   border-top: 1px solid var(--rule);
   scroll-margin-top: 32px;
+}
+.fw-guide .fw-guide-header + .fw-guide-section {
+  border-top: 0;
+  padding-top: 0;
 }
 .fw-guide .fw-guide-section:last-child {
   padding-bottom: 0;
@@ -118,10 +93,6 @@
   flex-wrap: wrap;
   gap: 12px 20px;
   margin-top: 16px;
-}
-.fw-guide .fw-guide-prompt-actions [role="status"] {
-  color: var(--muted);
-  font-size: 16px;
 }
 .fw-guide .fw-guide-checklist {
   max-width: 660px;
@@ -231,49 +202,22 @@
   font-size: 33px;
 }
 @media (hover: hover) and (pointer: fine) {
-  .fw-guide .fw-guide-toc a:hover,
   .fw-guide .fw-guide-details > summary:hover {
     color: var(--bright);
-  }
-  .fw-guide .fw-guide-toc a:hover span {
-    color: var(--accent);
-  }
-}
-@media (max-width: 1199px) {
-  .fw-guide .fw-guide-layout {
-    gap: 40px;
   }
 }
 @media (max-width: 760px) {
   .fw-guide .fw-guide-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 36px;
     padding: 32px 0 56px;
   }
-  .fw-guide .fw-guide-toc {
-    position: static;
-    padding-bottom: 20px;
-    border-bottom: 1px solid var(--rule);
-  }
-  .fw-guide .fw-guide-toc .fw-guide-label {
-    margin-bottom: 8px;
-  }
-  .fw-guide .fw-guide-toc ol {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0 24px;
-  }
-  .fw-guide .fw-guide-toc a {
-    gap: 9px;
-  }
   .fw-guide .fw-guide-header {
-    padding-bottom: 36px;
+    padding-bottom: 24px;
   }
   .fw-guide .fw-guide-header h1 {
     font-size: 46px;
   }
   .fw-guide .fw-guide-links {
-    gap: 0 24px;
+    gap: 0 20px;
     font-size: 16px;
   }
   .fw-guide .fw-guide-section {

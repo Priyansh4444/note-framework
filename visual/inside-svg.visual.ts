@@ -65,7 +65,9 @@ for (const width of [320, 390, 768, 1440]) {
     expect(finalTimeline.height).toBe(initialTimeline.height);
     expect(finalTimeline.top).toBeCloseTo(initialTimeline.top, 1);
     const sizes = await page
-      .locator(".svg-button,.svg-plane-label,.svg-order-strip,.nk-experiment-action")
+      .locator(
+        ".nk-choice button,.nk-action,.svg-plane-label,.svg-order-strip,.nk-experiment-action",
+      )
       .evaluateAll((nodes) =>
         nodes.map((n) => ({
           font: parseFloat(getComputedStyle(n).fontSize),
@@ -95,9 +97,9 @@ for (const width of [320, 390, 768, 1440]) {
     ).toBe(true);
     await peel.screenshot({ path: testInfo.outputPath(`intermediate-${width}.png`) });
     const clip = page.locator("#svg-clip");
-    await clip.getByRole("button", { name: "Left", exact: true }).click();
+    await clip.getByRole("radio", { name: "Left", exact: true }).click();
     await clip.screenshot({ path: testInfo.outputPath(`clip-left-${width}.png`) });
-    await clip.getByRole("button", { name: "Right", exact: true }).click();
+    await clip.getByRole("radio", { name: "Right", exact: true }).click();
     await clip.screenshot({ path: testInfo.outputPath(`clip-right-${width}.png`) });
   });
 }
@@ -115,7 +117,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
     )!;
   });
   expect(await hit(order, 160, 140)).toBe("rear");
-  await order.getByRole("button", { name: "Bring the sun forward" }).click();
+  await order.getByRole("radio", { name: "Sun in front" }).click();
   expect(await hit(order, 160, 140)).toBe("sun");
   expect(
     await page.evaluate(
@@ -124,7 +126,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
         document.querySelector('#svg-order [data-layer="sun"]'),
     ),
   ).toBe(true);
-  await order.getByRole("button", { name: "Put the sun behind" }).press("Enter");
+  await order.getByRole("radio", { name: "Sun in front" }).press("ArrowLeft");
   expect(await hit(order, 160, 140)).toBe("rear");
   const geometry = () =>
     clip.locator("[data-scenery]").evaluate((node) => {
@@ -143,7 +145,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
   });
   expect(await hit(clip, 20, 50)).toBe(null);
   for (const position of ["Left", "Right", "Center"]) {
-    await clip.getByRole("button", { name: position, exact: true }).click();
+    await clip.getByRole("radio", { name: position, exact: true }).click();
     expect(await geometry()).toEqual(original);
   }
   await clip.getByRole("button", { name: "Show beyond the window" }).click();
@@ -156,7 +158,7 @@ test("actual paint order moves the retained sun, and clipping preserves geometry
       ),
     ),
   ).toBe(true);
-  await clip.getByRole("button", { name: "Use the window" }).press("Space");
+  await clip.getByRole("button", { name: "Show beyond the window" }).press("Space");
   expect(await hit(clip, 20, 50)).toBe(null);
 });
 
@@ -185,7 +187,7 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   await expect(peel).toHaveAttribute("data-nk-scene-active", "false");
   await peel.getByRole("button", { name: "Replay", exact: true }).click();
   await expect(peel).toHaveAttribute("data-nk-scene-time", "0");
-  const forward = page.locator("#svg-order").getByRole("button", { name: "Bring the sun forward" });
+  const forward = page.locator("#svg-order").getByRole("radio", { name: "Sun behind" });
   await forward.focus();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Shift+Tab");
@@ -195,12 +197,94 @@ test("one scene pauses, seeks, replays and steps under reduced motion", async ({
   }));
   expect(focus.style).toBe("solid");
   expect(parseFloat(focus.width)).toBeGreaterThanOrEqual(2);
-  await forward.press("Enter");
+  await forward.press("ArrowRight");
   await expect(
-    page.locator("#svg-order").getByRole("button", { name: "Put the sun behind" }),
-  ).toHaveAttribute("aria-pressed", "true");
+    page.locator("#svg-order").getByRole("radio", { name: "Sun in front" }),
+  ).toHaveAttribute("aria-checked", "true");
   await page.emulateMedia({ forcedColors: "active" });
   await page
     .locator("#svg-order")
     .screenshot({ path: testInfo.outputPath("forced-colors-390.png") });
+});
+
+test("the path instrument writes the source's own bell and follows the slit", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/notes/inside-svg", { waitUntil: "networkidle" });
+  const root = page.locator("#svg-path"),
+    source = root.getByRole("slider", { name: "Source line" }),
+    ink = root.locator("[data-path-ink]"),
+    live = root.locator("[data-instrument-live]");
+  await source.scrollIntoViewIfNeeded();
+  // At rest it is the finished bell, at the stroke the source asks for.
+  await expect(live).toContainText("11/11 C · pen 59 82");
+  await expect(ink).toHaveAttribute("stroke-width", "6");
+  await expect(ink).toHaveAttribute("stroke-linejoin", "round");
+  const finished = await ink.evaluate((el) => (el as SVGPathElement).getTotalLength());
+  expect(Number((await live.innerText()).match(/length (\d+)/)![1])).toBeCloseTo(finished, -1);
+
+  // Each key is one line: nothing inked yet, then the pen lands, then the first curve.
+  await source.press("Home");
+  await expect(ink).toHaveAttribute("stroke-width", "1.25");
+  for (let i = 0; i < 3; i++) await source.press("ArrowDown");
+  await expect(live).toContainText("1/11 M · pen 50 10");
+  await source.press("ArrowDown");
+  await expect(live).toContainText("2/11 C · pen 23 45");
+  await expect(source).toHaveAttribute("aria-valuetext", /C 31 10, 23 26, 23 45|V 62/);
+
+  // Nodes persist through dragging, and the real path's length matches the readout mid-stroke.
+  const node = await ink.elementHandle();
+  const box = (await source.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.45);
+  await page.mouse.down();
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height * 0.6, { steps: 4 });
+  await page.mouse.up();
+  expect(await node!.evaluate((el) => el.isConnected)).toBe(true);
+  const drawn = await ink.evaluate((el) => (el as SVGPathElement).getTotalLength());
+  expect(Number((await live.innerText()).match(/length (\d+)/)![1])).toBeCloseTo(drawn, -1);
+
+  // The slit's window shows true text; beyond it, the source reads as noise.
+  const lines = root.locator(".svg-path-text");
+  const shown = await lines.allInnerTexts();
+  expect(shown.join("\n")).not.toContain("stroke-linejoin");
+  await source.press("End");
+  await source.press("ArrowUp");
+  await source.press("ArrowUp");
+  await expect(lines.nth(15)).toContainText("stroke-linejoin");
+
+  // Play writes it again from the first line on one clock.
+  await root.locator("[data-nk-scene-action]").click();
+  await expect(root).toHaveAttribute("data-nk-scene-active", "true");
+  await expect
+    .poll(async () => Number(await root.getAttribute("data-nk-scene-time")))
+    .toBeLessThan(6400);
+  await expect(root.locator("[data-nk-scene-action]")).toHaveAttribute(
+    "data-nk-scene-action",
+    "play",
+    { timeout: 9000 },
+  );
+  await expect(live).toContainText("11/11 C");
+});
+
+test("on a phone only the grip takes the slit, so the source still scrolls the page", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 844 });
+  await page.goto("/notes/inside-svg", { waitUntil: "networkidle" });
+  const root = page.locator("#svg-path");
+  await root.scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  const touch = await root.evaluate((el) => ({
+    column: getComputedStyle(el.querySelector(".svg-path-source")!).touchAction,
+    grip: getComputedStyle(el.querySelector(".svg-path-grip")!).touchAction,
+    gripSize: (() => {
+      const box = el.querySelector(".svg-path-grip")!.getBoundingClientRect();
+      return [box.width, box.height];
+    })(),
+    picture: el.querySelector(".nk-diagram")!.getBoundingClientRect().bottom,
+    source: el.querySelector(".svg-path-source")!.getBoundingClientRect().top,
+  }));
+  expect(touch.column).toBe("pan-y");
+  expect(touch.grip).toBe("none");
+  expect(touch.gripSize).toEqual([44, 44]);
+  expect(touch.picture).toBeLessThanOrEqual(touch.source);
 });

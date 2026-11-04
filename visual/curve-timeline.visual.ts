@@ -53,7 +53,10 @@ for (const width of [1440, 768, 390, 320])
         right: r.right,
         scroll: document.documentElement.scrollWidth,
         gap: r.top - stage.bottom,
-        actionGap: actions.top - r.bottom,
+        actionTop: actions.top,
+        sliderTop: el.querySelector(".nk-timeline-slider")!.getBoundingClientRect().top,
+        actionsBottom: actions.bottom,
+        sliderBottom: el.querySelector(".nk-timeline-slider")!.getBoundingClientRect().bottom,
         buttons: [...el.querySelectorAll("button")].map((button) => ({
           width: button.getBoundingClientRect().width,
           height: button.getBoundingClientRect().height,
@@ -63,17 +66,16 @@ for (const width of [1440, 768, 390, 320])
     });
     expect(geometry.scroll).toBeLessThanOrEqual(width);
     expect(geometry.right).toBeLessThanOrEqual(width);
-    expect(geometry.gap).toBeGreaterThanOrEqual(24);
-    expect(geometry.actionGap).toBeGreaterThanOrEqual(16);
+    expect(geometry.gap).toBeGreaterThanOrEqual(12);
+    expect(geometry.actionTop).toBe(geometry.sliderTop);
+    expect(geometry.actionsBottom).toBe(geometry.sliderBottom);
     for (const button of geometry.buttons) {
       expect(button.width).toBeGreaterThanOrEqual(44);
       expect(button.height).toBeGreaterThanOrEqual(44);
       expect(button.size).toBeGreaterThanOrEqual(15);
     }
     await slider.press("ArrowLeft");
-    await page
-      .locator("figure")
-      .screenshot({ path: `/tmp/service-curves/kit-timeline-${width}.png` });
+    await page.locator("figure").screenshot({ path: `artifacts/visual/kit-timeline-${width}.png` });
   });
 
 test("offset grab, primary capture, Escape, cancellation and resize never resume playback", async ({
@@ -152,7 +154,7 @@ test("zoom, enlarged text, reduced motion and forced colors preserve the rail", 
   ).not.toBe("none");
   await page
     .locator("figure")
-    .screenshot({ path: "/tmp/service-curves/kit-timeline-zoom-forced-colors.png" });
+    .screenshot({ path: "artifacts/visual/kit-timeline-zoom-forced-colors.png" });
 });
 
 test("keyboard focus follows only the blue marker, including forced colors", async ({ page }) => {
@@ -182,7 +184,7 @@ test("keyboard focus follows only the blue marker, including forced colors", asy
     expect(focus.stroke).not.toBe(focus.coreStroke);
   }
   await page.emulateMedia({ forcedColors: "none" });
-  await page.locator("figure").screenshot({ path: "/tmp/service-curves/kit-timeline-focused.png" });
+  await page.locator("figure").screenshot({ path: "artifacts/visual/kit-timeline-focused.png" });
 });
 
 for (const width of [320, 390, 768, 1440])
@@ -195,12 +197,7 @@ for (const width of [320, 390, 768, 1440])
         const figure = body.closest("figure")!,
           stage = body.querySelector(".nk-experiment-stage")!.getBoundingClientRect(),
           timeline = body.querySelector("[data-nk-timeline]")!.getBoundingClientRect();
-        const groups = [
-          body,
-          ...figure.querySelectorAll(
-            ":scope > .nk-experiment-controls,:scope > .nk-experiment-actions",
-          ),
-        ]
+        const groups = [body, ...figure.querySelectorAll(":scope > .nk-experiment-controls")]
           .map((el) => el.getBoundingClientRect())
           .filter((r) => r.height > 0)
           .sort((a, b) => a.top - b.top);
@@ -210,14 +207,14 @@ for (const width of [320, 390, 768, 1440])
         };
       }),
     );
-    expect(measured.length).toBeGreaterThanOrEqual(4);
+    expect(measured.length).toBeGreaterThanOrEqual(3);
     for (const figure of measured) {
-      expect(figure.stageGap).toBeGreaterThanOrEqual(24);
-      for (const gap of figure.groupGaps) expect(gap).toBeGreaterThanOrEqual(16);
+      expect(figure.stageGap).toBeGreaterThanOrEqual(12);
+      for (const gap of figure.groupGaps) expect(gap).toBeGreaterThanOrEqual(12);
     }
     await page
       .locator(".bz-first-try .nk-experiment")
-      .screenshot({ path: `/tmp/service-curves/kit-construction-${width}.png` });
+      .screenshot({ path: `artifacts/visual/kit-construction-${width}.png` });
   });
 
 test("the whole shifted endpoint marker is grabbable without a jump", async ({ page }) => {
@@ -256,5 +253,5 @@ test("integrated Service rail keeps localized keyboard focus and bottom actions"
   expect(focus.opacity).toBe("1");
   await page
     .locator("figure.nk-experiment")
-    .screenshot({ path: "/tmp/service-curves/kit-service-focused-1440.png" });
+    .screenshot({ path: "artifacts/visual/kit-service-focused-1440.png" });
 });

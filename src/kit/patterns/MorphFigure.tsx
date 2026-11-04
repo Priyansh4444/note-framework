@@ -1,19 +1,11 @@
-import {
-  createEffect,
-  createMemo,
-  createSignal,
-  For,
-  onCleanup,
-  onMount,
-  on,
-  untrack,
-} from "solid-js";
+import { createEffect, createMemo, createSignal, onCleanup, onMount, on, untrack } from "solid-js";
 import {
   createMorphModel,
   type MorphShape,
   type MorphVertex,
   validateMorphShapes,
 } from "./morph-model";
+import { Choice } from "../ui";
 import "./morph.css";
 export { makeMorphShapes, resampleContour } from "./morph-model";
 export type { MorphPoint, MorphShape } from "./morph-model";
@@ -26,6 +18,8 @@ export interface MorphFigureProps {
   onChange?: (id: string) => void;
   viewBox?: readonly [number, number, number, number];
   edgeLight?: boolean;
+  /** Zero-based corresponding contour to highlight across every form. */
+  accentContour?: number;
 }
 
 /** A retained, interruptible contour spring. Contour/vertex order is the author's correspondence. */
@@ -44,16 +38,28 @@ export function MorphFigure(props: MorphFigureProps) {
       throw new Error("MorphFigure: viewBox needs finite x/y and positive finite width/height.");
     return box;
   });
+  const accent = createMemo(() => {
+    const index = props.accentContour;
+    if (
+      index !== undefined &&
+      (!Number.isInteger(index) || index < 0 || index >= (props.shapes[0]?.contours.length ?? 0))
+    )
+      throw new Error("MorphFigure: accentContour must index an existing contour.");
+    return index;
+  });
   const model = createMorphModel(props.shapes, selected());
   let canvas!: HTMLCanvasElement, stage!: HTMLDivElement;
   let refresh = () => {};
   const [available, setAvailable] = createSignal(true);
   createEffect(
-    on([() => props.shapes, selected, bounds, () => props.edgeLight] as const, ([shapes, id]) => {
-      model.setShapes(shapes);
-      model.setTarget(id);
-      refresh();
-    }),
+    on(
+      [() => props.shapes, selected, bounds, () => props.edgeLight, accent] as const,
+      ([shapes, id]) => {
+        model.setShapes(shapes);
+        model.setTarget(id);
+        refresh();
+      },
+    ),
   );
   onMount(() => {
     const ctx = canvas.getContext("2d");
@@ -87,28 +93,41 @@ export function MorphFigure(props: MorphFigureProps) {
     }
     function draw() {
       if (disposed) return;
+      // Canvas colours come from the theme tokens declared in morph.css, read once per frame.
+      const style = getComputedStyle(canvas);
+      const tone = (name: string) => style.getPropertyValue(name).trim();
+      const [fill, ink, cool, warm] = [
+        "--morph-fill",
+        "--morph-ink",
+        "--morph-cool",
+        "--morph-warm",
+      ].map(tone);
       const [x, y, w, h] = untrack(bounds);
       scale = Math.min(width / w, height / h);
       ox = (width - w * scale) / 2 - x * scale;
       oy = (height - h * scale) / 2 - y * scale;
       ctx!.clearRect(0, 0, width, height);
-      for (const contour of model.contours) {
+      const accentIndex = untrack(accent);
+      for (const [index, contour] of model.contours.entries()) {
+        const highlighted = index === accentIndex;
         const speed =
           contour.reduce((sum, point) => sum + Math.hypot(point.vx, point.vy), 0) / contour.length;
         if (untrack(() => props.edgeLight ?? true) && !motion.matches && speed > 9) {
           const fringe = Math.min(4, speed / 145);
           trace(contour, fringe);
-          ctx!.fillStyle = "#91b1ce";
+          ctx!.fillStyle = cool;
           ctx!.fill();
           trace(contour, -fringe);
-          ctx!.fillStyle = "#c4a46a";
+          ctx!.fillStyle = warm;
           ctx!.fill();
         }
         trace(contour);
-        ctx!.fillStyle = `rgba(236,233,223,${Math.max(0, Math.min(1, model.fill))})`;
+        ctx!.globalAlpha = Math.max(0, Math.min(1, model.fill));
+        ctx!.fillStyle = highlighted ? cool : fill;
         ctx!.fill();
+        ctx!.globalAlpha = 1;
         ctx!.lineWidth = 1.1;
-        ctx!.strokeStyle = "#ece9df";
+        ctx!.strokeStyle = highlighted ? cool : ink;
         ctx!.stroke();
       }
       paints++;
@@ -222,19 +241,12 @@ export function MorphFigure(props: MorphFigureProps) {
       </div>
       <figcaption class="nk-morph-caption">
         <span class="nk-morph-label">{props.label}</span>
-        <div class="nk-morph-controls" role="group" aria-label={`Choose a form for ${props.label}`}>
-          <For each={props.shapes}>
-            {(shape) => (
-              <button
-                type="button"
-                aria-pressed={selected() === shape.id}
-                onClick={() => select(shape.id)}
-              >
-                {shape.label}
-              </button>
-            )}
-          </For>
-        </div>
+        <Choice
+          label={`Choose a form for ${props.label}`}
+          options={props.shapes}
+          value={selected()}
+          onChange={select}
+        />
         <span class="nk-morph-status" role="status">
           {current().label} selected.
         </span>

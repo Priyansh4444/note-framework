@@ -3,16 +3,25 @@ import { createSignal } from "solid-js";
 import { Parameter } from "../../../kit";
 import { CurveScene } from "../../framework-demo/bezier/CurveScene";
 import { NAME } from "../../framework-demo/bezier/Handles";
-import { pointAt } from "../../framework-demo/bezier/model";
-import { movePoint, points } from "../../framework-demo/bezier/store";
-import "../../framework-demo/demo.css";
+import {
+  clampPoint,
+  mapCubic,
+  pointAt,
+  START,
+  type Cubic,
+  type Point,
+} from "../../framework-demo/bezier/model";
 
 /** The example note's main figure, live: drag a control point or slide t. */
 export function HeroCurve() {
+  // The homepage is an independent experiment; visiting it must not edit the example note.
+  const [points, setPoints] = createSignal<Cubic>(START);
+  const movePoint = (index: number, point: Point) =>
+    setPoints((current) => mapCubic(current, (old, i) => (i === index ? clampPoint(point) : old)));
   const [t, setT] = createSignal(0.42);
   const b = () => pointAt(points(), t());
   return (
-    <figure class="bz-home fw-hero-figure">
+    <figure class="fw-hero-figure">
       <CurveScene
         points={points()}
         t={t()}
@@ -38,8 +47,8 @@ export function HeroCurve() {
         onInput={setT}
       />
       <figcaption>
-        A live figure from the <a href={EXAMPLE}>example note</a>. The grey lines are the
-        construction; the white curve is every point it reaches.
+        Coloured points shape the curve. Grey lines locate the white dot as <var>t</var> goes from 0
+        to 1. <a href={EXAMPLE}>See why it works →</a>
       </figcaption>
     </figure>
   );

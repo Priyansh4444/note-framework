@@ -1,59 +1,5 @@
-.spring-nav {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px 24px;
-  width: min(calc(100% - 2.5rem), 680px);
-  margin: 28px auto 0;
-  font: 17px/1.5 var(--serif);
-}
-.spring-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding-block: 4px;
-  color: var(--muted);
-  text-decoration: none;
-}
-.spring-nav a:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
 .note-spring-workshop .spring-instrument {
   margin: 36px 0;
-}
-.note-spring-workshop .spring-toolbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin-bottom: 20px;
-}
-.note-spring-workshop .spring-feels {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.note-spring-workshop .spring-instrument button {
-  min-height: 44px;
-  padding: 8px 12px;
-  border: 1px solid var(--rule);
-  border-radius: 6px;
-  background: transparent;
-  color: var(--text);
-  font: 16px/1.5 var(--serif);
-  cursor: pointer;
-}
-.note-spring-workshop .spring-instrument button[aria-pressed="true"] {
-  background: var(--code-bg);
-  border-color: var(--rule-strong);
-  color: var(--bright);
-}
-.note-spring-workshop .spring-instrument button:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
 }
 .note-spring-workshop .spring-card {
   --anatomy-card: var(--bg);
@@ -63,26 +9,25 @@
   border: 1px solid var(--rule);
   border-radius: 10px;
 }
-.note-spring-workshop .spring-card[data-theme="light"] {
-  --anatomy-card: #f5f2ec;
-  --anatomy-paper: #f5f2ec;
-  background: var(--anatomy-card);
-}
-.spring-card-top,
+
 .spring-card-bottom {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px 20px;
   color: var(--anatomy-muted);
   font: 15px/1.5 var(--mono);
 }
+.spring-card-bottom {
+  display: flex;
+  justify-content: flex-end;
+}
 .spring-card-bottom output {
+  min-width: 8ch;
+  text-align: right;
   font-variant-numeric: tabular-nums;
   color: var(--anatomy-text);
 }
+/* Keep the carriage and its curve on screen together. */
 .spring-stage {
-  width: 100%;
+  width: min(100%, 450px);
+  margin-inline: auto;
 }
 .spring-canvas {
   position: relative;
@@ -113,23 +58,33 @@
 .spring-needle-hub {
   fill: var(--anatomy-lit);
 }
-.note-spring-workshop .spring-footer {
+.note-spring-workshop .spring-instrument .nk-toolbar {
+  margin-top: 4px;
+}
+.note-spring-workshop .spring-instrument .nk-choice {
+  margin-bottom: 12px;
+}
+.spring-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  align-items: center;
-  margin-top: 20px;
+  gap: 4px 16px;
 }
-.spring-footer > span {
+/* The longest status holds the width, so the row does not reflow as it changes. */
+.note-spring-workshop .nk-toolbar-end {
   margin-left: auto;
+}
+.spring-status {
+  min-width: 4.2em;
   color: var(--muted);
   font-size: 16px;
+  text-align: right;
+  white-space: nowrap;
 }
 .note-spring-workshop .spring-instrument figcaption {
-  margin-top: 24px;
+  margin-top: 8px;
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.5;
+  font-size: 17px;
+  line-height: 1.45;
 }
 .spring-instrument figcaption p {
   margin: 0 0 8px;
@@ -143,13 +98,6 @@
   clip-path: inset(50%);
   white-space: nowrap;
 }
-.spring-reason {
-  border-block: 1px solid var(--rule);
-  margin-top: 28px;
-}
-.spring-reason > div {
-  padding-bottom: 12px;
-}
 @media (max-width: 440px) {
   .spring-canvas {
     width: 116%;
@@ -158,12 +106,8 @@
   .note-spring-workshop .spring-card {
     padding: 16px 10px;
   }
-  .spring-card-top,
   .spring-card-bottom {
     font-size: 15px;
-  }
-  .spring-card-bottom > span {
-    max-width: 20ch;
   }
 }
 @media (forced-colors: active) {

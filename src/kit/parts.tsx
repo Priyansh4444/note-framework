@@ -1,5 +1,5 @@
 import { type Component, type JSX, type ParentComponent, For, Show } from "solid-js";
-import { Tex } from "../components/ui/Tex";
+import { Tex } from "./math/Tex";
 import { auditLayout } from "./layout";
 export { DisclosureSummary } from "./disclosure";
 
@@ -20,6 +20,25 @@ export const Figure: ParentComponent<{
 );
 
 /** Text and a directional icon share one spacing rule inside any link or button. */
+/** The line above a note: the way home on the left, one onward link on the right. */
+export const NoteNav: Component<{
+  home: { href: string; label: string };
+  action?: { href: string; label: string };
+}> = (props) => (
+  <nav class="nk-note-nav" aria-label="Site">
+    <a href={props.home.href}>
+      <span aria-hidden="true">←</span> {props.home.label}
+    </a>
+    <Show when={props.action}>
+      {(action) => (
+        <a href={action().href}>
+          <ArrowLabel direction="right">{action().label}</ArrowLabel>
+        </a>
+      )}
+    </Show>
+  </nav>
+);
+
 export const ArrowLabel: ParentComponent<{ direction?: "out" | "right" | "down" }> = (props) => (
   <span class="nk-arrow-label">
     <span class="nk-arrow-text">{props.children}</span>
@@ -144,7 +163,8 @@ export const Steps: Component<{
               </Show>
             </span>
             <span class="nk-steps-rhs">
-              <Tex tex={`\\displaystyle ${rhs}`} />
+              {/* A row with a left side states "= rhs"; a row without one continues the line above. */}
+              <Tex tex={`\\displaystyle ${lhs ? "{}=" : ""}${rhs}`} />
             </span>
             <span class="nk-steps-why">{why}</span>
           </>

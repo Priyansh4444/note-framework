@@ -33,12 +33,10 @@ Inspect every changed PNG, then rerun `bun run test:visual` without `--update`. 
 
 Failures produce actual and diff attachments under `.vitest/`. The comparator allows zero mismatched pixels outside its antialias/color threshold. Different operating systems, browser revisions, or font renderers need their own reviewed references; do not raise the mismatch allowance to hide a layout change.
 
-The initial harness was checked by temporarily changing the test surface padding from 16px to 32px. The existing morph screenshot failed, then passed again after restoring the original padding. This proves the comparison detects an actual spacing regression.
-
-The independent starter includes the config, mount helper, tests, and eight binary reference images through an explicit export allowlist. A fresh export was installed outside this checkout, passed all 12 browser tests, and built both its ordinary note and self-contained HTML. It does not require an application router, the repository's page-test fixtures, or a sibling course archive.
-
 See the official [Vitest browser component guide](https://vitest.dev/guide/browser/component-testing) and [visual regression guide](https://vitest.dev/guide/browser/visual-regression-testing) for the browser and screenshot APIs.
 
-Ubuntu 24 CI sets `VITE_VISUAL_BASELINE=ubuntu-24` and uses separately reviewed references with that suffix. These eight images were captured by the pinned CI browser and reviewed for geometry and readability. The default references retain the local Linux renderer. Pixel allowances remain zero; renderer differences never relax spacing or interaction assertions.
+Ubuntu CI uses its own references, selected by `VITE_VISUAL_BASELINE=ubuntu-24` here and `VISUAL_BASELINE=ubuntu-24` in the page suite. Capture them on that renderer; neither suite raises its pixel allowance for a different platform.
 
-The page suite similarly selects `visual/baselines/ubuntu-24/` with `VISUAL_BASELINE=ubuntu-24`. Three native range renders have reviewed Ubuntu references; the other existing images already passed CI and are shared byte-for-byte. Neither suite raises its pixel allowance for a different platform.
+## Other browsers
+
+CI runs `scripts/cross-browser-check.mjs` in Firefox and WebKit against the built site: each route at 320px and 1440px, then playback, presets, keyboard and pointer dragging, reminders and disclosures. It is a smoke test; the deep suites run in Chromium.

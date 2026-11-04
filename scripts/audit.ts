@@ -184,6 +184,8 @@ export async function runAudit(options: AuditOptions): Promise<AuditReport> {
       await page.clock.pauseAt(new Date(Date.now() + 100));
       let frame: Frame;
       const load = async () => {
+        // Park the pointer: where the last click left it is not a state a fresh reader starts in.
+        await page.mouse.move(0, 0);
         await page.goto(url, { waitUntil: "load", timeout: 20_000 });
         if (fixture) {
           const handle = await page.locator("iframe").elementHandle();
@@ -285,6 +287,9 @@ export async function runAudit(options: AuditOptions): Promise<AuditReport> {
             );
             return false;
           }
+          // Restart the way a reader does: the timeline's Home key, then Play.
+          const rail = scene.locator(".nk-timeline-slider");
+          if (!(await replay.count()) && (await rail.count())) await rail.first().press("Home");
           await click(play.first());
           const time = Number(await scene.getAttribute("data-nk-scene-time"));
           if (

@@ -1,20 +1,3 @@
-.note-inside-svg-nav {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 12px;
-  width: min(calc(100% - 2.5rem), 680px);
-  margin: 28px auto 0;
-  padding: 0;
-  font: 17px/1.5 var(--serif, Georgia, serif);
-}
-.note-inside-svg-nav a {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  color: var(--muted);
-  text-decoration: none;
-}
 .note-inside-svg .svg-shape {
   stroke: none;
 }
@@ -39,19 +22,6 @@
   height: auto;
   margin: 0 auto;
   overflow: visible;
-}
-.note-inside-svg .svg-reference {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-bottom: 20px;
-  font-size: 15px;
-  color: var(--muted);
-}
-.note-inside-svg .svg-reference .svg-artwork {
-  width: 78px;
-  margin: 0;
 }
 .note-inside-svg .svg-peel-stage {
   position: relative;
@@ -78,45 +48,6 @@
   text-align: center;
   white-space: nowrap;
 }
-.note-inside-svg .svg-caption-main {
-  display: block;
-  color: var(--text);
-  margin-bottom: 5px;
-}
-.note-inside-svg .svg-button {
-  min-width: 44px;
-  min-height: 44px;
-  padding: 9px 14px;
-  border: 1px solid var(--rule-strong);
-  border-radius: 4px;
-  background: transparent;
-  color: var(--text);
-  font: 17px/1.4 var(--serif, Georgia, serif);
-  cursor: pointer;
-}
-.note-inside-svg .svg-button[aria-pressed="true"] {
-  background: var(--code-bg);
-  border-color: var(--diagram-orange);
-  color: var(--bright);
-}
-.note-inside-svg .svg-button:active {
-  opacity: 0.7;
-}
-.note-inside-svg .svg-button:focus-visible,
-.note-inside-svg-nav a:focus-visible {
-  outline: 2px solid var(--diagram-blue);
-  outline-offset: 4px;
-}
-.note-inside-svg .svg-clip-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px 20px;
-}
-.note-inside-svg .svg-stops {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
 .note-inside-svg .svg-order-strip {
   margin-top: 20px;
   font-size: 16px;
@@ -138,13 +69,130 @@
   margin: 0 9px;
   color: var(--faint);
 }
-.note-inside-svg .svg-reason {
-  margin-top: 24px;
-  border-top: 1px solid var(--rule);
-  border-bottom: 1px solid var(--rule);
+@media (max-width: 600px) {
+  .note-inside-svg .svg-order-strip ol {
+    font-size: 15px;
+  }
+  .note-inside-svg .svg-order-strip li:not(:last-child)::after {
+    margin: 0 5px;
+  }
 }
-.note-inside-svg .svg-reason > div {
-  padding: 0 0 12px;
+/* The bell: its source reads through a slit, and its drawing follows the same position. */
+.note-inside-svg .svg-path-bench {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: center;
+  /* Keeps the slit's lower edge from reading as one bar with the footer's rule. */
+  padding-bottom: 8px;
+}
+.note-inside-svg .svg-path-source {
+  position: relative;
+  padding-block: 2px;
+  border-radius: 2px;
+  outline: none;
+  color: var(--faint);
+  font: 13px/20px var(--mono);
+  white-space: pre;
+  cursor: row-resize;
+  touch-action: pan-y;
+  user-select: none;
+}
+.note-inside-svg .svg-path-line {
+  display: flex;
+  gap: 12px;
+  height: 20px;
+  overflow: hidden;
+}
+.note-inside-svg .svg-path-number {
+  flex: 0 0 2ch;
+  text-align: right;
+  opacity: 0.7;
+}
+.note-inside-svg .svg-path-text {
+  color: var(--text);
+}
+.note-inside-svg .svg-path-noise {
+  color: var(--faint);
+  opacity: 0.55;
+}
+.note-inside-svg .svg-path-line[data-open="true"][data-command] .svg-path-text,
+.note-inside-svg .svg-path-line[data-open="true"][data-command] .svg-path-number {
+  color: var(--accent);
+}
+.note-inside-svg .svg-path-slit {
+  position: absolute;
+  inset-inline: 0;
+  border-block: 1px dotted var(--accent);
+  pointer-events: none;
+}
+.note-inside-svg .svg-path-grip {
+  position: absolute;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  pointer-events: auto;
+  touch-action: none;
+}
+.note-inside-svg .svg-path-grip::after {
+  content: "";
+  position: absolute;
+  top: 19px;
+  right: 0;
+  width: 14px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--accent);
+}
+.note-inside-svg .svg-path-source:focus-visible .svg-path-slit {
+  border-block: 2px solid var(--accent);
+}
+.note-inside-svg .svg-path-line[data-reading] .svg-path-text {
+  color: var(--bright);
+}
+.note-inside-svg .svg-path-corner {
+  fill: var(--faint);
+}
+.note-inside-svg .svg-path-dot {
+  fill: var(--rule-strong);
+}
+.note-inside-svg .svg-path-frame {
+  fill: none;
+  stroke: var(--rule);
+  stroke-dasharray: 1 2;
+  vector-effect: non-scaling-stroke;
+}
+.note-inside-svg .svg-path-ghost {
+  fill: none;
+  stroke: var(--rule-strong);
+  stroke-dasharray: 2 3;
+  vector-effect: non-scaling-stroke;
+}
+.note-inside-svg .svg-path-ink {
+  fill: none;
+  stroke: var(--bright);
+  stroke-linecap: round;
+}
+.note-inside-svg .svg-path-pen line {
+  stroke: var(--accent);
+  stroke-dasharray: 1 3;
+  opacity: 0.45;
+  vector-effect: non-scaling-stroke;
+}
+.note-inside-svg .svg-path-pen circle {
+  fill: var(--accent);
+}
+/* Phone: the drawing sits above the source, so a thumb on the grip never covers it. */
+@media (max-width: 600px) {
+  .note-inside-svg .svg-path-bench {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+  .note-inside-svg .svg-path-bench > .nk-diagram {
+    grid-row: 1;
+    justify-self: center;
+    width: min(100%, 240px);
+  }
 }
 @media (forced-colors: active) {
   .note-inside-svg .svg-sky {
@@ -162,8 +210,5 @@
   }
   .note-inside-svg .svg-frame {
     fill: ButtonText;
-  }
-  .note-inside-svg .svg-button[aria-pressed="true"] {
-    outline: 2px solid Highlight;
   }
 }

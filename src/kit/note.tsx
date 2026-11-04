@@ -7,8 +7,9 @@ import {
   onCleanup,
   onMount,
 } from "solid-js";
-import { Tex } from "../components/ui/Tex";
-import { tip } from "../post/scene/tooltip";
+import { Tex } from "./math/Tex";
+import { tip } from "./scene/tooltip";
+import { DisclosureSummary } from "./disclosure";
 import { Wayfinder, type WayChapter } from "./Wayfinder";
 
 /**
@@ -35,8 +36,8 @@ export interface ChapterSpec<C extends string = string, S extends string = strin
   title: string;
   /** The question the chapter answers, in the reader's words, before any jargon. */
   question: string;
-  /** One sentence the reader can say after the chapter. The next chapter opens with it. */
-  takeaway: string;
+  /** A recap the next chapter opens with. Use it when chapters are long enough to lose the thread. */
+  takeaway?: string;
   /** Sources the chapter follows; shown beside its heading. */
   from?: readonly S[];
 }
@@ -129,7 +130,7 @@ export function defineNote<const C extends string, const S extends string = neve
     return (
       <section id={c.id} class="nk-chapter" data-chapter={c.id}>
         {/* Close the last chapter before opening this one: a reader who jumps here still has the context. */}
-        <Show when={prev}>
+        <Show when={prev?.takeaway}>
           <p class="nk-sofar">
             <a href={`#${prev!.id}`} class="nk-sofar-k">
               So far
@@ -138,13 +139,15 @@ export function defineNote<const C extends string, const S extends string = neve
           </p>
         </Show>
         <header class="nk-chapter-head">
-          <a
-            class="nk-chapter-n"
-            href={`#${c.id}`}
-            aria-label={`Chapter ${i + 1} of ${chapters.length}: link to this chapter`}
-          >
-            {pad(i + 1)}
-          </a>
+          <Show when={chapters.length > 1}>
+            <a
+              class="nk-chapter-n"
+              href={`#${c.id}`}
+              aria-label={`Chapter ${i + 1} of ${chapters.length}: link to this chapter`}
+            >
+              {pad(i + 1)}
+            </a>
+          </Show>
           <h2>
             <a class="anchor" href={`#${c.id}`} aria-hidden="true">
               #
@@ -154,7 +157,7 @@ export function defineNote<const C extends string, const S extends string = neve
           <p class="nk-question">{c.question}</p>
           <Show when={c.from?.length}>
             <p class="nk-from">
-              <span>Follows</span>
+              <span>Source</span>
               <For each={c.from}>{(k) => <Cite k={k} />}</For>
             </p>
           </Show>
@@ -232,7 +235,16 @@ export function defineNote<const C extends string, const S extends string = neve
     ];
   };
 
-  const GlossarySection: Component = () => (
+  const ReferenceBody: ParentComponent<{ compact?: boolean; label: string }> = (props) => (
+    <Show when={props.compact} fallback={props.children}>
+      <details class="nk-reference-details">
+        <DisclosureSummary>{props.label}</DisclosureSummary>
+        <div class="nk-reference-body">{props.children}</div>
+      </details>
+    </Show>
+  );
+
+  const GlossarySection: Component<{ compact?: boolean }> = (props) => (
     <section id="glossary" class="nk-end">
       <h2>
         <a class="anchor" href="#glossary" aria-hidden="true">
@@ -240,41 +252,46 @@ export function defineNote<const C extends string, const S extends string = neve
         </a>
         Glossary
       </h2>
-      <p>Every reminder from the text, grouped by the chapter that introduces it.</p>
-      <For each={groups()}>
-        {(g) => (
-          <>
-            <h4 class="nk-glossary-group">{g.title}</h4>
-            <dl class="nk-glossary">
-              <For each={g.items}>
-                {(t) => (
-                  <>
-                    <dt>
-                      {t.name}
-                      <Show when={t.symbol}>
-                        <span class="nk-glossary-symbol">
-                          <Tex tex={t.symbol!} />
-                        </span>
-                      </Show>
-                    </dt>
-                    <dd>
-                      {t.says()}
-                      <Show when={t.from}>
-                        {" "}
-                        <Cite k={t.from!} />
-                      </Show>
-                    </dd>
-                  </>
-                )}
-              </For>
-            </dl>
-          </>
-        )}
-      </For>
+      <ReferenceBody
+        compact={props.compact}
+        label={`${Object.keys(terms).length} ${Object.keys(terms).length === 1 ? "term" : "terms"} from this note`}
+      >
+        <p>Every reminder from the text, grouped by the chapter that introduces it.</p>
+        <For each={groups()}>
+          {(g) => (
+            <>
+              <h4 class="nk-glossary-group">{g.title}</h4>
+              <dl class="nk-glossary">
+                <For each={g.items}>
+                  {(t) => (
+                    <>
+                      <dt>
+                        {t.name}
+                        <Show when={t.symbol}>
+                          <span class="nk-glossary-symbol">
+                            <Tex tex={t.symbol!} />
+                          </span>
+                        </Show>
+                      </dt>
+                      <dd>
+                        {t.says()}
+                        <Show when={t.from}>
+                          {" "}
+                          <Cite k={t.from!} />
+                        </Show>
+                      </dd>
+                    </>
+                  )}
+                </For>
+              </dl>
+            </>
+          )}
+        </For>
+      </ReferenceBody>
     </section>
   );
 
-  const SourcesSection: Component = () => (
+  const SourcesSection: Component<{ compact?: boolean }> = (props) => (
     <section id="sources" class="nk-end">
       <h2>
         <a class="anchor" href="#sources" aria-hidden="true">
@@ -282,23 +299,28 @@ export function defineNote<const C extends string, const S extends string = neve
         </a>
         Sources
       </h2>
-      <ol class="nk-sources">
-        <For each={Object.values(sources) as Source[]}>
-          {(s) => (
-            <li>
-              <a href={s.url} target="_blank" rel="noreferrer">
-                {s.title}
-              </a>
-              <Show when={s.who}>
-                <span class="dim"> · {s.who}</span>
-              </Show>
-              <Show when={s.why}>
-                <span class="nk-sources-why">{s.why}</span>
-              </Show>
-            </li>
-          )}
-        </For>
-      </ol>
+      <ReferenceBody
+        compact={props.compact}
+        label={`${Object.keys(sources).length} ${Object.keys(sources).length === 1 ? "source and where it applies" : "sources and where they apply"}`}
+      >
+        <ol class="nk-sources">
+          <For each={Object.values(sources) as Source[]}>
+            {(s) => (
+              <li>
+                <a href={s.url} target="_blank" rel="noreferrer">
+                  {s.title}
+                </a>
+                <Show when={s.who}>
+                  <span class="dim"> · {s.who}</span>
+                </Show>
+                <Show when={s.why}>
+                  <span class="nk-sources-why">{s.why}</span>
+                </Show>
+              </li>
+            )}
+          </For>
+        </ol>
+      </ReferenceBody>
     </section>
   );
 
@@ -322,12 +344,27 @@ export function defineNote<const C extends string, const S extends string = neve
     dek: JSX.Element;
     /** Replace the default "how to read" note, or pass `false` to drop it. */
     howTo?: JSX.Element | false;
+    /** Keep reference material available without extending the default reading path. */
+    references?: "expanded" | "compact";
   }> = (props) => {
+    let root!: HTMLElement;
+    onMount(() => {
+      if (props.references !== "compact") return;
+      const revealReference = () => {
+        if (!["#glossary", "#sources"].includes(location.hash)) return;
+        const section = root.querySelector(location.hash);
+        const details = section?.querySelector("details");
+        if (details) details.open = true;
+      };
+      revealReference();
+      window.addEventListener("hashchange", revealReference);
+      onCleanup(() => window.removeEventListener("hashchange", revealReference));
+    });
     usePageHead(props.meta.title, props.meta.description);
     const hasTerms = () => Object.keys(terms).length > 0;
     const hasSources = () => Object.keys(sources).length > 0;
     return (
-      <main class={`nk-note note-${spec.slug}`}>
+      <main ref={root} class={`nk-note note-${spec.slug}`}>
         <article>
           {/* One quiet entrance for the header; the body never waits on a timer. */}
           <header class="nk-head enter">
@@ -350,7 +387,9 @@ export function defineNote<const C extends string, const S extends string = neve
             <p class="dek">{props.dek}</p>
           </header>
           {/* The page's one map: after the masthead on phones, in the margin on wide screens. */}
-          <Wayfinder chapters={way} />
+          <Show when={way.length > 1}>
+            <Wayfinder chapters={way} />
+          </Show>
           <Show when={props.howTo !== false}>
             <aside class="note nk-howto">
               {props.howTo ?? (
@@ -379,10 +418,10 @@ export function defineNote<const C extends string, const S extends string = neve
           </Show>
           {props.children}
           <Show when={hasTerms()}>
-            <GlossarySection />
+            <GlossarySection compact={props.references === "compact"} />
           </Show>
           <Show when={hasSources()}>
-            <SourcesSection />
+            <SourcesSection compact={props.references === "compact"} />
           </Show>
         </article>
       </main>

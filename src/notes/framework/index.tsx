@@ -1,5 +1,6 @@
 import { ArrowLabel, DisclosureSummary } from "../../kit/parts";
-import { createSignal, Show, type Component } from "solid-js";
+import { Show, type Component } from "solid-js";
+import { CopyButton } from "../../kit/CopyButton";
 import { usePageHead } from "../../kit/note";
 import "./framework.css";
 import { UploadForm } from "./UploadForm";
@@ -32,7 +33,7 @@ export const Masthead: Component<{ here?: "home" | "guide" | "studies" | "accoun
       <a href="/llms.txt">
         <ArrowLabel>For agents</ArrowLabel>
       </a>
-      <a class="fw-masthead-cta" href="/starter.zip" download="note-framework-starter.zip">
+      <a href="/starter.zip" download="note-framework-starter.zip">
         <ArrowLabel direction="down">Starter</ArrowLabel>
       </a>
     </nav>
@@ -62,17 +63,17 @@ const FrameworkHome: Component = () => {
     "Note Framework — notes you can play with",
     "A kit for short visual explanations: figures the reader can operate, terms explained in place, and a link you can share.",
   );
-  const [copied, setCopied] = createSignal(false);
   const prompt = () =>
     `Use ${location.origin}/llms.txt to create a compact, source-checked visual note about [topic] for [audience]. Explain terms, verify the diagrams, and give me the published link.`;
-  const copyPrompt = async () => {
+  const copyPrompt = async (signal: AbortSignal) => {
+    const target = document.querySelector<HTMLTextAreaElement>("#agent-prompt");
     try {
       await navigator.clipboard.writeText(prompt());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      return "copied" as const;
     } catch {
-      setCopied(false);
-      document.querySelector<HTMLTextAreaElement>("#agent-prompt")?.select();
+      if (signal.aborted || !target?.isConnected) throw new Error("Prompt is no longer available.");
+      target.select();
+      return "selected" as const;
     }
   };
   return (
@@ -86,133 +87,124 @@ const FrameworkHome: Component = () => {
             <br />
             play with.
           </h1>
-          <p class="fw-dek">
-            Give an agent one link. It writes a short, sourced note with figures your reader can
-            drag, play and check. You get a page you can share.
-          </p>
+          <p class="fw-dek">A short explanation and a picture the reader can change.</p>
           <div class="fw-actions">
-            <a
-              class="fw-button fw-button-primary"
-              href="/starter.zip"
-              download="note-framework-starter.zip"
-            >
-              <ArrowLabel direction="down">Download the starter</ArrowLabel>
-            </a>
-            <a class="fw-button" href={EXAMPLE}>
-              <ArrowLabel direction="right">Read the example</ArrowLabel>
+            <a class="fw-button fw-button-primary" href="/docs">
+              <ArrowLabel direction="right">Make your first note</ArrowLabel>
             </a>
           </div>
-          <p class="fw-small">
-            SolidJS · TypeScript · KaTeX · local fonts. Your files, your hosting.
-          </p>
         </div>
         <HeroCurve />
       </section>
 
       <section class="fw-section fw-start" aria-labelledby="start-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">01 · Ask</p>
+          <p class="fw-eyebrow">Start</p>
           <h2 id="start-title">Start with one sentence.</h2>
-          <p>
-            Paste this into your coding agent and fill in the brackets. The instructions it fetches
-            are under 300 words; the starter brings the rest.
-          </p>
+          <p>Paste this into your coding agent and fill in the brackets.</p>
         </div>
         <div class="fw-prompt">
           <label class="fw-prompt-label" for="agent-prompt">
             Prompt
           </label>
           <textarea id="agent-prompt" rows="3" readOnly value={prompt()} />
-          <button type="button" class="fw-button" onClick={copyPrompt} aria-live="polite">
-            {copied() ? "Copied ✓" : "Copy prompt"}
-          </button>
+          <CopyButton
+            label="Copy prompt"
+            class="fw-button"
+            onCopy={copyPrompt}
+            resetKey={prompt()}
+          />
         </div>
         <ol class="fw-steps">
           <li>
             <span>01</span>
             <h3>Ask</h3>
-            <p>
-              Name a topic and a reader. The agent downloads the starter and its authoring guide.
-            </p>
+            <p>Name a topic and a reader. The agent fetches the starter and its guide.</p>
           </li>
           <li>
             <span>02</span>
             <h3>Check</h3>
             <p>
-              It sources claims, tests the math, and audits every figure at phone and desktop
-              widths.
+              It sources claims, tests the math and audits each figure at phone and desktop widths.
             </p>
           </li>
           <li>
             <span>03</span>
             <h3>Share</h3>
-            <p>
-              One command publishes a self-contained page. Updates keep the link; each version keeps
-              its own.
-            </p>
+            <p>One command publishes a self-contained page. Updates keep the link.</p>
           </li>
         </ol>
       </section>
 
       <section class="fw-section" aria-labelledby="parts-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">02 · Build</p>
+          <p class="fw-eyebrow">Build</p>
           <h2 id="parts-title">Made from a few honest parts.</h2>
-          <p>
-            These are the real components, running on this page. A note combines them around one
-            question at a time.
-          </p>
+          <p>The real components, running on this page.</p>
         </div>
         <Specimens />
       </section>
 
       <section class="fw-section fw-principles-section" aria-labelledby="shape-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">03 · Read</p>
+          <p class="fw-eyebrow">Read</p>
           <h2 id="shape-title">Short by default. Complete underneath.</h2>
         </div>
         <div class="fw-principles">
           <div>
             <h3>A picture, a reason, a key fact.</h3>
-            <p>
-              Each chapter answers one question. Proofs and edge cases fold away beneath it, so
-              nothing is lost.
-            </p>
+            <p>Each chapter answers one question. Proofs and edge cases fold beneath it.</p>
           </div>
           <div>
             <h3>Motion that explains.</h3>
             <p>
-              Every intermediate frame is a true state of the model, so pausing halfway shows
-              something real.
+              Every in-between frame is a true state of the model, so pausing shows something real.
             </p>
           </div>
           <div>
             <h3>Quiet on every screen.</h3>
-            <p>
-              An ink-black page, serif type and labels measured at their real size on a 320px phone.
-            </p>
+            <p>Ink-black pages, serif type, and labels measured at real size on a 320px phone.</p>
           </div>
         </div>
         {import.meta.env.VITE_FRAMEWORK_PREVIEW === "1" && (
-          <p class="fw-small">
-            More examples: <a href="/notes/shared-service">one service, many windows</a>, or{" "}
-            <a href="/notes/inside-svg">a picture you can take apart</a>. Try{" "}
-            <a href="/notes/spring-workshop">a spring you can feel</a>, or{" "}
-            <a href="/studies">browse the motion studies</a>.
-          </p>
+          <nav class="fw-examples" aria-label="Example notes">
+            <p class="fw-prompt-label">Examples</p>
+            <ul>
+              <li>
+                <a href={EXAMPLE}>Draw a curve</a>
+                <span>Drag four dots and see why the line bends.</span>
+              </li>
+              <li>
+                <a href="/notes/shared-service">One service, many windows</a>
+                <span>Press Play and watch four clients share one process.</span>
+              </li>
+              <li>
+                <a href="/notes/inside-svg">A picture, made of shapes</a>
+                <span>Pull a drawing apart to find its five layers.</span>
+              </li>
+              <li>
+                <a href="/notes/spring-workshop">A little room to settle</a>
+                <span>Tug a carriage and feel what damping changes.</span>
+              </li>
+              <li>
+                <a href="/studies">Motion studies</a>
+                <span>Short experiments behind the framework's animation.</span>
+              </li>
+            </ul>
+          </nav>
         )}
       </section>
 
       <section id="share" class="fw-section fw-share" aria-labelledby="share-title">
         <div class="fw-section-head">
-          <p class="fw-eyebrow">04 · Share</p>
+          <p class="fw-eyebrow">Share</p>
           <h2 id="share-title">Send a link that keeps working.</h2>
           <p>
-            The hosted service stores each version of a single HTML file. Your link always shows the
-            latest; earlier versions keep permanent links.{" "}
+            The service stores each version of one HTML file. Your link shows the latest; older
+            versions keep their own.{" "}
             {import.meta.env.VITE_FRAMEWORK_PUBLIC === "1"
-              ? "Sign in once, connect your agent, and publish. Anyone with a link can read."
-              : "Publishing is by invitation; anyone with a link can read."}
+              ? "Sign in, connect your agent, publish. Anyone with the link can read."
+              : "Publishing is by invitation; anyone with the link can read."}
           </p>
         </div>
         <pre class="fw-command">
@@ -254,8 +246,8 @@ const FrameworkHome: Component = () => {
           </Show>
         </details>
         <p class="fw-small">
-          Prefer your own Cloudflare account? <code>bun run note:publish my-topic</code> needs no
-          invitation. See the <a href="/docs#publish">guide</a>.
+          On your own Cloudflare account: <code>bun run note:publish my-topic</code>. See the{" "}
+          <a href="/docs#publish">guide</a>.
         </p>
       </section>
       <Footer />

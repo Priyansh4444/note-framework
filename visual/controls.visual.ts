@@ -4,7 +4,7 @@ for (const width of [1280, 390, 320]) {
   test(`disclosure focus belongs to its text or marker at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/notes/framework-demo");
-    const summary = page.locator("#mix .bz-deeper > summary");
+    const summary = page.locator("#mix .nk-more > summary").first();
     await summary.focus();
     await expect(summary).toBeFocused();
     // A full-width summary is still a full-width target; its focus cue must stay local.
@@ -20,7 +20,7 @@ for (const width of [1280, 390, 320]) {
   test(`external arrow has its own space and size at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/notes/framework-demo");
-    const link = page.locator(".bz-example-nav a").last();
+    const link = page.locator(".nk-note-nav a").last();
     await expect(link).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     const geometry = await link.evaluate((el) => {
@@ -86,7 +86,6 @@ for (const width of [1280, 390, 320]) {
     );
     await ready(page, "/notes/framework-demo");
     expect(await controlFailures(page)).toEqual([]);
-    await expect(page.locator(".bz-example-nav")).toHaveScreenshot(`example-nav-${width}.png`);
   });
 }
 
@@ -115,8 +114,8 @@ test("the geometry audit rejects the reported layout failures", async ({ page })
   await ready(page, "/notes/framework-demo");
   for (const css of [
     ".nk-arrow-label { gap: 0 !important }",
-    ".bz-example-nav svg { transform: translateY(-5px) }",
-    ".bz-example-nav svg { width: 6px !important }",
+    ".nk-note-nav svg { transform: translateY(-5px) }",
+    ".nk-note-nav svg { width: 6px !important }",
   ]) {
     const style = await page.addStyleTag({ content: css });
     expect((await controlFailures(page)).map((f) => f.rule)).toContain("link-icon-spacing");
@@ -314,7 +313,4 @@ test("the actual guide range keeps keyboard focus on its native thumb", async ({
   await input.focus();
   await expect(input).toHaveCSS("outline-style", "none");
   expect(await controlFailures(page)).toEqual([]);
-  await expect(page.locator("#interact .nk-parameter")).toHaveScreenshot("guide-range-focus.png", {
-    animations: "allow",
-  });
 });

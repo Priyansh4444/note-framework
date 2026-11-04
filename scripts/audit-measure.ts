@@ -666,7 +666,12 @@ export async function measureDocument(): Promise<Measurement> {
         b = m.c * m.c + m.d * m.d,
         c = m.a * m.c + m.b * m.d;
       const scale = Math.sqrt(Math.max(0, (a + b - Math.hypot(a - b, 2 * c)) / 2));
-      return parseFloat(getComputedStyle(part).fontSize) * scale;
+      // Typographic indices are smaller than their readable base label. Keep a
+      // 10.5px minimum for sub/superscripts alongside the base label's 15px.
+      const index =
+        part.localName === "tspan" &&
+        /^(sub|super)$/.test(part.getAttribute("baseline-shift") ?? "");
+      return (parseFloat(getComputedStyle(part).fontSize) * scale) / (index ? 0.7 : 1);
     });
     if (sizes.some((n) => !Number.isFinite(n)))
       emit(

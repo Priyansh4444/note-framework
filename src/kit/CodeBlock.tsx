@@ -1,8 +1,8 @@
 import { createEffect, createSignal, Show, onCleanup, onMount } from "solid-js";
 import "./code-block.css";
-import { tip } from "../post/scene/tooltip";
+import { tip } from "./scene/tooltip";
+import { CopyButton, type CopyResult } from "./CopyButton";
 import { mountCodeMorph } from "./code-morph";
-import { DisclosureSummary } from "./disclosure";
 import type { CodeMorphPlan, CodeSide } from "./code-morph-plan";
 
 declare const compiledCode: unique symbol;
@@ -26,16 +26,22 @@ export type CodeArtifact =
         splitPrerenderedHTML: string;
         morph: CodeMorphPlan;
       }>);
-export type CodeBlockProps = { artifact: CodeArtifact };
+export type CodeBlockProps = {
+  artifact: CodeArtifact;
+  /** Which side of a diff shows first; show the fixed code when a patch is the fix. */
+  initial?: CodeSide;
+};
 
 /** Static Pierre markup; no highlighter or worker enters the reader bundle. */
 export function CodeBlock(props: CodeBlockProps) {
   let host!: HTMLDivElement;
   let shadow: ShadowRoot | undefined;
   let mounted: ReturnType<typeof mountCodeMorph> | undefined;
-  const [side, setSide] = createSignal<CodeSide>("before");
+  const [side, setSide] = createSignal<CodeSide>(props.initial ?? "before");
   let inspector!: HTMLDivElement;
-  let tools!: HTMLDetailsElement;
+  // Source tools open in place with a toggle, not a <details>, so a code block inside a
+  // disclosure never nests one disclosure in another.
+  const [toolsOpen, setToolsOpen] = createSignal(false);
   let inspectorShadow: ShadowRoot | undefined;
   const [flash, setFlash] = createSignal(false);
   let flashReset: ReturnType<typeof setTimeout> | undefined;
@@ -43,7 +49,7 @@ export function CodeBlock(props: CodeBlockProps) {
   let updateOverflow = () => {};
   const [view, setView] = createSignal<"unified" | "split">("unified");
   const [scrollable, setScrollable] = createSignal(false);
-  const [copied, setCopied] = createSignal<"" | "Copied" | "Selected">("");
+  let active = true;
   const name = () => props.artifact.filename.split("/").at(-1) ?? props.artifact.filename;
   onMount(() => {
     shadow = host.attachShadow({ mode: "open" });
@@ -60,7 +66,7 @@ export function CodeBlock(props: CodeBlockProps) {
     let overflowFrame = 0;
     const measureOverflow = () => {
       overflowFrame = 0;
-      const listing = (tools.open ? inspectorShadow : shadow)?.querySelector("pre");
+      const listing = (toolsOpen() ? inspectorShadow : shadow)?.querySelector("pre");
       setScrollable(!!listing && listing.scrollWidth > listing.clientWidth + 1);
     };
     // The hint changes ancestor height. Write it before the next observation
@@ -106,26 +112,23 @@ export function CodeBlock(props: CodeBlockProps) {
 
   // An opaque sandbox may refuse the async clipboard. The fallback copy event carries the
   // exact imported text (patch headers included); if even that is blocked, the code stays selected.
-  let reset: ReturnType<typeof setTimeout> | undefined;
-  const say = (state: "Copied" | "Selected") => {
-    clearTimeout(reset);
-    setCopied(state);
-    reset = setTimeout(() => setCopied(""), 1600);
-  };
   onCleanup(() => {
-    clearTimeout(reset);
+    active = false;
     clearTimeout(flashReset);
   });
-  const copy = async () => {
-    const text = props.artifact.source;
+  const copy = async (signal: AbortSignal): Promise<CopyResult> => {
+    const artifact = props.artifact;
+    const text = artifact.source;
     try {
       await navigator.clipboard.writeText(text);
-      return say("Copied");
+      return "copied";
     } catch {}
+    if (signal.aborted || !active || props.artifact !== artifact)
+      throw new Error("Copy source changed.");
     mounted?.settle();
-    const target = (tools.open ? inspectorShadow : shadow)?.querySelector("pre");
+    const target = (toolsOpen() ? inspectorShadow : shadow)?.querySelector("pre");
     const selection = getSelection();
-    if (!target || !selection) return;
+    if (!target || !selection) throw new Error("No source selection available.");
     const range = document.createRange();
     range.selectNodeContents(target);
     selection.removeAllRanges();
@@ -145,7 +148,7 @@ export function CodeBlock(props: CodeBlockProps) {
     } finally {
       document.removeEventListener("copy", onCopy);
     }
-    say(exact ? "Copied" : "Selected");
+    return exact ? "copied" : "selected";
   };
 
   const choose = (next: CodeSide, animate = true) => {
@@ -174,6 +177,7 @@ export function CodeBlock(props: CodeBlockProps) {
         class="nk-code-block"
         data-kind={props.artifact.kind}
         data-current-version={props.artifact.kind === "diff" ? side() : undefined}
+        data-scrollable={scrollable() ? "" : undefined}
         aria-label={name()}
       >
         <figcaption class="nk-code-block-header">
@@ -197,6 +201,7 @@ export function CodeBlock(props: CodeBlockProps) {
                 d="M8 1 15 5 8 9 1 5ZM1 7l7 4 7-4v2l-7 4-7-4Zm0 3 7 4 7-4v2l-7 4-7-4Z"
               />
             </svg>
+            <span class="nk-code-current-side">{side() === "before" ? "Before" : "After"}</span>
           </button>
         </Show>
         <div
@@ -208,73 +213,81 @@ export function CodeBlock(props: CodeBlockProps) {
           onKeyDown={(event) => scroll(event, shadow)}
         />
       </figure>
-      <details ref={tools} class="nk-code-source-tools" onToggle={updateOverflow}>
-        <DisclosureSummary>Source tools</DisclosureSummary>
-        <div class="nk-code-source-actions">
-          <Show when={props.artifact.kind === "diff"}>
-            <p class="nk-code-source-notice">
-              Changed excerpts from the original patch. Unchanged source outside its hunks is
-              omitted; these excerpts are not a complete file.
-            </p>
-            <div class="nk-code-block-views" role="group" aria-label="Code version">
-              <button
-                type="button"
-                aria-pressed={side() === "before"}
-                onClick={(event) => choose("before", event.detail > 0)}
-              >
-                Before
-              </button>
-              <button
-                type="button"
-                aria-pressed={side() === "after"}
-                onClick={(event) => choose("after", event.detail > 0)}
-              >
-                After
-              </button>
-            </div>
-            <div class="nk-code-block-views" role="group" aria-label="Diff view">
-              <button
-                type="button"
-                aria-label="Show unified diff"
-                aria-pressed={view() === "unified"}
-                onClick={() => setView("unified")}
-              >
-                Unified
-              </button>
-              <button
-                type="button"
-                aria-label="Show split diff"
-                aria-pressed={view() === "split"}
-                onClick={() => setView("split")}
-              >
-                Split
-              </button>
-            </div>
-          </Show>
-          <button
-            type="button"
-            class="nk-code-block-copy"
-            onClick={copy}
-            aria-label={`Copy ${props.artifact.kind === "diff" ? "patch" : "source"}`}
-          >
-            {copied() || "Copy"}
-          </button>
+      <Show when={scrollable()}>
+        <p class="nk-code-block-scroll-hint">Scroll horizontally to read →</p>
+      </Show>
+      <div class="nk-code-source-tools" data-open={toolsOpen() ? "" : undefined}>
+        <button
+          type="button"
+          class="nk-code-source-toggle"
+          aria-expanded={toolsOpen()}
+          onClick={() => {
+            setToolsOpen(!toolsOpen());
+            updateOverflow();
+          }}
+        >
+          Source tools
+        </button>
+        <div class="nk-code-source-body" hidden={!toolsOpen()}>
+          <div class="nk-code-source-actions">
+            <Show when={props.artifact.kind === "diff"}>
+              <p class="nk-code-source-notice">
+                Changed excerpts from the original patch. Unchanged source outside its hunks is
+                omitted; these excerpts are not a complete file.
+              </p>
+              <div class="nk-code-block-views" role="group" aria-label="Code version">
+                <button
+                  type="button"
+                  aria-pressed={side() === "before"}
+                  onClick={(event) => choose("before", event.detail > 0)}
+                >
+                  Before
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={side() === "after"}
+                  onClick={(event) => choose("after", event.detail > 0)}
+                >
+                  After
+                </button>
+              </div>
+              <div class="nk-code-block-views" role="group" aria-label="Diff view">
+                <button
+                  type="button"
+                  aria-label="Show unified diff"
+                  aria-pressed={view() === "unified"}
+                  onClick={() => setView("unified")}
+                >
+                  Unified
+                </button>
+                <button
+                  type="button"
+                  aria-label="Show split diff"
+                  aria-pressed={view() === "split"}
+                  onClick={() => setView("split")}
+                >
+                  Split
+                </button>
+              </div>
+            </Show>
+            <CopyButton
+              label="Copy"
+              class="nk-code-block-copy"
+              onCopy={copy}
+              resetKey={props.artifact}
+              ariaLabel={`Copy ${props.artifact.kind === "diff" ? "patch" : "source"}`}
+            />
+          </div>
+          <div
+            ref={inspector}
+            class="nk-code-inspector-render"
+            tabIndex={0}
+            role="region"
+            aria-label={`${name()} ${props.artifact.kind === "diff" ? `${view()} patch` : "original source"}`}
+            onKeyDown={(event) => scroll(event, inspectorShadow)}
+          />
         </div>
-        <span class="nk-code-block-status" role="status">
-          {copied()}
-        </span>
-        <Show when={scrollable()}>
-          <p class="nk-code-block-scroll-hint">Scroll horizontally to read →</p>
-        </Show>
-        <div
-          ref={inspector}
-          class="nk-code-inspector-render"
-          tabIndex={0}
-          role="region"
-          aria-label={`${name()} ${props.artifact.kind === "diff" ? `${view()} patch` : "original source"}`}
-          onKeyDown={(event) => scroll(event, inspectorShadow)}
-        />
-      </details>
+      </div>
     </div>
   );
 }

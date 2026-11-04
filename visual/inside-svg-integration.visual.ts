@@ -16,8 +16,13 @@ test("source reasoning uses the shared keyboard disclosure and measured spacing"
 }) => {
   await page.setViewportSize({ width: 320, height: 1000 });
   await page.goto("/notes/inside-svg", { waitUntil: "networkidle" });
-  const summaries = page.locator(".svg-reason > summary");
-  await expect(summaries).toHaveCount(2);
+  const summaries = page.locator(".nk-more > summary");
+  await expect(summaries).toHaveText([
+    "What are the shapes?",
+    "What changed in the SVG?",
+    "Why are the shapes still there?",
+    "Why does the line only thicken at the end?",
+  ]);
   for (const summary of await summaries.all()) {
     await summary.focus();
     await page.keyboard.press("Enter");

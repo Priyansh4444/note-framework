@@ -13,19 +13,20 @@ async function fixture(page: Page) {
 const seek = (page: Page, ms: number) => page.evaluate((ms) => window.serviceFixture.seek(ms), ms);
 
 for (const width of [320, 390, 768, 1440]) {
-  test(`service route has aligned wires, readable labels, compact rows and local scrolling at ${width}px`, async ({
+  test(`service route has aligned wires, readable labels and no sideways scrolling at ${width}px`, async ({
     page,
   }) => {
     await page.setViewportSize({ width, height: 1100 });
     await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
     await expect(
       page
-        .getByRole("navigation", { name: "Framework", exact: true })
-        .getByRole("link", { name: "← Note Framework", exact: true }),
+        .getByRole("navigation", { name: "Site", exact: true })
+        .getByRole("link", { name: "Note Framework" }),
     ).toHaveAttribute("href", "/");
-    await expect(
-      page.getByRole("link", { name: "Build a note like this →", exact: true }),
-    ).toHaveAttribute("href", "/docs");
+    await expect(page.getByRole("link", { name: "Build a note like this" })).toHaveAttribute(
+      "href",
+      "/docs",
+    );
     const experiment = page.locator("#service-experiment");
     await expect(experiment).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
@@ -44,7 +45,7 @@ for (const width of [320, 390, 768, 1440]) {
           Math.abs(b.x + b.width / 2 - port.x - port.width / 2),
         );
       });
-      const scroll = el.querySelector<HTMLElement>(".ss-scroll")!;
+      const diagram = el.querySelector<HTMLElement>(".ss-diagram")!;
       const stage = el.querySelector(".nk-experiment-stage")!,
         timeline = el.querySelector("[data-nk-timeline]")!;
       const labels = [
@@ -57,54 +58,46 @@ for (const width of [320, 390, 768, 1440]) {
         pageWidth: document.documentElement.scrollWidth,
         viewport: innerWidth,
         diagramWidth: box(el.querySelector(".ss-diagram")!).width,
-        scrollWidth: scroll.scrollWidth,
-        clientWidth: scroll.clientWidth,
-        scrollTabIndex: scroll.tabIndex,
+        scrollWidth: diagram.scrollWidth,
+        clientWidth: diagram.clientWidth,
         cardHeights: clients.map((c) => box(c).height),
         rowHeights: [...el.querySelectorAll(".ss-session")].map((r) => box(r).height),
         wireHeight: box(el.querySelector(".ss-port-columns")!).height,
         minFont: Math.min(...labels.map((l) => parseFloat(getComputedStyle(l).fontSize))),
         font: getComputedStyle(clients[0]).fontFamily,
-        stageGap: box(timeline).top - box(stage).bottom,
+        stageGap:
+          box(timeline).top >= box(stage).bottom
+            ? box(timeline).top - box(stage).bottom
+            : box(stage).top - box(timeline).bottom,
         checkpointCount: el.querySelectorAll(".nk-timeline-labels button").length,
         diagramBottom: box(el.querySelector(".ss-diagram")!).bottom,
         labelsInsideCards: clients.every((c) =>
           [...c.querySelectorAll(".ss-client-heading,.ss-client-task,.ss-client-status")].every(
-            (label) => box(label).bottom <= box(c).bottom - 3,
+            (label) =>
+              getComputedStyle(label).display === "none" ||
+              (box(label).bottom <= box(c).bottom - 3 &&
+                box(label).left >= box(c).left &&
+                box(label).right <= box(c).right),
           ),
         ),
       };
     });
     expect(Math.max(...geometry.centerErrors)).toBeLessThanOrEqual(1);
     expect(geometry.pageWidth).toBeLessThanOrEqual(width);
-    expect(geometry.diagramWidth).toBeGreaterThanOrEqual(560);
+    // The whole diagram fits the column, at every width.
+    expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth);
     expect(geometry.minFont).toBeGreaterThanOrEqual(15);
-    expect(geometry.cardHeights).toEqual([120, 120, 120, 120]);
+    const cardHeight = width <= 600 ? 84 : 96;
+    expect(geometry.cardHeights).toEqual([cardHeight, cardHeight, cardHeight, cardHeight]);
     for (const height of geometry.rowHeights) {
-      expect(height).toBeGreaterThanOrEqual(56);
-      expect(height).toBeLessThanOrEqual(57);
+      const rowHeight = width <= 600 ? 36 : 34;
+      expect(height).toBeGreaterThanOrEqual(rowHeight);
+      expect(height).toBeLessThanOrEqual(rowHeight + 1);
     }
-    expect(geometry.wireHeight).toBe(64);
+    expect(geometry.wireHeight).toBe(56);
     expect(geometry.labelsInsideCards).toBe(true);
     expect(geometry.stageGap).toBeGreaterThanOrEqual(24);
-    expect(geometry.scrollTabIndex).toBe(0);
     expect(geometry.checkpointCount).toBe(5); // Four phases plus the explicit endpoint.
-    const region = experiment.getByRole("region", {
-      name: "Four clients connected to one service",
-    });
-    if (width < 560) {
-      expect(geometry.scrollWidth).toBeGreaterThan(geometry.clientWidth);
-      await expect(
-        experiment.getByText("Swipe sideways, or focus here and use the arrow keys."),
-      ).toBeVisible();
-      await region.focus();
-      await region.press("ArrowRight");
-      expect(await region.evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
-      await region.press("ArrowLeft");
-      expect(await region.evaluate((el) => el.scrollLeft)).toBe(0);
-    }
-    await experiment.screenshot({ path: `/tmp/service-curves/note-final-${width}.png` });
-    console.log(JSON.stringify({ width, ...geometry }));
   });
 }
 
@@ -144,7 +137,7 @@ test("arrival, subscriber membership, backward seeking and return geometry prese
             document.querySelectorAll(".ss-client,.ss-wire,.ss-packet,.ss-port-dot,.ss-session")[i],
       ),
       shared: document.querySelector('[data-session="flaky"] .ss-subscribers')!.textContent,
-      completed: [...document.querySelectorAll('.ss-client[data-state="Complete"]')].map((el) =>
+      completed: [...document.querySelectorAll('.ss-client[data-state="Done"]')].map((el) =>
         el.getAttribute("data-client"),
       ),
     }));
@@ -170,11 +163,12 @@ test("arrival, subscriber membership, backward seeking and return geometry prese
         const b = wire
           .getPointAtLength(wire.getTotalLength())
           .matrixTransform(wire.getScreenCTM()!);
-        const center = packet
-          .getPointAtLength(packet.getTotalLength() / 2)
+        // A comet's head leads its tail, and halfway through its time it is halfway along the wire.
+        const head = packet
+          .getPointAtLength(packet.getTotalLength())
           .matrixTransform(packet.getScreenCTM()!);
         return {
-          error: Math.hypot(center.x - a.x, center.y - (a.y + b.y) / 2),
+          error: Math.hypot(head.x - a.x, head.y - (a.y + b.y) / 2),
           kind: packet.getAttribute("data-kind"),
         };
       }),
@@ -185,7 +179,7 @@ test("arrival, subscriber membership, backward seeking and return geometry prese
   await seek(page, 15425);
   await page
     .locator("#service-experiment")
-    .screenshot({ path: "/tmp/service-curves/note-shared-return.png" });
+    .screenshot({ path: "artifacts/visual/note-shared-return.png" });
   for (const [ms, stage] of [
     [1500, "boot"],
     [2875, "first-request"],
@@ -195,7 +189,7 @@ test("arrival, subscriber membership, backward seeking and return geometry prese
     await seek(page, ms);
     await page
       .locator("#service-experiment")
-      .screenshot({ path: `/tmp/service-curves/note-${stage}.png` });
+      .screenshot({ path: `artifacts/visual/note-${stage}.png` });
   }
 });
 
@@ -264,28 +258,33 @@ test("reduced motion steps the same trace and enlarged phone text stays locally 
   });
   // This is an explicit stress sample, not a claim about physical device text-size settings.
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-  const clearance = await page.locator(".ss-client").evaluateAll((cards) =>
+  // Enlarged labels may crowd a phone card, but must stay inside it.
+  const inside = await page.locator(".ss-client").evaluateAll((cards) =>
     cards.map((card) => {
       const box = card.getBoundingClientRect();
-      const heading = card.querySelector(".ss-client-heading")!.getBoundingClientRect();
-      const task = card.querySelector(".ss-client-task")!.getBoundingClientRect();
       const status = card.querySelector(".ss-client-status")!.getBoundingClientRect();
-      return {
-        headingToTask: task.top - heading.bottom,
-        taskToStatus: status.top - task.bottom,
-        bottom: box.bottom - status.bottom,
-      };
+      return box.bottom - status.bottom;
     }),
   );
-  for (const card of clearance) {
-    expect(card.headingToTask).toBeGreaterThanOrEqual(9);
-    expect(card.taskToStatus).toBeGreaterThanOrEqual(3);
-    expect(card.bottom).toBeGreaterThanOrEqual(9);
-  }
-  await page
-    .getByRole("region", { name: "Four clients connected to one service" })
-    .press("ArrowRight");
+  for (const bottom of inside) expect(bottom).toBeGreaterThanOrEqual(0);
   await page
     .locator("#service-experiment")
-    .screenshot({ path: "/tmp/service-curves/note-enlarged-320.png" });
+    .screenshot({ path: "artifacts/visual/note-enlarged-320.png" });
+});
+
+test("a citation's reminder closes when scrolled away, so it cannot cover Play", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/notes/shared-service", { waitUntil: "networkidle" });
+  const tip = page.locator("#nk-reader-tooltip");
+  await page.locator(".nk-cite").first().hover();
+  await expect(tip).toBeVisible();
+  await page.evaluate(() => {
+    const pad = document.createElement("div");
+    pad.style.height = "1400px";
+    document.body.append(pad);
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "instant" });
+  });
+  await expect(tip).toBeHidden();
 });

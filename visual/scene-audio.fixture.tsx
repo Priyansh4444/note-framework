@@ -1,5 +1,5 @@
 import { render } from "solid-js/web";
-import { createScene, type Scene } from "../src/post/scene/clock";
+import { createScene, type Scene } from "../src/kit/scene/clock";
 import { Experiment } from "../src/kit/Experiment";
 import type { CuePlan } from "../src/kit/scene-audio";
 
@@ -44,7 +44,6 @@ export function mountSceneAudioFixture() {
           scene={scene}
           timeline="Request time"
           sound={plan}
-          actionsPlacement="bottom"
           question="Watch and hear one scene"
           caption="Original quiet synthesis; sound starts off."
         >

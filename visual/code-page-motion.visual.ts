@@ -21,7 +21,8 @@ async function choose(patch: import("@playwright/test").Locator, side: "before" 
   if (await toggle.isVisible()) await toggle.click();
   else {
     const tools = patch.locator("..").locator(".nk-code-source-tools");
-    if ((await tools.getAttribute("open")) === null) await tools.locator("summary").click();
+    if ((await tools.getAttribute("data-open")) === null)
+      await tools.locator(".nk-code-source-toggle").click();
     await tools
       .getByRole("button", { name: side === "before" ? "Before" : "After", exact: true })
       .click();
@@ -30,6 +31,7 @@ async function choose(patch: import("@playwright/test").Locator, side: "before" 
 
 test("the numerical patch offers readable before and after versions", async ({ page }) => {
   const patch = await revealPatch(page);
+  await choose(patch, "before");
   await expect(patch).toHaveAttribute("data-current-version", "before");
   await choose(patch, "after");
   await expect(patch).toHaveAttribute("data-current-version", "after");
@@ -135,6 +137,7 @@ test("keyboard and reduced-motion code changes settle immediately", async ({ pag
           .flatMap((e) => e.getAnimations())
           .filter((a) => a.playState === "running").length,
     );
+  await choose(patch, "before");
   await patch.getByRole("button").focus();
   await page.keyboard.press("Enter");
   expect(await countRunning()).toBe(0);
@@ -175,7 +178,7 @@ for (const width of [320, 390, 768, 1440])
     expect(result.left).toBeGreaterThanOrEqual(0);
     expect(result.right).toBeLessThanOrEqual(width);
     for (const control of result.controls) {
-      expect(control.h, control.text ?? "control").toBe(width <= 640 ? 0 : 28);
+      expect(control.h, control.text ?? "control").toBe(width <= 640 ? 44 : 28);
       expect(control.right).toBeLessThanOrEqual(result.right);
     }
   });
@@ -191,9 +194,8 @@ test("selecting the active source keeps each original code line intact", async (
       .map((e) => e.innerText);
   });
   expect(lines).toContain("export type Point = readonly [x: number, y: number];");
-  expect(lines).toContain(
-    "export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;",
-  );
+  expect(lines).toContain("export function lerp(a: number, b: number, t: number) {");
+  expect(lines).toContain("  return a + (b - a) * t;");
 });
 
 test("font remeasurement under enlarged layout keeps token boxes fitted to text", async ({

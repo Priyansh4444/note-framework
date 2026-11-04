@@ -3,7 +3,7 @@ import { page, userEvent } from "vitest/browser";
 import { createSignal, onCleanup } from "solid-js";
 import { Parameter } from "../src/kit/Parameter";
 import { CurveTimeline } from "../src/kit/CurveTimeline";
-import { createScene } from "../src/post/scene/clock";
+import { createScene } from "../src/kit/scene/clock";
 import { CurveMorphExample, LayersExample, InkExample } from "../src/kit/patterns/recipes";
 import { mount, painted } from "./mount";
 
@@ -67,9 +67,9 @@ test("all recipes update the selected visual without replacing persistent drawin
   expect(canvas).not.toBeNull();
   expect(layer).not.toBeNull();
   expect(marks).toHaveLength(240);
-  await page.getByRole("button", { name: "Straight", exact: true }).click();
-  await page.getByRole("button", { name: "Chords", exact: true }).click();
-  await page.getByRole("button", { name: "Hatching", exact: true }).click();
+  await page.getByRole("radio", { name: "Straight", exact: true }).click();
+  await page.getByRole("radio", { name: "Chords", exact: true }).click();
+  await page.getByRole("radio", { name: "Hatching", exact: true }).click();
   expect(container.querySelector("canvas")).toBe(canvas);
   expect(container.querySelector('[data-layer-id="guides"]')).toBe(layer);
   expect([...container.querySelectorAll(".nk-ink-mark")]).toEqual(marks);

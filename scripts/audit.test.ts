@@ -116,6 +116,15 @@ describe("real rendered geometry counterexamples", () => {
     expect(failures(await measure(fixture(20)), "font-size")[0]?.measured).toBe(10);
     expect((await measure(fixture(30))).findings).toEqual([]);
   });
+  test("readable base labels allow typographic indices but reject tiny indices and bases", async () => {
+    const fixture = (base: number, index: number) =>
+      svg(
+        `<text x="30" y="40" style="font-size:${base}px">P<tspan baseline-shift="sub" style="font-size:${index}px">0</tspan></text>`,
+      );
+    expect(failures(await measure(fixture(16, 11.2)), "font-size")).toHaveLength(0);
+    expect(failures(await measure(fixture(16, 8)), "font-size")).toHaveLength(1);
+    expect(failures(await measure(fixture(12, 11.2)), "font-size")).toHaveLength(1);
+  });
   test("hidden and zero-opacity essential targets fail and visible target passes", async () => {
     for (const style of [
       "display:none",
@@ -738,7 +747,7 @@ test("Experiment invalid duration or frozen time metadata cannot silently pass",
 }, 30_000);
 
 test("Experiment owns its figure geometry under the real post stylesheet, including phones", async () => {
-  const postCSS = await readFile(new URL("../src/post/post.css", import.meta.url), "utf8");
+  const postCSS = await readFile(new URL("../src/kit/base.css", import.meta.url), "utf8");
   const experimentCSS = await readFile(
     new URL("../src/kit/experiment.css", import.meta.url),
     "utf8",
